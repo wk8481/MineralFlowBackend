@@ -1,0 +1,21 @@
+plugins {
+
+    id 'module-config' // Ensure this is the correct plugin ID
+    id 'spring-conventions'
+}
+
+//group = 'be.kdg.prgramming6'
+//version = '1.0-SNAPSHOT'
+
+//repositories {
+//    mavenCentral()
+//}
+
+dependencies {
+    implementation project(":common")
+    implementation project(':landSlideContext')
+
+
+
+}
+
