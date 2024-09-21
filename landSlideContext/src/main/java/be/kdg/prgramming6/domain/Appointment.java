@@ -10,11 +10,12 @@ public class Appointment {
     private final MaterialType materialType;
     private final LocalDateTime windowStart;
     private final LocalDateTime windowEnd;
-
+    private final PersonId seller;
 
     public Appointment(UUID appointmentId, Truck truck, LicensePlate licensePlate, MaterialType materialType,
-                       LocalDateTime windowStart, LocalDateTime windowEnd) {
-        if (appointmentId == null || truck == null || licensePlate == null || materialType == null || windowStart == null || windowEnd == null) {
+                       LocalDateTime windowStart, LocalDateTime windowEnd, PersonId seller) {
+        if (appointmentId == null || truck == null || licensePlate == null || materialType == null ||
+                windowStart == null || windowEnd == null || seller == null) {
             throw new IllegalArgumentException("Arguments cannot be null");
         }
         if (windowStart.isAfter(windowEnd)) {
@@ -30,7 +31,7 @@ public class Appointment {
         this.materialType = materialType;
         this.windowStart = windowStart;
         this.windowEnd = windowEnd;
-
+        this.seller = seller; // Assign the seller
     }
 
     // Getter methods
@@ -58,10 +59,16 @@ public class Appointment {
         return windowEnd;
     }
 
+    public PersonId getSeller() {
+        return seller; // Getter for seller
+    }
 
     // Method to schedule an appointment
-    public static Appointment scheduleAppointment(UUID appointmentId, Truck truck, LicensePlate licensePlate, MaterialType materialType,
-                                                 LocalDateTime windowStart, LocalDateTime windowEnd) {
-        return new Appointment(appointmentId, truck, licensePlate, materialType, windowStart, windowEnd);
+    public static Appointment scheduleAppointment(UUID appointmentId, Truck truck, LicensePlate licensePlate,
+                                                  MaterialType materialType, LocalDateTime windowStart,
+                                                  LocalDateTime windowEnd, PersonId seller) {
+        return new Appointment(appointmentId, truck, licensePlate, materialType, windowStart, windowEnd, seller);
     }
+
+
 }

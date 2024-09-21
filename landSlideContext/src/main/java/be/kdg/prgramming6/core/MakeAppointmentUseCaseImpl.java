@@ -29,11 +29,12 @@ public class MakeAppointmentUseCaseImpl implements MakeAppointmentUseCase {
         // Create the appointment using the domain method
         Appointment appointment = Appointment.scheduleAppointment(
                 appointmentId,
-                new Truck(command.licensePlate()),
+                new Truck(command.licensePlate()), // Assuming Truck can be created this way
                 command.licensePlate(),
                 command.materialType(),
                 start,
-                end
+                end,
+                command.seller() // Include the seller in the appointment
         );
 
         // Save the appointment (update the in-memory store for simplicity)
@@ -56,4 +57,3 @@ public class MakeAppointmentUseCaseImpl implements MakeAppointmentUseCase {
         }
     }
 }
-
