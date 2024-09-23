@@ -1,6 +1,8 @@
 package be.kdg.prgramming6.events;
 
-import be.kdg.prgramming6.domain.PersonId;
 
-public record AppointmentUpdatedEvent (PersonId seller){
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public record AppointmentUpdatedEvent (UUID sellerId, String licensePLate) {
 }

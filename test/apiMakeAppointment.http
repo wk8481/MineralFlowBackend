@@ -1,0 +1,2 @@
+POST http://localhost:8090/api/make-appointment/5c2db01b-1b71-48be-8b93-fa25635a388d/ABC-123/PET_COKE//2024-09-30T09:00:00/2024-09-30T10:00:00
+

@@ -1,59 +1,41 @@
 package be.kdg.prgramming6.core;
 
 import be.kdg.prgramming6.domain.Appointment;
-import be.kdg.prgramming6.domain.Truck;
+import be.kdg.prgramming6.domain.Schedule;
 import be.kdg.prgramming6.port.in.MakeAppointmentCommand;
 import be.kdg.prgramming6.port.in.MakeAppointmentUseCase;
+import be.kdg.prgramming6.port.out.UpdateAppointmentPort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class MakeAppointmentUseCaseImpl implements MakeAppointmentUseCase {
+    private final Schedule schedule = new Schedule(); // Use Schedule to handle appointment logic
+    private final UpdateAppointmentPort updateAppointmentPort;
 
-    private final Map<LocalDateTime, Integer> appointmentsPerHour = new HashMap<>();
+    public MakeAppointmentUseCaseImpl(UpdateAppointmentPort updateAppointmentPort) {
+        this.updateAppointmentPort = updateAppointmentPort;
+    }
 
     @Override
     public void makeAppointment(MakeAppointmentCommand command) {
         LocalDateTime start = command.appointmentWindowStart().withMinute(0).withSecond(0).withNano(0);
         LocalDateTime end = command.appointmentWindowEnd().withMinute(0).withSecond(0).withNano(0);
 
-        validateSlotAvailability(start, end);
-
-        // Generate a unique identifier for the appointment
-        UUID appointmentId = UUID.randomUUID();
-
-        // Create the appointment using the domain method
-        Appointment appointment = Appointment.scheduleAppointment(
-                appointmentId,
-                new Truck(command.licensePlate()), // Assuming Truck can be created this way
+        // Delegate scheduling logic to Schedule class and capture the appointment created
+        Appointment appointment = schedule.scheduleAppointment(
+                command.sellerId(),
                 command.licensePlate(),
                 command.materialType(),
                 start,
-                end,
-                command.seller() // Include the seller in the appointment
+                end
         );
 
-        // Save the appointment (update the in-memory store for simplicity)
-        for (LocalDateTime dateTime = start; !dateTime.isAfter(end); dateTime = dateTime.plusHours(1)) {
-            appointmentsPerHour.put(dateTime, appointmentsPerHour.getOrDefault(dateTime, 0) + 1);
-        }
+        // Pass the appointment to the output port
+        updateAppointmentPort.updateAppointment(appointment);
 
-        // Notify the truck (e.g., log an event or send a message)
-        System.out.println("Appointment created with ID: " + appointment.getAppointmentId());
-    }
-
-    private void validateSlotAvailability(LocalDateTime start, LocalDateTime end) {
-        int maxAppointmentsPerHour = 40;
-
-        for (LocalDateTime dateTime = start; !dateTime.isAfter(end); dateTime = dateTime.plusHours(1)) {
-            int currentCount = appointmentsPerHour.getOrDefault(dateTime, 0);
-            if (currentCount >= maxAppointmentsPerHour) {
-                throw new IllegalStateException("No available slots for the selected time window");
-            }
-        }
+        // Notify about the new appointment
+        System.out.println("Appointment successfully scheduled.");
     }
 }
