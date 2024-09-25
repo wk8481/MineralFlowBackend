@@ -1,11 +1,19 @@
 package be.kdg.prgramming6.domain;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
-public record Appointment(UUID appointmentId, Truck truck, MaterialType materialType, LocalDateTime windowStart,
-                          LocalDateTime windowEnd, SellerId sellerId) {
-    public Appointment {
+public class Appointment {
+    private final UUID appointmentId;
+    private final Truck truck;
+    private final MaterialType materialType;
+    private final LocalDateTime windowStart;
+    private final LocalDateTime windowEnd;
+    private final SellerId sellerId;
+
+    public Appointment( final UUID appointmentId, final Truck truck, final MaterialType materialType,
+                       final LocalDateTime windowStart, final LocalDateTime windowEnd, final SellerId sellerId) {
         if (appointmentId == null || truck == null || materialType == null ||
                 windowStart == null || windowEnd == null || sellerId == null) {
             throw new IllegalArgumentException("Arguments cannot be null");
@@ -17,6 +25,12 @@ public record Appointment(UUID appointmentId, Truck truck, MaterialType material
             throw new IllegalArgumentException("Appointment date cannot be in the past");
         }
 
+        this.appointmentId = appointmentId;
+        this.truck = truck;
+        this.materialType = materialType;
+        this.windowStart = windowStart;
+        this.windowEnd = windowEnd;
+        this.sellerId = sellerId;
     }
 
     // Method to check if this appointment overlaps with another time window
@@ -24,12 +38,39 @@ public record Appointment(UUID appointmentId, Truck truck, MaterialType material
         return (start.isBefore(windowEnd) && end.isAfter(windowStart));
     }
 
-    // Method to schedule an appointment
+    // Getters
+    public UUID getAppointmentId() {
+        return appointmentId;
+    }
+
+    public Truck getTruck() {
+        return truck;
+    }
+
+    public MaterialType getMaterialType() {
+        return materialType;
+    }
+
+    public LocalDateTime getWindowStart() {
+        return windowStart;
+    }
+
+    public LocalDateTime getWindowEnd() {
+        return windowEnd;
+    }
+
+    public SellerId getSellerId() {
+        return sellerId;
+    }
+
+
+
+
+
+    // Method to create a new Appointment instance
     public static Appointment scheduleAppointment(UUID appointmentId, Truck truck,
                                                   MaterialType materialType, LocalDateTime windowStart,
                                                   LocalDateTime windowEnd, SellerId sellerId) {
         return new Appointment(appointmentId, truck, materialType, windowStart, windowEnd, sellerId);
     }
-
-    // Getter methods...
 }

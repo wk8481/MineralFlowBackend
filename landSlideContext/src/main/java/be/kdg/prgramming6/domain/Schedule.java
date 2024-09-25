@@ -8,6 +8,10 @@ import java.util.UUID;
 public class Schedule {
     private final List<Appointment> appointments = new ArrayList<>(); // Store the appointments
 
+    public void addAppointment(Appointment appointment) {
+        appointments.add(appointment);
+    }
+
     // Method to check availability and schedule an appointment
     public Appointment scheduleAppointment(SellerId sellerId, LicensePlate licensePlate, MaterialType materialType,
                                            LocalDateTime windowStart, LocalDateTime windowEnd) {
@@ -28,9 +32,9 @@ public class Schedule {
                 sellerId
         );
 
-        appointments.add(appointment); // Add the appointment to the schedule
+        addAppointment(appointment); // Add the appointment to the schedule
 
-        System.out.println("Appointment created with ID: " + appointment.appointmentId());
+        System.out.println("Appointment created with ID: " + appointment.getAppointmentId());
 
         // Return the newly created appointment
         return appointment;

@@ -24,6 +24,7 @@
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/landSlideContext" />
+            <option value="$PROJECT_DIR$/warehouseContext" />
           </set>
         </option>
       </GradleProjectSettings>

@@ -3,4 +3,5 @@ rootProject.name = 'backend'
 include 'application'
 include 'common'
 include 'landSlideContext'
+include 'warehouseContext'
 

@@ -4,16 +4,15 @@ plugins {
     id 'spring-conventions'
 }
 
-//group = 'be.kdg.prgramming6'
-//version = '1.0-SNAPSHOT'
 
-//repositories {
-//    mavenCentral()
-//}
 
 dependencies {
     implementation project(":common")
     implementation project(':landSlideContext')
+    implementation project(':warehouseContext')
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
 
 

@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/appointments")
+@RequestMapping("/")
 public class MakeAppointmentController {
 
     private final Logger logger = LoggerFactory.getLogger(MakeAppointmentController.class);
@@ -21,7 +21,7 @@ public class MakeAppointmentController {
         this.makeAppointmentUseCase = makeAppointmentUseCase;
     }
 
-    @PostMapping
+    @PostMapping("/make-appointment/{sellerId}/{licensePlate}/{materialType}/{appointmentWindowStart}/{appointmentWindowEnd}")
     public void makeAppointment(@RequestBody MakeAppointmentDTO dto) {
         logger.info("Received request to schedule an appointment.");
 
