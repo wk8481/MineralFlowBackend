@@ -5,6 +5,7 @@ import be.kdg.prgramming6.events.AppointmentUpdatedEvent;
 import be.kdg.prgramming6.port.out.UpdateAppointmentPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
@@ -12,11 +13,11 @@ import java.util.UUID;
 
 @Component
 public class AppointmentUpdatedPublisher implements UpdateAppointmentPort {
-    private final ApplicationEventPublisher publisher;
+    private final RabbitTemplate rabbitTemplate;
     private static final Logger logger = LoggerFactory.getLogger(AppointmentUpdatedPublisher.class);
 
-    public AppointmentUpdatedPublisher(ApplicationEventPublisher publisher) {
-        this.publisher = publisher;
+    public AppointmentUpdatedPublisher(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
@@ -31,10 +32,19 @@ public class AppointmentUpdatedPublisher implements UpdateAppointmentPort {
         logger.info("Updating appointment for Seller ID: {} with License Plate: {}", sellerIdValue, licensePlateValue);
 
         // Publish event using primitive values
-        publisher.publishEvent(new AppointmentUpdatedEvent(
+        AppointmentUpdatedEvent appointmentUpdatedEvent = new AppointmentUpdatedEvent(
                 sellerIdValue,
                 licensePlateValue
-        ));
+        );
+
+        String routingKey = "landslide.%s.appointment.updated".formatted(sellerIdValue.toString());
+
+        this.rabbitTemplate.convertAndSend(
+                RabbitMQTopology.LANDSLIDE_EVENTS_EXCHANGE,
+                routingKey,
+                appointmentUpdatedEvent
+        );
+
 
         // Log the event publication
         logger.info("Published AppointmentUpdatedEvent for Seller ID: {} and License Plate: {}", sellerIdValue, licensePlateValue);
