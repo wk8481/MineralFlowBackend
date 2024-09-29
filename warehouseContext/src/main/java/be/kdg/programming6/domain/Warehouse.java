@@ -1,70 +1,67 @@
 package be.kdg.programming6.domain;
 
-import java.math.BigDecimal;
+import be.kdg.programming6.domain.CustomerId;
+import be.kdg.programming6.domain.PayloadDeliveryTicket;
+import be.kdg.programming6.domain.Truck;
+import be.kdg.programming6.domain.WarehouseId;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Warehouse {
-    private final WarehouseId id;
-    private int currentCapacity;  // Current number of trucks docked
-    private final BigDecimal maxCapacity; // Maximum capacity of the warehouse
-    private final BigDecimal overflowFactor; // Factor to determine overflow capacity
+    private final WarehouseId warehouseId;
+    private final int maxTrucksPerHour;
+    private final List<LocalDateTime> dockedTrucks;
+    private final CustomerId customerId;
 
     // Constructor
-    public Warehouse(WarehouseId id, BigDecimal maxCapacity, BigDecimal overflowFactor) {
-        this.id = id;
-        this.maxCapacity = maxCapacity; // Ensure this is a BigDecimal
-        this.currentCapacity = 0; // Initially, the warehouse is empty
-        this.overflowFactor = overflowFactor; // E.g., new BigDecimal("1.1") for 110% overflow
+    public Warehouse(WarehouseId warehouseId, int maxTrucksPerHour, CustomerId customerId, CustomerId customerId1) {
+        this.warehouseId = warehouseId;
+        this.maxTrucksPerHour = maxTrucksPerHour;
+        this.customerId = customerId1;
+        this.dockedTrucks = new ArrayList<>();
     }
 
     public WarehouseId getId() {
-        return id;
+        return warehouseId;
     }
 
     // Validation logic for docking a truck
-    public boolean canDockTruck(Truck truck) {
-        // Check if the warehouse is at maximum capacity with overflow
-        BigDecimal maxAllowedCapacity = maxCapacity.multiply(overflowFactor);
-        if (BigDecimal.valueOf(currentCapacity).compareTo(maxAllowedCapacity) >= 0) {
-            return false; // Cannot dock if over the overflow capacity
-        }
+    public boolean canDockTruck() {
+        // Remove docked trucks older than an hour
+        LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
+        dockedTrucks.removeIf(timestamp -> timestamp.isBefore(oneHourAgo));
 
-        // Implement material type restrictions (if any)
-        // Placeholder logic: assuming all material types are accepted
-        return true; // Placeholder logic
+        // Check if the count of docked trucks in the last hour is less than the maximum
+        return dockedTrucks.size() < maxTrucksPerHour;
     }
 
-    // Method to dock a truck, increments current capacity
+    // Method to dock a truck, increments docked truck count
     public void dockTruck(Truck truck) {
-        if (canDockTruck(truck)) {
-            currentCapacity++;
+        if (canDockTruck()) {
+            dockedTrucks.add(LocalDateTime.now());
         } else {
             throw new IllegalStateException("Truck cannot be docked due to capacity or restrictions.");
         }
     }
 
-    // Method to generate the PDT
-    public PayloadDeliveryTicket generatePDT(Truck truck, String conveyorBeltId, String weighingBridgeNumber, LocalDateTime deliveryDate) {
-        // Create and return the PDT object
-        return new PayloadDeliveryTicket(truck.licensePlate(), truck.materialType(), this.id, conveyorBeltId, weighingBridgeNumber, deliveryDate);
+    // Method to assign a weighbridge number using WeighbridgeNumber record
+    public WeighbridgeNumber assignWeighbridgeNumber(Truck truck) {
+        return WeighbridgeNumber.generate(truck);
     }
 
-    // Method to remove a truck after docking, decrements current capacity
+    // Method to generate the PDT, now using dock number instead of conveyor belt ID
+    public PayloadDeliveryTicket generatePDT(Truck truck, String dockNumber, LocalDateTime deliveryDate) {
+        return new PayloadDeliveryTicket(truck.getMaterialType(), deliveryDate, this.getId(), dockNumber);
+    }
+
+    // Method to remove a truck after docking (not currently needed but kept for future use)
     public void undockTruck() {
-        if (currentCapacity > 0) {
-            currentCapacity--;
-        } else {
-            throw new IllegalStateException("No trucks to undock.");
-        }
+        // You can implement logic here if needed in the future
     }
 
-    // Method to get current capacity
-    public int getCurrentCapacity() {
-        return currentCapacity;
-    }
-
-    // Method to get max capacity with overflow
-    public BigDecimal getMaxCapacityWithOverflow() {
-        return maxCapacity.multiply(overflowFactor);
+    public int getMaxTrucksPerHour() {
+        return maxTrucksPerHour;
     }
 }

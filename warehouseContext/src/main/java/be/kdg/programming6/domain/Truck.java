@@ -1,24 +1,40 @@
 package be.kdg.programming6.domain;
 
-public record Truck(LicensePlate licensePlate, MaterialType materialType) {
-    public Truck {
-        if (licensePlate == null) {
-            throw new IllegalArgumentException("License plate cannot be null");
-        }
-        if (materialType == null) {
-            throw new IllegalArgumentException("Material type cannot be null");
-        }
+public class Truck {
+    private final LicensePlate licensePlate;
+    private final MaterialType materialType;
+    private String dockNumber; // Add dock number to track docking location
+
+    // Constructor
+    public Truck(LicensePlate licensePlate, MaterialType materialType) {
+        this.licensePlate = licensePlate;
+        this.materialType = materialType;
+        this.dockNumber = null; // Initially, no dock number assigned
     }
 
-    @Override
-    public LicensePlate licensePlate() {
+    // Getters
+    public LicensePlate getLicensePlate() {
         return licensePlate;
     }
 
-    @Override
-    public MaterialType materialType() {
+    public MaterialType getMaterialType() {
         return materialType;
     }
 
+    public String getDockNumber() {
+        return dockNumber;
+    }
 
+    public void setDockNumber(String dockNumber) {
+        this.dockNumber = dockNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "Truck{" +
+                "licensePlate=" + licensePlate +
+                ", materialType=" + materialType +
+                ", dockNumber='" + dockNumber + '\'' +
+                '}';
+    }
 }

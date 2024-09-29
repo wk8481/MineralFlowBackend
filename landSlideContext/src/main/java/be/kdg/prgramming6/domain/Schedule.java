@@ -1,12 +1,23 @@
 package be.kdg.prgramming6.domain;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class Schedule {
+    private final LocalDate day; // Store the day for this schedule
     private final List<Appointment> appointments = new ArrayList<>(); // Store the appointments
+
+    // Constructor to initialize the schedule with a specific day
+    public Schedule(LocalDate day) {
+        this.day = day;
+    }
+
+    public LocalDate getDay() {
+        return day;
+    }
 
     public void addAppointment(Appointment appointment) {
         appointments.add(appointment);
