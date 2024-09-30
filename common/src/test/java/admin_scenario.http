@@ -1,0 +1,18 @@
+### Get access token with admin user
+
+POST http://localhost:8180/realms/demo/protocol/openid-connect/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+client_id=demo_client&client_secret=nNhIIzSj3s8IYRIZouVkGEuQJHQpuGUG&username=admin&password=password&grant_type=password&scope=openid
+
+//saving the access token
+> {%
+    client.global.set("access_token", response.body.access_token);
+%}
+
+
+
+### Access secured endpoint via admin role
+GET http://localhost:8080/secured/admin HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{access_token}}

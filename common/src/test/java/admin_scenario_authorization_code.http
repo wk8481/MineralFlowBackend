@@ -1,0 +1,25 @@
+### Copy this url in your browser
+http://localhost:8180/realms/demo/protocol/openid-connect/auth?response_type=code&client_id=demo_client&client_secret=nNhIIzSj3s8IYRIZouVkGEuQJHQpuGUG&redirect_uri=http://localhost:3333/callback&scope=openid&state=123456789
+
+//http://localhost:3333/callback?state=123456789&session_state=132adc18-96be-408d-a1cf-4c344aa5026f&code=9ef4eedd-c7dc-4a78-bbfc-5a2dfeebabd7.132adc18-96be-408d-a1cf-4c344aa5026f.aac9b208-baee-4184-b916-afe1f078469a
+
+http://localhost:3333/callback?state=123456789&session_state=019a08b2-e2ab-426f-9e3e-06e9377da5e8&code=9d9f5acf-1734-4643-9c81-c2626328e7a4.019a08b2-e2ab-426f-9e3e-06e9377da5e8.aac9b208-baee-4184-b916-afe1f078469a
+
+### Get access token with admin user
+
+POST http://localhost:8180/realms/demo/protocol/openid-connect/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+client_id=demo_client&client_secret=nNhIIzSj3s8IYRIZouVkGEuQJHQpuGUG&grant_type=authorization_code&scope=openid&redirect_uri=http://localhost:3333/callback&code=9d9f5acf-1734-4643-9c81-c2626328e7a4.019a08b2-e2ab-426f-9e3e-06e9377da5e8.aac9b208-baee-4184-b916-afe1f078469a
+
+//saving the access token
+> {%
+    client.global.set("access_token", response.body.access_token);
+%}
+
+
+
+### Access secured endpoint via admin role
+GET http://localhost:8080/secured/admin HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
