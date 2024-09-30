@@ -26,7 +26,6 @@ public class Schedule {
     // Method to check availability and schedule an appointment
     public Appointment scheduleAppointment(SellerId sellerId, LicensePlate licensePlate, MaterialType materialType,
                                            LocalDateTime windowStart, LocalDateTime windowEnd) {
-
         // Check if there is availability in the schedule
         if (!hasAvailability(windowStart, windowEnd)) {
             throw new IllegalStateException("No available slots for the selected time window");
@@ -59,5 +58,10 @@ public class Schedule {
                 .count();
 
         return overlappingAppointments < 40; // Limiting to 40 trucks per time window
+    }
+
+    // Method to get all appointments
+    public List<Appointment> getAppointments() {
+        return new ArrayList<>(appointments); // Return a copy of the appointments list to maintain encapsulation
     }
 }

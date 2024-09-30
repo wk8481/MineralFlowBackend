@@ -7,4 +7,6 @@ public record DockTruckDTO(
         String conveyorBeltId,
         String weighingBridgeNumber,
         String deliveryDate
-) {}
+) {
+
+}

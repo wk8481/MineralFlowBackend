@@ -13,5 +13,5 @@ public interface LoadDockedTruckPort {
      * @param licensePlate The license plate of the truck to load.
      * @return An Optional containing the Truck if found, or empty if not found.
      */
-    Optional<Truck> loadDockedTruck(LicensePlate licensePlate);
+    Optional<Truck> loadTruckByPlate(LicensePlate licensePlate);
 }

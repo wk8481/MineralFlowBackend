@@ -11,11 +11,12 @@ import java.util.UUID;
 public class AppointmentJpaEntity {
 
     @Id
-    @Column(name = "appointment_id", columnDefinition = "uuid")
+    @Column(name = "appointment_id", columnDefinition = "varchar(36)")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID appointmentId;
 
     @ManyToOne
-    @JoinColumn(name = "schedule_id", nullable = false)
+    @JoinColumn(name = "day", nullable = false)
     private ScheduleJpaEntity schedule;
 
     @Column(name = "license_plate", nullable = false)
@@ -30,7 +31,8 @@ public class AppointmentJpaEntity {
     @Column(name = "window_end", nullable = false)
     private LocalDateTime windowEnd;
 
-    @Column(name = "seller_id", columnDefinition = "uuid")
+    @Column(name = "seller_id", nullable = false, columnDefinition = "VARCHAR(36)")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID sellerId;
 
     public AppointmentJpaEntity() {
@@ -46,13 +48,7 @@ public class AppointmentJpaEntity {
         this.appointmentId = appointmentId;
     }
 
-    public ScheduleJpaEntity getSchedule() {
-        return schedule;
-    }
 
-    public void setSchedule(ScheduleJpaEntity schedule) {
-        this.schedule = schedule;
-    }
 
     public String getLicensePlate() {
         return licensePlate;
@@ -92,5 +88,13 @@ public class AppointmentJpaEntity {
 
     public void setSellerId(UUID sellerId) {
         this.sellerId = sellerId;
+    }
+
+    public ScheduleJpaEntity getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(ScheduleJpaEntity schedule) {
+        this.schedule = schedule;
     }
 }

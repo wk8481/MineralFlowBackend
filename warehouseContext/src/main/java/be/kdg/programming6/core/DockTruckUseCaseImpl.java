@@ -3,47 +3,71 @@ package be.kdg.programming6.core;
 import be.kdg.programming6.domain.*;
 import be.kdg.programming6.port.in.DockTruckCommand;
 import be.kdg.programming6.port.in.DockTruckUseCase;
+import be.kdg.programming6.port.in.out.LoadWarehousePort;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
+
+@Service
 public class DockTruckUseCaseImpl implements DockTruckUseCase {
-    private final Warehouse warehouse;
+    private final List<Warehouse> warehouses; // List of warehouses to check
+    private final LoadWarehousePort loadWarehousePort; // Port to load warehouse by seller ID
 
-    public DockTruckUseCaseImpl(Warehouse warehouse) {
-        this.warehouse = warehouse;
+    public DockTruckUseCaseImpl(List<Warehouse> warehouses, LoadWarehousePort loadWarehousePort) {
+        this.warehouses = warehouses; // Injected list of warehouses
+        this.loadWarehousePort = loadWarehousePort; // Initialize the load warehouse port
     }
 
     @Override
     public void dockTruck(DockTruckCommand command) {
         LicensePlate licensePlate = command.licensePlate();
         MaterialType materialType = command.materialType();
-        String dockNumber = command.conveyorBeltId(); // Renamed for clarity
+        String dockNumber = command.conveyorBeltId();
         LocalDateTime deliveryDate = command.deliveryDate();
+        UUID sellerId = command.sellerId();
 
-        // Create a Truck instance
+        // Attempt to load existing Warehouse ID based on seller ID
+        WarehouseId warehouseId = loadWarehousePort.findWarehouseIdbySellerId(sellerId);
+
+        // If the warehouse ID is not found, use a static Warehouse ID (as UUID)
+        if (warehouseId == null) {
+            warehouseId = new WarehouseId(UUID.fromString("00000000-0000-0000-0000-000000000001")); // Replace with your desired static UUID
+        }
+
+        // Find the corresponding warehouse in the list
+        WarehouseId finalWarehouseId = warehouseId;
+        Warehouse targetWarehouse = warehouses.stream()
+                .filter(warehouse -> warehouse.getId().equals(finalWarehouseId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Warehouse not found for the given seller ID."));
+
         Truck truck = new Truck(licensePlate, materialType);
         truck.setDockNumber(dockNumber);
 
-        // Check if the truck can dock
-        if (!warehouse.canDockTruck()) {
-            throw new IllegalArgumentException("Truck cannot dock at this warehouse due to capacity or restrictions.");
+        if (targetWarehouse.canDockTruck()) {
+            targetWarehouse.dockTruck(truck);
+
+            // Generate the PDT and handle weighbridge assignment
+            PayloadDeliveryTicket pdt = targetWarehouse.generatePDT(truck, dockNumber, deliveryDate);
+            WeighbridgeNumber weighbridgeNumber = targetWarehouse.assignWeighbridgeNumber(truck);
+
+            // Print the PDT and weighbridge number
+            printPDTAndWeighbridge(pdt, weighbridgeNumber);
+        } else {
+            throw new IllegalArgumentException("Truck cannot dock at the warehouse due to capacity or restrictions.");
         }
-
-        // Dock the truck
-        warehouse.dockTruck(truck);
-
-        // Generate the weighbridge number
-        WeighbridgeNumber weighbridgeNumber = warehouse.assignWeighbridgeNumber(truck);
-
-        // Generate the PDT using the dock number and delivery date
-        PayloadDeliveryTicket pdt = warehouse.generatePDT(truck, dockNumber, deliveryDate);
-
-        // Save the PDT and weighbridge number as needed
-        savePDT(pdt, weighbridgeNumber);
     }
 
-    private void savePDT(PayloadDeliveryTicket pdt, WeighbridgeNumber weighbridgeNumber) {
-        // Logic to save the PDT and weighbridge number to a database
-        // This could involve a repository pattern or direct database interaction
+
+
+    private void printPDTAndWeighbridge(PayloadDeliveryTicket pdt, WeighbridgeNumber weighbridgeNumber) {
+        // Print the PDT and weighbridge number
+        System.out.println("----- Docking Summary -----");
+        System.out.println("Payload Delivery Ticket: " + pdt);
+        System.out.println("Weighbridge Number: " + weighbridgeNumber);
+        System.out.println("---------------------------");
     }
 }

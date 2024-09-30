@@ -71,3 +71,42 @@ public class MakeAppointmentController {
         }
     }
 }
+
+//DTO version
+//
+//@PostMapping("/make-appointment")
+//public ResponseEntity<String> makeAppointment(@RequestBody MakeAppointmentDTO dto) {
+//    logger.info("Received request to schedule an appointment: {}", dto);
+//
+//    // Validate that the start time is before the end time
+//    if (dto.appointmentWindowStart().isAfter(dto.appointmentWindowEnd())) {
+//        logger.warn("Appointment creation failed: Start time {} is after end time {}.", dto.appointmentWindowStart(), dto.appointmentWindowEnd());
+//        return ResponseEntity.badRequest().body("Start time cannot be after end time.");
+//    }
+//
+//    // Create the command object
+//    MakeAppointmentCommand command = new MakeAppointmentCommand(
+//            new LicensePlate(dto.licensePlate()),
+//            MaterialType.fromString(dto.materialType()),
+//            dto.appointmentWindowStart(),
+//            dto.appointmentWindowEnd(),
+//            new SellerId(dto.sellerId()) // Using sellerId directly as a UUID
+//    );
+//
+//    try {
+//        // Use the use case to make the appointment
+//        makeAppointmentUseCase.makeAppointment(command);
+//        logger.info("Appointment successfully scheduled for sellerId: {}", dto.sellerId());
+//        return ResponseEntity.status(HttpStatus.CREATED).body("Appointment successfully scheduled.");
+//    } catch (NotFoundException e) {
+//        logger.error("Not found error for sellerId: {}. Error: {}", dto.sellerId(), e.getMessage());
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+//    } catch (InvalidOperationException e) {
+//        logger.error("Invalid operation for sellerId: {}. Error: {}", dto.sellerId(), e.getMessage());
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+//    } catch (Exception e) {
+//        logger.error("Error scheduling appointment for sellerId: {}. Error: {}", dto.sellerId(), e.getMessage());
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while scheduling the appointment.");
+//    }
+//}
+//

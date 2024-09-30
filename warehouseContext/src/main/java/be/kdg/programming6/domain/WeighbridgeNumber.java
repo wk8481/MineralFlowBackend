@@ -11,7 +11,7 @@ public record WeighbridgeNumber(String value) {
 
     // Static factory method to generate a unique weighbridge number
     public static WeighbridgeNumber generate(Truck truck) {
-        String uniqueNumber = "WB-" + truck.licensePlate().plateNumber() + "-" + System.nanoTime();
+        String uniqueNumber = "WB-" + truck.getLicensePlate().plateNumber() + "-" + System.nanoTime();
         return new WeighbridgeNumber(uniqueNumber);
     }
 

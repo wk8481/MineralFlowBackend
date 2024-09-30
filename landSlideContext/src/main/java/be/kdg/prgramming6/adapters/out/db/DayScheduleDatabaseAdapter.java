@@ -4,14 +4,13 @@ import be.kdg.prgramming6.domain.*;
 import be.kdg.prgramming6.port.out.CreateSchedulePort;
 import be.kdg.prgramming6.port.out.LoadDaySchedulePort;
 import be.kdg.prgramming6.port.out.UpdateAppointmentPort;
-import be.kdg.prgramming6.port.out.CreateAppointmentPort; // Import your interface
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 @Component
-public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAppointmentPort, CreateSchedulePort, CreateAppointmentPort {
+public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAppointmentPort, CreateSchedulePort {
     private final ScheduleJpaRepository scheduleJpaRepository;
 
     public DayScheduleDatabaseAdapter(ScheduleJpaRepository scheduleJpaRepository) {
@@ -34,6 +33,20 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
         Schedule schedule = new Schedule(day);
         ScheduleJpaEntity scheduleJpaEntity = new ScheduleJpaEntity();
         scheduleJpaEntity.setDay(day);
+
+        // Set the schedule for each appointment if any
+        for (Appointment appointment : schedule.getAppointments()) {
+            AppointmentJpaEntity appointmentJpaEntity = new AppointmentJpaEntity();
+            appointmentJpaEntity.setAppointmentId(appointment.getAppointmentId());
+            appointmentJpaEntity.setLicensePlate(appointment.getTruck().licensePlate().plateNumber());
+            appointmentJpaEntity.setMaterialType(appointment.getMaterialType().name());
+            appointmentJpaEntity.setWindowStart(appointment.getWindowStart());
+            appointmentJpaEntity.setWindowEnd(appointment.getWindowEnd());
+            appointmentJpaEntity.setSellerId(appointment.getSellerId().id());
+            appointmentJpaEntity.setSchedule(scheduleJpaEntity); // Set the schedule reference
+            scheduleJpaEntity.getAppointments().add(appointmentJpaEntity);
+        }
+
         scheduleJpaRepository.save(scheduleJpaEntity);
 
         return Optional.of(schedule); // Return the newly created schedule wrapped in an Optional
@@ -48,15 +61,15 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
 
         // Add each appointment to the domain Schedule
         scheduleJpaEntity.getAppointments().forEach(appointmentJpaEntity -> {
-            Appointment appointment = toAppointment(appointmentJpaEntity);
+            Appointment appointment = toAppointment(appointmentJpaEntity, scheduleJpaEntity);
             schedule.addAppointment(appointment);
         });
 
         return schedule; // Return the new schedule with the appointments
     }
 
-    private Appointment toAppointment(AppointmentJpaEntity appointmentJpaEntity) {
-        return new Appointment(
+    private Appointment toAppointment(AppointmentJpaEntity appointmentJpaEntity, ScheduleJpaEntity scheduleJpaEntity) {
+        Appointment appointment = new Appointment(
                 appointmentJpaEntity.getAppointmentId(),
                 new Truck(new LicensePlate(appointmentJpaEntity.getLicensePlate())),
                 MaterialType.valueOf(appointmentJpaEntity.getMaterialType()),
@@ -64,33 +77,53 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
                 appointmentJpaEntity.getWindowEnd(),
                 new SellerId(appointmentJpaEntity.getSellerId())
         );
+
+        // Set the schedule for the appointment
+        appointmentJpaEntity.setSchedule(scheduleJpaEntity); // Make sure to set the schedule
+
+        return appointment; // Return the new appointment
     }
 
     @Override
     public void updateAppointment(Appointment appointment) {
-        AppointmentJpaEntity appointmentJpaEntity = new AppointmentJpaEntity();
-        appointmentJpaEntity.setAppointmentId(appointment.getAppointmentId());
-        appointmentJpaEntity.setLicensePlate(appointment.getTruck().licensePlate().plateNumber());
-        appointmentJpaEntity.setMaterialType(appointment.getMaterialType().name());
-        appointmentJpaEntity.setWindowStart(appointment.getWindowStart());
-        appointmentJpaEntity.setWindowEnd(appointment.getWindowEnd());
-        appointmentJpaEntity.setSellerId(appointment.getSellerId().id());
+        // Load the existing schedule for the day
+        ScheduleJpaEntity scheduleJpaEntity = scheduleJpaRepository.findByDay(appointment.getWindowStart().toLocalDate());
 
-        AppointmentJpaEntity savedEntity = scheduleJpaRepository.save(appointmentJpaEntity);
-        System.out.println("Saved Appointment ID: " + savedEntity.getAppointmentId());
-    }
+        if (scheduleJpaEntity != null) {
+            // Check if the appointment exists and update it
+            boolean appointmentExists = scheduleJpaEntity.getAppointments().stream()
+                    .anyMatch(existingAppointment -> existingAppointment.getAppointmentId().equals(appointment.getAppointmentId()));
 
-    @Override
-    public void createAppointment(Appointment appointment) {
-        AppointmentJpaEntity appointmentJpaEntity = new AppointmentJpaEntity();
-        appointmentJpaEntity.setAppointmentId(appointment.getAppointmentId());
-        appointmentJpaEntity.setLicensePlate(appointment.getTruck().licensePlate().plateNumber());
-        appointmentJpaEntity.setMaterialType(appointment.getMaterialType().name());
-        appointmentJpaEntity.setWindowStart(appointment.getWindowStart());
-        appointmentJpaEntity.setWindowEnd(appointment.getWindowEnd());
-        appointmentJpaEntity.setSellerId(appointment.getSellerId().id());
+            if (appointmentExists) {
+                // Update existing appointment
+                scheduleJpaEntity.getAppointments().stream()
+                        .filter(existingAppointment -> existingAppointment.getAppointmentId().equals(appointment.getAppointmentId()))
+                        .forEach(existingAppointment -> {
+                            existingAppointment.setLicensePlate(appointment.getTruck().licensePlate().plateNumber());
+                            existingAppointment.setMaterialType(appointment.getMaterialType().name());
+                            existingAppointment.setWindowStart(appointment.getWindowStart());
+                            existingAppointment.setWindowEnd(appointment.getWindowEnd());
+                            existingAppointment.setSellerId(appointment.getSellerId().id());
+                            existingAppointment.setSchedule(scheduleJpaEntity); // Ensure the schedule reference is set
+                        });
+            } else {
+                // Create and add a new appointment
+                AppointmentJpaEntity newAppointment = new AppointmentJpaEntity();
+                newAppointment.setAppointmentId(appointment.getAppointmentId());
+                newAppointment.setLicensePlate(appointment.getTruck().licensePlate().plateNumber());
+                newAppointment.setMaterialType(appointment.getMaterialType().name());
+                newAppointment.setWindowStart(appointment.getWindowStart());
+                newAppointment.setWindowEnd(appointment.getWindowEnd());
+                newAppointment.setSellerId(appointment.getSellerId().id());
+                newAppointment.setSchedule(scheduleJpaEntity); // Set the schedule reference
 
-        scheduleJpaRepository.save(appointmentJpaEntity);
-        System.out.println("Saved Appointment ID: " + appointmentJpaEntity.getAppointmentId());
+                // Add the new appointment to the existing list
+                scheduleJpaEntity.getAppointments().add(newAppointment);
+            }
+
+            // Save all appointments to the database
+            scheduleJpaRepository.save(scheduleJpaEntity);
+            System.out.println("Updated/Saved Appointment ID: " + appointment.getAppointmentId());
+        }
     }
 }

@@ -21,7 +21,7 @@ public class AppointmentUpdatedListener {
         LOGGER.info(
                 "Appointment from {} has now the status of {}",
                 event.sellerId(),
-                event.licensePLate()
+                event.licensePlate()
         );
 
     }

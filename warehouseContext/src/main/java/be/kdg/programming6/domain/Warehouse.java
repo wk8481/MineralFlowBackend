@@ -1,25 +1,19 @@
 package be.kdg.programming6.domain;
 
-import be.kdg.programming6.domain.CustomerId;
-import be.kdg.programming6.domain.PayloadDeliveryTicket;
-import be.kdg.programming6.domain.Truck;
-import be.kdg.programming6.domain.WarehouseId;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Warehouse {
+    private static final int MAX_TRUCKS_PER_HOUR = 40; // Hardcoded maxTrucksPerHour
     private final WarehouseId warehouseId;
-    private final int maxTrucksPerHour;
     private final List<LocalDateTime> dockedTrucks;
-    private final CustomerId customerId;
+    private final SellerId sellerId;
 
     // Constructor
-    public Warehouse(WarehouseId warehouseId, int maxTrucksPerHour, CustomerId customerId, CustomerId customerId1) {
+    public Warehouse(WarehouseId warehouseId, SellerId sellerId) {
         this.warehouseId = warehouseId;
-        this.maxTrucksPerHour = maxTrucksPerHour;
-        this.customerId = customerId1;
+        this.sellerId = sellerId;
         this.dockedTrucks = new ArrayList<>();
     }
 
@@ -34,7 +28,7 @@ public class Warehouse {
         dockedTrucks.removeIf(timestamp -> timestamp.isBefore(oneHourAgo));
 
         // Check if the count of docked trucks in the last hour is less than the maximum
-        return dockedTrucks.size() < maxTrucksPerHour;
+        return dockedTrucks.size() < MAX_TRUCKS_PER_HOUR;
     }
 
     // Method to dock a truck, increments docked truck count
@@ -56,12 +50,8 @@ public class Warehouse {
         return new PayloadDeliveryTicket(truck.getMaterialType(), deliveryDate, this.getId(), dockNumber);
     }
 
-    // Method to remove a truck after docking (not currently needed but kept for future use)
-    public void undockTruck() {
-        // You can implement logic here if needed in the future
-    }
 
     public int getMaxTrucksPerHour() {
-        return maxTrucksPerHour;
+        return MAX_TRUCKS_PER_HOUR;
     }
 }

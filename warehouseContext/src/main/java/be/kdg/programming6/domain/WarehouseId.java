@@ -1,12 +1,16 @@
 package be.kdg.programming6.domain;
 
 import java.util.Objects;
+import java.util.UUID;
 
-public record WarehouseId(String value) {
+public record WarehouseId(UUID id) {
     public WarehouseId {
-        Objects.requireNonNull(value, "Warehouse ID cannot be null");
-        if (value.isEmpty()) {
-            throw new IllegalArgumentException("Warehouse ID cannot be empty");
-        }
+        Objects.requireNonNull(id, "Warehouse ID cannot be null");
+        // No need for isEmpty check, as UUID cannot be empty
+    }
+
+    @Override
+    public String toString() {
+        return id.toString();
     }
 }

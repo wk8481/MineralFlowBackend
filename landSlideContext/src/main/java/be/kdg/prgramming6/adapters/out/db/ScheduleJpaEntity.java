@@ -1,10 +1,9 @@
 package be.kdg.prgramming6.adapters.out.db;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
+import java.util.ArrayList; // Import ArrayList
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "schedule")
@@ -15,7 +14,7 @@ public class ScheduleJpaEntity {
     private LocalDate day; // Use LocalDate as the primary key
 
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<AppointmentJpaEntity> appointments;
+    private List<AppointmentJpaEntity> appointments = new ArrayList<>(); // Initialize the list
 
     // Getters and setters
     public LocalDate getDay() {
@@ -31,6 +30,6 @@ public class ScheduleJpaEntity {
     }
 
     public void setAppointments(List<AppointmentJpaEntity> appointments) {
-        this.appointments = appointments;
+        this.appointments = appointments != null ? appointments : new ArrayList<>(); // Avoid null assignments
     }
 }
