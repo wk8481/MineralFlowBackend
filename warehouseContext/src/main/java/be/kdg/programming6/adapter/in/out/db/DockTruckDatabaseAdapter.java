@@ -1,21 +1,24 @@
 package be.kdg.programming6.adapter.in.out.db;
 
-import be.kdg.programming6.domain.PayloadDeliveryTicket;
-import be.kdg.programming6.domain.WarehouseId;
-import be.kdg.programming6.domain.WeighbridgeNumber;
+import be.kdg.programming6.domain.*;
+import be.kdg.programming6.port.in.out.LoadPDTPort;
 import be.kdg.programming6.port.in.out.LoadWarehousePort;
-import be.kdg.programming6.port.in.out.UpdateWarehousePort;
+import be.kdg.programming6.port.in.out.SavePDTPort;
+import be.kdg.programming6.port.in.out.UpdatePDTPort;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 @Component
-public class DockTruckDatabaseAdapter implements LoadWarehousePort {
+public class DockTruckDatabaseAdapter implements LoadWarehousePort, UpdatePDTPort, LoadPDTPort, SavePDTPort {
     private final WarehouseJpaRepository warehouseJpaRepository;
+    private final PayloadDeliveryTicketJpaRepository payloadDeliveryTicketJpaRepository;
 
-    public DockTruckDatabaseAdapter(WarehouseJpaRepository warehouseJpaRepository) {
+    public DockTruckDatabaseAdapter(WarehouseJpaRepository warehouseJpaRepository, PayloadDeliveryTicketJpaRepository payloadDeliveryTicketJpaRepository) {
         this.warehouseJpaRepository = warehouseJpaRepository;
+        this.payloadDeliveryTicketJpaRepository = payloadDeliveryTicketJpaRepository;
     }
 
     @Override
@@ -27,34 +30,58 @@ public class DockTruckDatabaseAdapter implements LoadWarehousePort {
         return warehouseEntity.map(entity -> new WarehouseId(entity.getWarehouseId())).orElse(null);
     }
 
-    // Method to save PDT (Payload Delivery Ticket)
-    public void savePDT(PayloadDeliveryTicket pdt) {
-        // Implement logic to save the Payload Delivery Ticket to the database
-        System.out.println("Saving PDT to database: " + pdt.toString());
+    @Override
+    public void updatePDT(String licensePlate, String materialType, UUID warehouseId, String conveyorBeltId, LocalDateTime deliveryDate) {
+        // Create a new PayloadDeliveryTicketJpaEntity with the updated values
+        PayloadDeliveryTicketJpaEntity updatedPDT = new PayloadDeliveryTicketJpaEntity(
+                warehouseId,
+                licensePlate,
+                MaterialType.valueOf(materialType), // Ensure materialType is a valid enum
+                conveyorBeltId,
+                deliveryDate
+        );
+
+        // Persist the updated Payload Delivery Ticket entity
+        payloadDeliveryTicketJpaRepository.save(updatedPDT);
+
+        // Optionally, log the update
+        System.out.println("Updated Payload Delivery Ticket for license plate: " + licensePlate);
     }
 
-    // Method to save Weighbridge Number
-    public void saveWeighbridgeNumber(WeighbridgeNumber weighbridgeNumber) {
-        System.out.println("Saving Weighbridge Number to database: " + weighbridgeNumber.toString());
+    private PayloadDeliveryTicket toPayloadDeliveryTicket(PayloadDeliveryTicketJpaEntity pdtEntity) {
+        return new PayloadDeliveryTicket(
+                new LicensePlate(pdtEntity.getLicensePlate()),
+                pdtEntity.getMaterialType(),
+                pdtEntity.getDeliveryDate(),
+                new WarehouseId(pdtEntity.getWarehouseId()),
+                pdtEntity.getDockNumber()
+        );
     }
 
-//    @Override
-//    public void updateWarehouse(WarehouseId warehouseId, String weighbridgeNumber, String pdt) {
-//        // Logic to update the warehouse entity in the database
-//        Optional<WarehouseJpaEntity> warehouseEntity = warehouseJpaRepository.findById(warehouseId.id());
-//
-//        if (warehouseEntity.isPresent()) {
-//            WarehouseJpaEntity entity = warehouseEntity.get();
-//            // Assuming you have appropriate setters in your WarehouseJpaEntity
-//            entity.setWeighbridgeNumber(weighbridgeNumber); // Set the weighbridge number
-//            entity.setPayloadDeliveryTicket(pdt); // Set the PDT as string
-//
-//            // Save the updated warehouse entity back to the database
-//            warehouseJpaRepository.save(entity);
-//            System.out.println("Updated warehouse with ID: " + warehouseId + " with new weighbridge number and PDT.");
-//        } else {
-//            throw new IllegalArgumentException("Warehouse not found for ID: " + warehouseId);
-//        }
+    @Override
+    public Optional<PayloadDeliveryTicket> loadPDTByPlate(LicensePlate licensePlate) {
+        // Load the Payload Delivery Ticket from the repository
+        Optional<PayloadDeliveryTicketJpaEntity> pdtEntity = payloadDeliveryTicketJpaRepository.findByLicensePlate(licensePlate.toString());
+
+        // Map the entity to the domain model and return
+        return pdtEntity.map(this::toPayloadDeliveryTicket);
     }
 
+    @Override
+    public PayloadDeliveryTicket savePDT(LicensePlate licensePlate, MaterialType materialType, WarehouseId warehouseId, String dockNumber, LocalDateTime deliveryDate) {
+        // Create a new PayloadDeliveryTicketJpaEntity for saving
+        PayloadDeliveryTicketJpaEntity newPDT = new PayloadDeliveryTicketJpaEntity(
+                warehouseId.id(), // Use getId() to retrieve the UUID of the WarehouseId
+                licensePlate.toString(),
+                materialType,
+                dockNumber,
+                deliveryDate
+        );
 
+        // Save the new Payload Delivery Ticket entity
+        PayloadDeliveryTicketJpaEntity savedEntity = payloadDeliveryTicketJpaRepository.save(newPDT);
+
+        // Map the saved entity back to the domain model and return
+        return toPayloadDeliveryTicket(savedEntity);
+    }
+}

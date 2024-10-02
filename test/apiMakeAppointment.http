@@ -1,6 +1,15 @@
-#Valid Request
-POST http://localhost:8090/api/make-appointment/5c2db01b-1b71-48be-8b93-fa25635a388d/ABC-123/PET_COKE/2024-09-30T09:00:00/2024-09-30T10:00:00
+#Valid Request APPOINTMENT
+POST http://localhost:8090/api/make-appointment/5c2db01b-1b71-48be-8b93-fa25635a388d/ABC-123/PET_COKE/2024-10-30T09:00:00/2024-10-30T10:00:00
 
 #Post of  docktruck
 ###
-POST http://localhost:8090/dock-truck/ABC-123?materialType=PET_COKE&conveyorBeltId=CB-001&deliveryDate=2024-09-30T10:00:00&sellerId=5c2db01b-1b71-48be-8b93-fa25635a388d
+POST http://localhost:8090/api/dock-truck
+Content-Type: application/json
+
+{
+  "licensePlate": "ABC-123",
+  "materialType": "PET_COKE",
+  "warehouseId": "5c3db01b-1b71-48be-8b93-fa25635a388d",
+  "deliveryDate": "2024-10-30T09:00:00",
+  "dockNumber": "WB-10"
+}

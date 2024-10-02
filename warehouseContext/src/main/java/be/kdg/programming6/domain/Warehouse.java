@@ -5,39 +5,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Warehouse {
-    private static final int MAX_TRUCKS_PER_HOUR = 40; // Hardcoded maxTrucksPerHour
     private final WarehouseId warehouseId;
-    private final List<LocalDateTime> dockedTrucks;
+    private final List<Truck> dockedTrucks; // Changed to store Truck objects
     private final SellerId sellerId;
 
     // Constructor
     public Warehouse(WarehouseId warehouseId, SellerId sellerId) {
         this.warehouseId = warehouseId;
         this.sellerId = sellerId;
-        this.dockedTrucks = new ArrayList<>();
+        this.dockedTrucks = new ArrayList<>(); // Initialize the list for docked trucks
     }
 
     public WarehouseId getId() {
         return warehouseId;
     }
 
-    // Validation logic for docking a truck
-    public boolean canDockTruck() {
-        // Remove docked trucks older than an hour
-        LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
-        dockedTrucks.removeIf(timestamp -> timestamp.isBefore(oneHourAgo));
-
-        // Check if the count of docked trucks in the last hour is less than the maximum
-        return dockedTrucks.size() < MAX_TRUCKS_PER_HOUR;
-    }
-
-    // Method to dock a truck, increments docked truck count
+    // Method to dock a truck, adds the truck to the docked trucks list
     public void dockTruck(Truck truck) {
-        if (canDockTruck()) {
-            dockedTrucks.add(LocalDateTime.now());
-        } else {
-            throw new IllegalStateException("Truck cannot be docked due to capacity or restrictions.");
-        }
+        dockedTrucks.add(truck); // Log the truck object
+        // Additional logic can be added here if needed
     }
 
     // Method to assign a weighbridge number using WeighbridgeNumber record
@@ -47,11 +33,17 @@ public class Warehouse {
 
     // Method to generate the PDT, now using dock number instead of conveyor belt ID
     public PayloadDeliveryTicket generatePDT(Truck truck, String dockNumber, LocalDateTime deliveryDate) {
-        return new PayloadDeliveryTicket(truck.getMaterialType(), deliveryDate, this.getId(), dockNumber);
+        return new PayloadDeliveryTicket(
+                truck.getLicensePlate(),
+                truck.getMaterialType(),
+                deliveryDate,
+                warehouseId,
+                dockNumber
+        );
     }
 
-
-    public int getMaxTrucksPerHour() {
-        return MAX_TRUCKS_PER_HOUR;
+    // Optional: Method to get all docked trucks for inspection or processing
+    public List<Truck> getDockedTrucks() {
+        return new ArrayList<>(dockedTrucks); // Return a copy to maintain encapsulation
     }
 }
