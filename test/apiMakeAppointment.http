@@ -9,7 +9,8 @@ Content-Type: application/json
 {
   "licensePlate": "ABC-123",
   "materialType": "PET_COKE",
-  "warehouseId": "5c3db01b-1b71-48be-8b93-fa25635a388d",
+  "warehouseId": "e2f7bcdc-69da-4b0e-b73f-6adf79e8d5f9",
+  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
   "deliveryDate": "2024-10-30T09:00:00",
   "dockNumber": "WB-10"
 }

@@ -1,8 +1,8 @@
-package be.kdg.programming6.adapter.in;
+package be.kdg.prgramming6.adapter.in;
 
-import be.kdg.programming6.domain.*;
-import be.kdg.programming6.port.in.DockTruckCommand;
-import be.kdg.programming6.port.in.DockTruckUseCase;
+import be.kdg.prgramming6.domain.*;
+import be.kdg.prgramming6.port.in.DockTruckCommand;
+import be.kdg.prgramming6.port.in.DockTruckUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
