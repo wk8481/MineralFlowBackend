@@ -10,8 +10,13 @@ VALUES
 -- Seller 2's Warehouses
 INSERT INTO warehouse.warehouses (warehouse_id, seller_id, material_type)
 VALUES
+
+
+
     ('39dcbb4a-b535-4ab1-97b2-cfcba92f462a', 'b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6', 'GYPSUM'),
     ('bb182e36-4077-4987-b179-544dbd9a9cb6', 'b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6', 'IRON_ORE'),
     ('3f23dd36-cbd9-4025-b476-c9a24c3e6c19', 'b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6', 'CEMENT'),
     ('bf838cb6-6463-4b77-a70d-cb9f7b52af24', 'b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6', 'PET_COKE'),
     ('ee5e9b7f-56b7-4f4a-a7df-561ff0cf720e', 'b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6', 'SLAG');
+
+
