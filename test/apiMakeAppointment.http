@@ -1,9 +1,26 @@
-#Valid Request APPOINTMENT
+### Get access token with normal user
+
+POST http://localhost:8180/realms/mineral/protocol/openid-connect/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+client_id=backend&client_secret=bQG1f1VFFPbGkF8sjtMPryOXQChtU8p4&username=zamlamb&password=admin&grant_type=password&scope=openid
+
+//saving the access token
+> {%
+    client.global.set("access_token", response.body.access_token);
+%}
+
+
+
+
+### Valid Request APPOINTMENT
 POST http://localhost:8090/api/make-appointment/5c2db01b-1b71-48be-8b93-fa25635a388d/ABC-123/PET_COKE/2024-10-30T09:00:00/2024-10-30T10:00:00
+Authorization: Bearer {{access_token}}
 
 #Post of  docktruck
 ###
 POST http://localhost:8090/api/dock-truck
+Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
