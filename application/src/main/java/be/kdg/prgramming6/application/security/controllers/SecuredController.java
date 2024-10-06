@@ -1,6 +1,6 @@
-package be.kdg.prgramming6.common.security.controllers;
+package be.kdg.prgramming6.application.security.controllers;
 
-import be.kdg.prgramming6.common.security.messages.SecuredMessage;
+import be.kdg.prgramming6.application.security.messages.SecuredMessage;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,10 +25,10 @@ public class SecuredController {
         return getInfoFromToken(token, "I got the information via an annotation");
     }
 
-    @GetMapping("trucker")
-    @PreAuthorize("hasAuthority('trucker')")
+    @GetMapping("user")
+    @PreAuthorize("hasAuthority('user')")
     public SecuredMessage getSecuredWithUserRole(@AuthenticationPrincipal Jwt token){
-        return getInfoFromToken(token, "I'm a trucker");
+        return getInfoFromToken(token, "I'm a user");
     }
 
 

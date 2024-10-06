@@ -1,9 +1,9 @@
 ### Get access token with normal user
 
-POST http://localhost:8180/realms/demo/protocol/openid-connect/token HTTP/1.1
+POST http://localhost:8180/realms/mineral/protocol/openid-connect/token HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
-client_id=demo_client&client_secret=nNhIIzSj3s8IYRIZouVkGEuQJHQpuGUG&username=developer&password=password&grant_type=password&scope=openid
+client_id=backend&client_secret=bQG1f1VFFPbGkF8sjtMPryOXQChtU8p4&username=zamlamb&password=admin&grant_type=password&scope=openid
 
 //saving the access token
 > {%
@@ -31,8 +31,9 @@ GET http://localhost:8080/secured/annotation HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
-### Access secured endpoint via user role
+### Access secured endpoint via trucker role
 
-GET http://localhost:8080/secured/user HTTP/1.1
+GET http://localhost:8080/secured/trucker HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
+

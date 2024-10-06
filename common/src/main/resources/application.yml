@@ -3,7 +3,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8180/realms/demo/protocol/openid-connect/certs
-          issuer-uri: http://localhost:8180/realms/demo
+          jwk-set-uri: http://localhost:8180/realms/mineral/protocol/openid-connect/certs
+          issuer-uri: http://localhost:8180/realms/mineral
 
 
