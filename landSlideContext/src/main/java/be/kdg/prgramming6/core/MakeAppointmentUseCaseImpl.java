@@ -5,6 +5,7 @@ import be.kdg.prgramming6.domain.Schedule;
 import be.kdg.prgramming6.exception.NotFoundException;
 import be.kdg.prgramming6.port.in.MakeAppointmentCommand;
 import be.kdg.prgramming6.port.in.MakeAppointmentUseCase;
+import be.kdg.prgramming6.port.out.CheckAppointmentPort;
 import be.kdg.prgramming6.port.out.CreateSchedulePort; // Importing the CreateSchedulePort
 import be.kdg.prgramming6.port.out.LoadDaySchedulePort;
 import be.kdg.prgramming6.port.out.UpdateAppointmentPort;
@@ -19,19 +20,27 @@ public class MakeAppointmentUseCaseImpl implements MakeAppointmentUseCase {
     private final LoadDaySchedulePort loadDaySchedulePort;
     private final CreateSchedulePort createSchedulePort; // New dependency
     private final List<UpdateAppointmentPort> updateAppointmentPorts;
+    private final CheckAppointmentPort checkAppointmentPort;
 
     public MakeAppointmentUseCaseImpl(
             LoadDaySchedulePort loadDaySchedulePort,
             CreateSchedulePort createSchedulePort, // Injecting CreateSchedulePort
-            List<UpdateAppointmentPort> updateAppointmentPorts) {
+            List<UpdateAppointmentPort> updateAppointmentPorts, CheckAppointmentPort checkAppointmentPort
+            ) {
         this.loadDaySchedulePort = loadDaySchedulePort;
         this.createSchedulePort = createSchedulePort; // Assigning to field
         this.updateAppointmentPorts = updateAppointmentPorts;
+        this.checkAppointmentPort = checkAppointmentPort;
     }
 
     @Override
     @Transactional
     public void makeAppointment(MakeAppointmentCommand command) {
+
+        // Check if the appointment already exists
+        if (checkAppointmentPort.existsById(command.appointmentId())) {
+            throw new NotFoundException("Appointment with ID %s already exists".formatted(command.appointmentId()));
+        }
         LocalDateTime start = command.appointmentWindowStart().withMinute(0).withSecond(0).withNano(0);
         LocalDateTime end = command.appointmentWindowEnd().withMinute(0).withSecond(0).withNano(0);
 
@@ -45,6 +54,7 @@ public class MakeAppointmentUseCaseImpl implements MakeAppointmentUseCase {
 
         // Delegate scheduling logic to Schedule class and capture the appointment created
         Appointment appointment = schedule.scheduleAppointment(
+                command.appointmentId(),
                 command.sellerId(),
                 command.licensePlate(),
                 command.materialType(),

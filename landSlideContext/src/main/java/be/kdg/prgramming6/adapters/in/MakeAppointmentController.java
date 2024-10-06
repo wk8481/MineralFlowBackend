@@ -1,10 +1,11 @@
 package be.kdg.prgramming6.adapters.in;
 
+import be.kdg.prgramming6.domain.AppointmentId;
 import be.kdg.prgramming6.domain.LicensePlate;
 import be.kdg.prgramming6.domain.MaterialType;
 import be.kdg.prgramming6.domain.SellerId;
-import be.kdg.prgramming6.exception.InvalidOperationException; // Importing existing exceptions
-import be.kdg.prgramming6.exception.NotFoundException; // Importing existing exceptions
+import be.kdg.prgramming6.exception.InvalidOperationException;
+import be.kdg.prgramming6.exception.NotFoundException;
 import be.kdg.prgramming6.port.in.MakeAppointmentCommand;
 import be.kdg.prgramming6.port.in.MakeAppointmentUseCase;
 import org.slf4j.Logger;
@@ -28,16 +29,17 @@ public class MakeAppointmentController {
         this.makeAppointmentUseCase = makeAppointmentUseCase;
     }
 
-    @PostMapping("/make-appointment/{sellerId}/{licensePlate}/{materialType}/{appointmentWindowStart}/{appointmentWindowEnd}")
-    public ResponseEntity<String> makeAppointment(
+    @PostMapping("/make-appointment/{appointmentId}/{sellerId}/{licensePlate}/{materialType}/{appointmentWindowStart}/{appointmentWindowEnd}")
+    public ResponseEntity<Object> makeAppointment(
+            @PathVariable UUID appointmentId, // Include the appointmentId as a path variable
             @PathVariable UUID sellerId,
             @PathVariable String licensePlate,
             @PathVariable String materialType,
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime appointmentWindowStart,
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime appointmentWindowEnd) {
 
-        logger.info("Received request to schedule an appointment for sellerId: {}, licensePlate: {}, materialType: {}, start: {}, end: {}",
-                sellerId, licensePlate, materialType, appointmentWindowStart, appointmentWindowEnd);
+        logger.info("Received request to schedule an appointment for appointmentId: {}, sellerId: {}, licensePlate: {}, materialType: {}, start: {}, end: {}",
+                appointmentId, sellerId, licensePlate, materialType, appointmentWindowStart, appointmentWindowEnd);
 
         // Validate that the start time is before the end time
         if (appointmentWindowStart.isAfter(appointmentWindowEnd)) {
@@ -45,8 +47,20 @@ public class MakeAppointmentController {
             return ResponseEntity.badRequest().body("Start time cannot be after end time.");
         }
 
+        // Validate LicensePlate and MaterialType
+        if (licensePlate == null || licensePlate.isEmpty()) {
+            logger.warn("Invalid license plate: {}", licensePlate);
+            return ResponseEntity.badRequest().body("License plate cannot be empty.");
+        }
+
+        if (MaterialType.fromString(materialType) == null) {
+            logger.warn("Invalid material type: {}", materialType);
+            return ResponseEntity.badRequest().body("Invalid material type.");
+        }
+
         // Create the command object
         MakeAppointmentCommand command = new MakeAppointmentCommand(
+                new AppointmentId(appointmentId), // Use the appointmentId from the path variable
                 new LicensePlate(licensePlate),
                 MaterialType.fromString(materialType),
                 appointmentWindowStart,
@@ -60,53 +74,15 @@ public class MakeAppointmentController {
             logger.info("Appointment successfully scheduled for sellerId: {}", sellerId);
             return ResponseEntity.status(HttpStatus.CREATED).body("Appointment successfully scheduled.");
         } catch (NotFoundException e) {
-            logger.error("Not found error for sellerId: {}. Error: {}", sellerId, e.getMessage());
+            logger.error("Not found error for sellerId: {}. Error: {}", sellerId, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (InvalidOperationException e) {
-            logger.error("Invalid operation for sellerId: {}. Error: {}", sellerId, e.getMessage());
+            logger.error("Invalid operation for sellerId: {}. Error: {}", sellerId, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Error scheduling appointment for sellerId: {}. Error: {}", sellerId, e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while scheduling the appointment.");
+            logger.error("Error scheduling appointment for sellerId: {}. Error: {}", sellerId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while scheduling the appointment.");
         }
     }
 }
-
-//DTO version
-//
-//@PostMapping("/make-appointment")
-//public ResponseEntity<String> makeAppointment(@RequestBody MakeAppointmentDTO dto) {
-//    logger.info("Received request to schedule an appointment: {}", dto);
-//
-//    // Validate that the start time is before the end time
-//    if (dto.appointmentWindowStart().isAfter(dto.appointmentWindowEnd())) {
-//        logger.warn("Appointment creation failed: Start time {} is after end time {}.", dto.appointmentWindowStart(), dto.appointmentWindowEnd());
-//        return ResponseEntity.badRequest().body("Start time cannot be after end time.");
-//    }
-//
-//    // Create the command object
-//    MakeAppointmentCommand command = new MakeAppointmentCommand(
-//            new LicensePlate(dto.licensePlate()),
-//            MaterialType.fromString(dto.materialType()),
-//            dto.appointmentWindowStart(),
-//            dto.appointmentWindowEnd(),
-//            new SellerId(dto.sellerId()) // Using sellerId directly as a UUID
-//    );
-//
-//    try {
-//        // Use the use case to make the appointment
-//        makeAppointmentUseCase.makeAppointment(command);
-//        logger.info("Appointment successfully scheduled for sellerId: {}", dto.sellerId());
-//        return ResponseEntity.status(HttpStatus.CREATED).body("Appointment successfully scheduled.");
-//    } catch (NotFoundException e) {
-//        logger.error("Not found error for sellerId: {}. Error: {}", dto.sellerId(), e.getMessage());
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-//    } catch (InvalidOperationException e) {
-//        logger.error("Invalid operation for sellerId: {}. Error: {}", dto.sellerId(), e.getMessage());
-//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-//    } catch (Exception e) {
-//        logger.error("Error scheduling appointment for sellerId: {}. Error: {}", dto.sellerId(), e.getMessage());
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while scheduling the appointment.");
-//    }
-//}
-//
