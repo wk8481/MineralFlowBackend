@@ -5,14 +5,14 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Appointment {
-    private final UUID appointmentId;
+    private final AppointmentId appointmentId;
     private final Truck truck;
     private final MaterialType materialType;
     private final LocalDateTime windowStart;
     private final LocalDateTime windowEnd;
     private final SellerId sellerId;
 
-    public Appointment( final UUID appointmentId, final Truck truck, final MaterialType materialType,
+    public Appointment( final AppointmentId appointmentId, final Truck truck, final MaterialType materialType,
                        final LocalDateTime windowStart, final LocalDateTime windowEnd, final SellerId sellerId) {
         if (appointmentId == null || truck == null || materialType == null ||
                 windowStart == null || windowEnd == null || sellerId == null) {
@@ -39,7 +39,7 @@ public class Appointment {
     }
 
     // Getters
-    public UUID getAppointmentId() {
+    public AppointmentId getAppointmentId() {
         return appointmentId;
     }
 
@@ -68,7 +68,7 @@ public class Appointment {
 
 
     // Method to create a new Appointment instance
-    public static Appointment scheduleAppointment(UUID appointmentId, Truck truck,
+    public static Appointment scheduleAppointment(AppointmentId appointmentId, Truck truck,
                                                   MaterialType materialType, LocalDateTime windowStart,
                                                   LocalDateTime windowEnd, SellerId sellerId) {
         return new Appointment(appointmentId, truck, materialType, windowStart, windowEnd, sellerId);

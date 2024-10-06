@@ -25,10 +25,10 @@ public class SecuredController {
         return getInfoFromToken(token, "I got the information via an annotation");
     }
 
-    @GetMapping("user")
-    @PreAuthorize("hasAuthority('user')")
+    @GetMapping("trucker")
+    @PreAuthorize("hasAuthority('trucker')")
     public SecuredMessage getSecuredWithUserRole(@AuthenticationPrincipal Jwt token){
-        return getInfoFromToken(token, "I'm a user");
+        return getInfoFromToken(token, "I'm a trucker");
     }
 
 
@@ -44,7 +44,7 @@ public class SecuredController {
 
     private static SecuredMessage getInfoFromToken(Jwt token, String message){
         return SecuredMessage.builder()
-                    .subjectid(token.getClaimAsString("sub"))
+                .subjectid(token.getClaimAsString("sub"))
                 .firstName(token.getClaimAsString("given_name"))
                 .lastName(token.getClaimAsString("family_name"))
                 .email(token.getClaimAsString("email"))

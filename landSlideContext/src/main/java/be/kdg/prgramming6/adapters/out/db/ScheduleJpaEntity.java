@@ -6,7 +6,7 @@ import java.util.ArrayList; // Import ArrayList
 import java.util.List;
 
 @Entity
-@Table(name = "schedule")
+@Table(catalog = "landside", name = "schedule")
 public class ScheduleJpaEntity {
 
     @Id

@@ -26,3 +26,7 @@ spring:
     password: mypassword
   config:
     additional-location: ${SPRING_CONFIG_ADDITIONAL_LOCATION}
+
+logging:
+  level:
+    web: DEBUG

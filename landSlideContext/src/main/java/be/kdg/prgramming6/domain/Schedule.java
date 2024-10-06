@@ -24,7 +24,7 @@ public class Schedule {
     }
 
     // Method to check availability and schedule an appointment
-    public Appointment scheduleAppointment(SellerId sellerId, LicensePlate licensePlate, MaterialType materialType,
+    public Appointment scheduleAppointment(AppointmentId appointmentId, SellerId sellerId, LicensePlate licensePlate, MaterialType materialType,
                                            LocalDateTime windowStart, LocalDateTime windowEnd) {
         // Check if there is availability in the schedule
         if (!hasAvailability(windowStart, windowEnd)) {
@@ -32,7 +32,7 @@ public class Schedule {
         }
 
         // Create and store the appointment
-        UUID appointmentId = UUID.randomUUID();
+
         Appointment appointment = Appointment.scheduleAppointment(
                 appointmentId,
                 new Truck(licensePlate),

@@ -1,6 +1,7 @@
 package be.kdg.prgramming6.adapters.out.db;
 
 import be.kdg.prgramming6.domain.*;
+import be.kdg.prgramming6.port.out.CheckAppointmentPort;
 import be.kdg.prgramming6.port.out.CreateSchedulePort;
 import be.kdg.prgramming6.port.out.LoadDaySchedulePort;
 import be.kdg.prgramming6.port.out.UpdateAppointmentPort;
@@ -8,13 +9,16 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
-public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAppointmentPort, CreateSchedulePort {
+public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAppointmentPort, CreateSchedulePort, CheckAppointmentPort {
     private final ScheduleJpaRepository scheduleJpaRepository;
+    private final AppointmentJpaRepository appointmentJpaRepository;
 
-    public DayScheduleDatabaseAdapter(ScheduleJpaRepository scheduleJpaRepository) {
+    public DayScheduleDatabaseAdapter(ScheduleJpaRepository scheduleJpaRepository, AppointmentJpaRepository appointmentJpaRepository) {
         this.scheduleJpaRepository = scheduleJpaRepository;
+        this.appointmentJpaRepository = appointmentJpaRepository;
     }
 
     @Override
@@ -37,7 +41,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
         // Set the schedule for each appointment if any
         for (Appointment appointment : schedule.getAppointments()) {
             AppointmentJpaEntity appointmentJpaEntity = new AppointmentJpaEntity();
-            appointmentJpaEntity.setAppointmentId(appointment.getAppointmentId());
+            appointmentJpaEntity.setAppointmentId(appointment.getAppointmentId().appointmentId());
             appointmentJpaEntity.setLicensePlate(appointment.getTruck().licensePlate().plateNumber());
             appointmentJpaEntity.setMaterialType(appointment.getMaterialType().name());
             appointmentJpaEntity.setWindowStart(appointment.getWindowStart());
@@ -70,7 +74,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
 
     private Appointment toAppointment(AppointmentJpaEntity appointmentJpaEntity, ScheduleJpaEntity scheduleJpaEntity) {
         Appointment appointment = new Appointment(
-                appointmentJpaEntity.getAppointmentId(),
+                new AppointmentId(appointmentJpaEntity.getAppointmentId()),
                 new Truck(new LicensePlate(appointmentJpaEntity.getLicensePlate())),
                 MaterialType.valueOf(appointmentJpaEntity.getMaterialType()),
                 appointmentJpaEntity.getWindowStart(),
@@ -109,7 +113,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
             } else {
                 // Create and add a new appointment
                 AppointmentJpaEntity newAppointment = new AppointmentJpaEntity();
-                newAppointment.setAppointmentId(appointment.getAppointmentId());
+                newAppointment.setAppointmentId(appointment.getAppointmentId().appointmentId());
                 newAppointment.setLicensePlate(appointment.getTruck().licensePlate().plateNumber());
                 newAppointment.setMaterialType(appointment.getMaterialType().name());
                 newAppointment.setWindowStart(appointment.getWindowStart());
@@ -125,5 +129,11 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
             scheduleJpaRepository.save(scheduleJpaEntity);
             System.out.println("Updated/Saved Appointment ID: " + appointment.getAppointmentId());
         }
+    }
+
+
+    @Override
+    public boolean existsById(AppointmentId appointmentId) {
+        return appointmentJpaRepository.existsById(appointmentId.appointmentId());
     }
 }

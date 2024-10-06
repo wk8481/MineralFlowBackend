@@ -25,7 +25,7 @@ public class AppointmentUpdatedPublisher implements UpdateAppointmentPort {
         logger.info("Received appointment update request.");
 
         // Extract primitive types
-        UUID sellerIdValue = appointment.getAppointmentId();  // Assuming SellerId has a method id() that returns a UUID
+        UUID sellerIdValue = appointment.getAppointmentId().appointmentId();  // Assuming SellerId has a method id() that returns a UUID
         String licensePlateValue = appointment.getTruck().licensePlate().plateNumber();  // Extract the plate number string
 
         // Log the appointment update
