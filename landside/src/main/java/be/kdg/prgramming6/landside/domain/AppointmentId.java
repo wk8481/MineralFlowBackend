@@ -1,4 +1,4 @@
-package be.kdg.prgramming6.domain;
+package be.kdg.prgramming6.landside.domain;
 
 import java.util.UUID;
 

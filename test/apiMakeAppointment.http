@@ -32,7 +32,7 @@ Authorization: Bearer {{access_token}}
 POST http://localhost:8090/api/make-appointment/5c2db01b-1b71-48be-8b93-fa25635a388d//PET_COKE/2024-10-30T09:00:00/2024-10-30T10:00:00
 Authorization: Bearer {{access_token}}
 
-### Post of  docktruck
+### Post of  docktruck and need to insert the warehouse information
 ###
 POST http://localhost:8090/api/dock-truck
 Authorization: Bearer {{access_token}}
@@ -46,3 +46,4 @@ Content-Type: application/json
   "deliveryDate": "2024-10-30T09:00:00",
   "dockNumber": "WB-10"
 }
+

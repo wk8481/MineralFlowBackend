@@ -1,8 +1,6 @@
 package be.kdg.prgramming6.landside.domain;
 
-import be.kdg.prgramming6.landside.domain.Truck;
-
-public record WeighbridgeNumber(String value) {
+ public record WeighbridgeNumber(String value) {
 
     // Primary constructor with validation logic
     public WeighbridgeNumber {
@@ -21,4 +19,7 @@ public record WeighbridgeNumber(String value) {
     public String toString() {
         return value;
     }
-}
+
+     public String getValue() {
+     }
+ }

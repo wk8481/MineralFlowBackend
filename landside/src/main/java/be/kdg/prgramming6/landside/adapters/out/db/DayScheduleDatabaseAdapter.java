@@ -1,15 +1,16 @@
-package be.kdg.prgramming6.adapters.out.db;
+package be.kdg.prgramming6.landside.adapters.out.db;
 
-import be.kdg.prgramming6.domain.*;
-import be.kdg.prgramming6.port.out.CheckAppointmentPort;
-import be.kdg.prgramming6.port.out.CreateSchedulePort;
-import be.kdg.prgramming6.port.out.LoadDaySchedulePort;
-import be.kdg.prgramming6.port.out.UpdateAppointmentPort;
+
+import be.kdg.prgramming6.landside.domain.*;
+import be.kdg.prgramming6.landside.port.out.LoadDaySchedulePort;
+import be.kdg.prgramming6.landside.port.out.UpdateAppointmentPort;
+import be.kdg.prgramming6.landside.port.out.CreateSchedulePort;
+import be.kdg.prgramming6.landside.port.out.CheckAppointmentPort;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.UUID;
+
 
 @Component
 public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAppointmentPort, CreateSchedulePort, CheckAppointmentPort {
@@ -42,7 +43,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
         for (Appointment appointment : schedule.getAppointments()) {
             AppointmentJpaEntity appointmentJpaEntity = new AppointmentJpaEntity();
             appointmentJpaEntity.setAppointmentId(appointment.getAppointmentId().appointmentId());
-            appointmentJpaEntity.setLicensePlate(appointment.getTruck().licensePlate().plateNumber());
+            appointmentJpaEntity.setLicensePlate(appointment.getTruck().getLicensePlate().plateNumber());
             appointmentJpaEntity.setMaterialType(appointment.getMaterialType().name());
             appointmentJpaEntity.setWindowStart(appointment.getWindowStart());
             appointmentJpaEntity.setWindowEnd(appointment.getWindowEnd());
@@ -103,7 +104,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
                 scheduleJpaEntity.getAppointments().stream()
                         .filter(existingAppointment -> existingAppointment.getAppointmentId().equals(appointment.getAppointmentId()))
                         .forEach(existingAppointment -> {
-                            existingAppointment.setLicensePlate(appointment.getTruck().licensePlate().plateNumber());
+                            existingAppointment.setLicensePlate(appointment.getTruck().getLicensePlate().plateNumber());
                             existingAppointment.setMaterialType(appointment.getMaterialType().name());
                             existingAppointment.setWindowStart(appointment.getWindowStart());
                             existingAppointment.setWindowEnd(appointment.getWindowEnd());
@@ -114,7 +115,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
                 // Create and add a new appointment
                 AppointmentJpaEntity newAppointment = new AppointmentJpaEntity();
                 newAppointment.setAppointmentId(appointment.getAppointmentId().appointmentId());
-                newAppointment.setLicensePlate(appointment.getTruck().licensePlate().plateNumber());
+                newAppointment.setLicensePlate(appointment.getTruck().getLicensePlate().plateNumber());
                 newAppointment.setMaterialType(appointment.getMaterialType().name());
                 newAppointment.setWindowStart(appointment.getWindowStart());
                 newAppointment.setWindowEnd(appointment.getWindowEnd());

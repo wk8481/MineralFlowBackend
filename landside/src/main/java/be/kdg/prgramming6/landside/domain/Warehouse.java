@@ -1,0 +1,62 @@
+package be.kdg.prgramming6.landside.domain;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+
+public class Warehouse {
+    private final WarehouseId warehouseId;
+    private final MaterialType materialType;  // Type of material stored in this warehouse
+    private static final BigDecimal MAX_CAPACITY = BigDecimal.valueOf(400_000); // Maximum capacity in tonnes
+    private BigDecimal currentCapacity;        // Current filled capacity
+    private final SellerId sellerId;           // ID of the seller using this warehouse
+
+    public Warehouse(WarehouseId warehouseId, MaterialType materialType, SellerId sellerId) {
+        this.warehouseId = Objects.requireNonNull(warehouseId, "Warehouse ID cannot be null");
+        this.materialType = Objects.requireNonNull(materialType, "Material type cannot be null");
+        this.currentCapacity = BigDecimal.ZERO; // Initialize the current load as empty
+        this.sellerId = Objects.requireNonNull(sellerId, "Seller ID cannot be null");
+    }
+
+    public WarehouseId getWarehouseId() {
+        return warehouseId;
+    }
+
+    public MaterialType getMaterialType() {
+        return materialType;
+    }
+
+    public SellerId getSellerId() {
+        return sellerId;
+    }
+
+    public BigDecimal getCurrentCapacity() {
+        return currentCapacity;
+    }
+
+    public static BigDecimal getMaxCapacity() {
+        return MAX_CAPACITY;
+    }
+
+    // Method to check if there is enough storage available for the given payload weight
+    public boolean canStore(BigDecimal payloadWeight) {
+        return currentCapacity.add(payloadWeight).compareTo(MAX_CAPACITY) <= 0; // Check against maximum capacity
+    }
+
+    // Method to store the payload (updating the current capacity)
+    public void store(BigDecimal payloadWeight) {
+        if (!canStore(payloadWeight)) {
+            throw new IllegalStateException("Warehouse has exceeded its maximum capacity.");
+        }
+        currentCapacity = currentCapacity.add(payloadWeight);
+    }
+
+    // Method to check if the warehouse is 80% full
+    public boolean isEightyPercentFull() {
+        return currentCapacity.compareTo(MAX_CAPACITY.multiply(BigDecimal.valueOf(0.8))) >= 0;
+    }
+
+    // Method to reset current capacity for testing or end-of-day operations
+    public void resetCapacity() {
+        currentCapacity = BigDecimal.ZERO;
+    }
+}

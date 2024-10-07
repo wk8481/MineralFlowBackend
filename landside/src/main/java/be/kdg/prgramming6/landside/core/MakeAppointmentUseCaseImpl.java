@@ -1,14 +1,14 @@
-package be.kdg.prgramming6.core;
+package be.kdg.prgramming6.landside.core;
 
-import be.kdg.prgramming6.domain.Appointment;
-import be.kdg.prgramming6.domain.Schedule;
-import be.kdg.prgramming6.exception.NotFoundException;
-import be.kdg.prgramming6.port.in.MakeAppointmentCommand;
-import be.kdg.prgramming6.port.in.MakeAppointmentUseCase;
-import be.kdg.prgramming6.port.out.CheckAppointmentPort;
-import be.kdg.prgramming6.port.out.CreateSchedulePort; // Importing the CreateSchedulePort
-import be.kdg.prgramming6.port.out.LoadDaySchedulePort;
-import be.kdg.prgramming6.port.out.UpdateAppointmentPort;
+import be.kdg.prgramming6.landside.domain.Appointment;
+import be.kdg.prgramming6.landside.domain.Schedule;
+import be.kdg.prgramming6.common.exception.NotFoundException;
+import be.kdg.prgramming6.landside.port.in.MakeAppointmentCommand;
+import be.kdg.prgramming6.landside.port.in.MakeAppointmentUseCase;
+import be.kdg.prgramming6.landside.port.out.CheckAppointmentPort;
+import be.kdg.prgramming6.landside.port.out.CreateSchedulePort; // Importing the CreateSchedulePort
+import be.kdg.prgramming6.landside.port.out.LoadDaySchedulePort;
+import be.kdg.prgramming6.landside.port.out.UpdateAppointmentPort;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

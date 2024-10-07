@@ -1,6 +1,6 @@
-package be.kdg.prgramming6.port.out;
+package be.kdg.prgramming6.landside.port.out;
 
-import be.kdg.prgramming6.domain.AppointmentId;
+import be.kdg.prgramming6.landside.domain.AppointmentId;
 
 import java.util.UUID;
 

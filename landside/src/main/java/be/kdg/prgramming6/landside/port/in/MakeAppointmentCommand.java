@@ -1,9 +1,9 @@
-package be.kdg.prgramming6.port.in;
+package be.kdg.prgramming6.landside.port.in;
 
-import be.kdg.prgramming6.domain.AppointmentId;
-import be.kdg.prgramming6.domain.LicensePlate;
-import be.kdg.prgramming6.domain.MaterialType;
-import be.kdg.prgramming6.domain.SellerId;
+import be.kdg.prgramming6.landside.domain.AppointmentId;
+import be.kdg.prgramming6.landside.domain.LicensePlate;
+import be.kdg.prgramming6.landside.domain.MaterialType;
+import be.kdg.prgramming6.landside.domain.SellerId;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

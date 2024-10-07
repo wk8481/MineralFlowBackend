@@ -1,13 +1,13 @@
-package be.kdg.prgramming6.adapters.in;
+package be.kdg.prgramming6.landside.adapters.in;
 
-import be.kdg.prgramming6.domain.AppointmentId;
-import be.kdg.prgramming6.domain.LicensePlate;
-import be.kdg.prgramming6.domain.MaterialType;
-import be.kdg.prgramming6.domain.SellerId;
-import be.kdg.prgramming6.exception.InvalidOperationException;
-import be.kdg.prgramming6.exception.NotFoundException;
-import be.kdg.prgramming6.port.in.MakeAppointmentCommand;
-import be.kdg.prgramming6.port.in.MakeAppointmentUseCase;
+import be.kdg.prgramming6.landside.domain.AppointmentId;
+import be.kdg.prgramming6.landside.domain.LicensePlate;
+import be.kdg.prgramming6.landside.domain.MaterialType;
+import be.kdg.prgramming6.landside.domain.SellerId;
+import be.kdg.prgramming6.common.exception.InvalidOperationException;
+import be.kdg.prgramming6.common.exception.NotFoundException;
+import be.kdg.prgramming6.landside.port.in.MakeAppointmentCommand;
+import be.kdg.prgramming6.landside.port.in.MakeAppointmentUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
