@@ -1,6 +1,6 @@
-package be.kdg.prgramming6.landside.port.in;
-
-public class ReceiveWarehouseNumberUseCase {
-
-    
-}
+//package be.kdg.prgramming6.landside.port.in;
+//@FunctionalInterface
+//public interface ReceiveWarehouseNumberUseCase {
+//void receiveWarehouseNumber(ReceiveWarehouseNumberCommand receiveWarehouseNumberCommand);
+//
+//}

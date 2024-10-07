@@ -6,4 +6,8 @@ public record Truck(LicensePlate licensePlate) {
             throw new IllegalArgumentException("License plate cannot be null");
         }
     }
+
+    public LicensePlate getLicensePlate() {
+        return licensePlate;
+    }
 }
