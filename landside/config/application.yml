@@ -1,0 +1,26 @@
+server:
+  port: ${PORT:8091}
+  servlet:
+    context-path: /landside
+
+
+
+spring:
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+      show-sql: true
+  datasource:
+    url: "jdbc:mysql://localhost:3306/app_db"
+    username: user
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: myuser
+    password: mypassword
+
+  config:
+    additional-location: ${SPRING_CONFIG_ADDITIONAL_LOCATION}

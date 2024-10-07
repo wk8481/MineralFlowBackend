@@ -2,20 +2,32 @@ plugins {
 
     id 'module-config' // Ensure this is the correct plugin ID
     id 'spring-conventions'
+    id 'io.spring.dependency-management'
+    id("org.owasp.dependencycheck") version "10.0.4"
 }
 
 
 
 dependencies {
     implementation project(":common")
-    implementation project(':landSlideContext')
+    implementation project(':landside')
     implementation project(':warehouseContext')
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
 
+    //MAJOR VULNERABILITY
+    //CVE-2021-44228 -> Base Score: CRITICAL (10.0)
+    implementation 'org.apache.logging.log4j:log4j-api:2.13.3'
+    implementation 'org.apache.logging.log4j:log4j-core:2.13.3'
 
 
 }
+
+
 
 

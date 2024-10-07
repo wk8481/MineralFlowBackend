@@ -1,0 +1,39 @@
+### Get access token with normal user
+
+POST http://localhost:8180/realms/mineral/protocol/openid-connect/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+client_id=backend&client_secret=bQG1f1VFFPbGkF8sjtMPryOXQChtU8p4&username=zamlamb&password=admin&grant_type=password&scope=openid
+
+//saving the access token
+> {%
+    client.global.set("access_token", response.body.access_token);
+%}
+
+
+### Access unsecured endpiont
+
+GET http://localhost:8080/unsecured HTTP/1.1
+Content-Type: application/json
+
+
+
+### Access secured endpoint via SecurityContextHolder
+
+GET http://localhost:8080/secured/principal HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+### Access secured endpoint via Annoation
+
+GET http://localhost:8080/secured/annotation HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+### Access secured endpoint via trucker role
+
+GET http://localhost:8080/secured/trucker HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+

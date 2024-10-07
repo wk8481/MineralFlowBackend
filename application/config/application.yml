@@ -11,7 +11,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
       show-sql: true
     defer-datasource-initialization: true
   datasource:
@@ -24,8 +24,16 @@ spring:
     port: 5672
     username: myuser
     password: mypassword
+
   config:
     additional-location: ${SPRING_CONFIG_ADDITIONAL_LOCATION}
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8180/realms/mineral/protocol/openid-connect/certs
+          issuer-uri: http://localhost:8180/realms/mineral
 
 logging:
   level:
