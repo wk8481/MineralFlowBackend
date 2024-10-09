@@ -4,28 +4,24 @@ import be.kdg.prgramming6.landside.domain.*;
 import be.kdg.prgramming6.landside.port.out.*;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
 public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadTruckPort, LoadWeighbridgePort, UpdateWeighbridgePort, UpdateWarehousePort, UpdateTruckPort {
 
-    private final WarehouseJpaRepository warehouseJpaRepository;
+    private final WarehouseProjectionJpaRepository warehouseProjectionJpaRepository;
     private final TruckJpaRepository truckJpaRepository;
     private final WeighbridgeJpaRepository weighbridgeJpaRepository;
 
-    public WeighbridgeDatabaseAdapter(WarehouseJpaRepository warehouseJpaRepository,
+    public WeighbridgeDatabaseAdapter(WarehouseProjectionJpaRepository warehouseProjectionJpaRepository,
                                       TruckJpaRepository truckJpaRepository,
                                       WeighbridgeJpaRepository weighbridgeJpaRepository) {
-        this.warehouseJpaRepository = warehouseJpaRepository;
+        this.warehouseProjectionJpaRepository = warehouseProjectionJpaRepository;
         this.truckJpaRepository = truckJpaRepository;
         this.weighbridgeJpaRepository = weighbridgeJpaRepository;
     }
 
-    @Override
-    public Optional<Warehouse> loadWarehouse(WarehouseId warehouseId) {
-        WarehouseJpaEntity warehouseJpaEntity = warehouseJpaRepository.findByWarehouseNumber(warehouseId.id());
-        return Optional.ofNullable(toWarehouse(warehouseJpaEntity));
-    }
 
     @Override
     public Optional<Truck> loadTruck(LicensePlate licensePlate) {
@@ -39,17 +35,29 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadTruckP
         return Optional.ofNullable(toWeighbridge(weighbridgeJpaEntity));
     }
 
+    @Override
+    public Optional<Warehouse> loadWarehouse(SellerId sellerId, MaterialType materialType, LocalDateTime timestamp) {
+        WarehouseProjectionJpaEntity warehouseProjectionJpaEntity = warehouseProjectionJpaRepository
+                .findFirstBySellerIdAndMaterialTypeAndTimestampLessThanEqualOrderByTimestampDesc(
+                        sellerId.getValue(),
+                        materialType.toString(),
+                        timestamp
+                ).orElse(null);
+        return Optional.ofNullable(toWarehouse(warehouseProjectionJpaEntity));
+    }
+
     // Transform WarehouseJpaEntity to Warehouse
-    private Warehouse toWarehouse(WarehouseJpaEntity warehouseJpaEntity) {
-        if (warehouseJpaEntity == null) {
+    private Warehouse toWarehouse(WarehouseProjectionJpaEntity warehouseProjectionJpaEntity) {
+        if (warehouseProjectionJpaEntity == null) {
             return null;
         }
         return new Warehouse(
-                new WarehouseId(warehouseJpaEntity.getWarehouseId()),
-                warehouseJpaEntity.getMaterialType(),
-                new SellerId(warehouseJpaEntity.getSellerId())  // Assuming SellerId is stored in warehouseJpaEntity
+                new WarehouseId(warehouseProjectionJpaEntity.getWarehouseId()),
+                warehouseProjectionJpaEntity.getMaterialType(),
+                new SellerId(warehouseProjectionJpaEntity.getSellerId())
         );
     }
+
 
     // Transform TruckJpaEntity to Truck
     private Truck toTruck(TruckJpaEntity truckJpaEntity) {
@@ -59,37 +67,40 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadTruckP
         return new Truck(
                 new LicensePlate(truckJpaEntity.getLicensePlate()),
                 truckJpaEntity.getPayloadWeight(),
-                truckJpaEntity.getMaterialType()
+                truckJpaEntity.getMaterialType(),
+                truckJpaEntity.getDockNumber(),
+                new SellerId(truckJpaEntity.getSellerId())
         );
     }
+
+
 
     // Transform WeighbridgeJpaEntity to Weighbridge
     private Weighbridge toWeighbridge(WeighbridgeJpaEntity weighbridgeJpaEntity) {
         if (weighbridgeJpaEntity == null) {
             return null;
         }
-        // Convert String to WeighbridgeNumber
         WeighbridgeNumber weighbridgeNumber = new WeighbridgeNumber(weighbridgeJpaEntity.getWeighbridgeNumber());
         return new Weighbridge(weighbridgeNumber);
     }
 
     // Transform Warehouse to WarehouseJpaEntity
-    // Transform Warehouse to WarehouseJpaEntity
-    private WarehouseJpaEntity fromWarehouse(Warehouse warehouse) {
-        return new WarehouseJpaEntity(
+    private WarehouseProjectionJpaEntity fromWarehouse(Warehouse warehouse) {
+        return new WarehouseProjectionJpaEntity(
                 warehouse.getWarehouseId().getValue(), // Ensure this returns the UUID or appropriate type
                 warehouse.getMaterialType(),
-                warehouse.getSellerId().getValue() // Assuming SellerId is a type that has a getValue() method
+                warehouse.getSellerId().getValue()
         );
     }
-
 
     // Transform Truck to TruckJpaEntity
     private TruckJpaEntity fromTruck(Truck truck) {
         return new TruckJpaEntity(
                 truck.getLicensePlate().toString(),
                 truck.getPayloadWeight(),
-                truck.getMaterialType()
+                truck.getMaterialType(),
+                truck.getDockNumber(),
+                truck.getSellerId().toString()
         );
     }
 
@@ -105,8 +116,8 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadTruckP
 
     @Override
     public void updateWarehouse(Warehouse warehouse) {
-        WarehouseJpaEntity warehouseJpaEntity = fromWarehouse(warehouse);
-        warehouseJpaRepository.save(warehouseJpaEntity);
+        WarehouseProjectionJpaEntity warehouseProjectionJpaEntity = fromWarehouse(warehouse);
+        warehouseProjectionJpaRepository.save(warehouseProjectionJpaEntity);
     }
 
     @Override

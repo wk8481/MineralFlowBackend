@@ -1,6 +1,7 @@
 package be.kdg.prgramming6.landside.adapters.out.db;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -15,6 +16,7 @@ public class AppointmentJpaEntity {
     @Id
     @Column(name = "appointment_id", columnDefinition = "varchar(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID appointmentId;
 
     @ManyToOne

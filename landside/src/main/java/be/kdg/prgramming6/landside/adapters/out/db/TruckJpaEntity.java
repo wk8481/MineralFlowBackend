@@ -18,14 +18,22 @@ public class TruckJpaEntity {
     @Column(nullable = false)
     private MaterialType materialType;
 
+    @Column(nullable = true) // Dock number can be null initially
+    private String dockNumber;
+
+    @Column(nullable = false)
+    private String sellerId;
+
     protected TruckJpaEntity() {
         // Required by JPA
     }
 
-    public TruckJpaEntity(String licensePlate, BigDecimal payloadWeight, MaterialType materialType) {
+    public TruckJpaEntity(String licensePlate, BigDecimal payloadWeight, MaterialType materialType, String dockNumber, String sellerId) {
         this.licensePlate = licensePlate;
         this.payloadWeight = payloadWeight;
         this.materialType = materialType;
+        this.dockNumber = dockNumber;
+        this.sellerId = sellerId;
     }
 
     public String getLicensePlate() {
@@ -39,8 +47,16 @@ public class TruckJpaEntity {
     public MaterialType getMaterialType() {
         return materialType;
     }
+
+    public String getDockNumber() {
+        return dockNumber;
+    }
+
+    public String getSellerId() {
+        return sellerId;
+    }
+
+    public void setDockNumber(String dockNumber) {
+        this.dockNumber = dockNumber;
+    }
 }
-
-
-
-

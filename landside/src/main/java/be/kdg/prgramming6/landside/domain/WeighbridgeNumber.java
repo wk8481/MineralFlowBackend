@@ -21,5 +21,6 @@ package be.kdg.prgramming6.landside.domain;
     }
 
      public String getValue() {
+         return "";
      }
  }

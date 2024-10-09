@@ -24,8 +24,8 @@ public class AppointmentUpdatedPublisher implements UpdateAppointmentPort {
         logger.info("Received appointment update request.");
 
         // Extract primitive types
-        UUID sellerIdValue = appointment.getAppointmentId().appointmentId();  // Assuming SellerId has a method id() that returns a UUID
-        String licensePlateValue = appointment.getTruck().getLicensePlate().plateNumber();  // Extract the plate number string
+        UUID sellerIdValue = appointment.getSellerId().id(); // Use the correct method to get SellerId
+        String licensePlateValue = appointment.getTruck().getLicensePlate().plateNumber(); // Extract the plate number string
 
         // Log the appointment update
         logger.info("Updating appointment for Seller ID: {} with License Plate: {}", sellerIdValue, licensePlateValue);
@@ -36,16 +36,22 @@ public class AppointmentUpdatedPublisher implements UpdateAppointmentPort {
                 licensePlateValue
         );
 
-        String routingKey = "landslide.%s.appointment.updated".formatted(sellerIdValue.toString());
+        // Use a dynamic routing key based on seller ID
+        String routingKey = String.format("landslide.%s.appointment.updated", sellerIdValue);
 
-        this.rabbitTemplate.convertAndSend(
-                RabbitMQTopology.LANDSLIDE_EVENTS_EXCHANGE,
-                routingKey,
-                appointmentUpdatedEvent
-        );
+        try {
+            // Send the message to the RabbitMQ exchange
+            this.rabbitTemplate.convertAndSend(
+                    RabbitMQTopology.LANDSLIDE_EVENTS_EXCHANGE,
+                    routingKey,
+                    appointmentUpdatedEvent
+            );
 
-
-        // Log the event publication
-        logger.info("Published AppointmentUpdatedEvent for Seller ID: {} and License Plate: {}", sellerIdValue, licensePlateValue);
+            // Log the event publication
+            logger.info("Published AppointmentUpdatedEvent for Seller ID: {} and License Plate: {}", sellerIdValue, licensePlateValue);
+        } catch (Exception e) {
+            // Log any errors that occur during message publishing
+            logger.error("Failed to publish AppointmentUpdatedEvent for Seller ID: {} and License Plate: {}. Error: {}", sellerIdValue, licensePlateValue, e.getMessage());
+        }
     }
 }

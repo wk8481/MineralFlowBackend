@@ -2,17 +2,14 @@ package be.kdg.prgramming6.landside.adapters.out.db;
 
 import jakarta.persistence.*;
 import be.kdg.prgramming6.landside.domain.MaterialType;
-import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.math.BigDecimal;
-import java.sql.SQLType;
 import java.util.UUID;
 
 @Entity
-@Table(catalog = "landside", name = "warehouse")
-public class WarehouseJpaEntity {
+@Table(catalog = "landside", name = "warehouse_projection")
+public class WarehouseProjectionJpaEntity {
 
     @Id
     @Column(name = "warehouse_id", columnDefinition = "varchar(36)")
@@ -29,10 +26,10 @@ public class WarehouseJpaEntity {
 
 
     // Default constructor for JPA
-    protected WarehouseJpaEntity() {
+    protected WarehouseProjectionJpaEntity() {
     }
 
-    public WarehouseJpaEntity(UUID warehouseId, MaterialType materialType, UUID sellerId) {
+    public WarehouseProjectionJpaEntity(UUID warehouseId, MaterialType materialType, UUID sellerId) {
         this.warehouseId = warehouseId;
         this.materialType = materialType;
         this.sellerId = sellerId;

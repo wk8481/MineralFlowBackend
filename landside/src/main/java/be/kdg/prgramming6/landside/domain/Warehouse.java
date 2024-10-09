@@ -5,10 +5,11 @@ import java.util.Objects;
 
 public class Warehouse {
     private final WarehouseId warehouseId;
-    private final MaterialType materialType;  // Type of material stored in this warehouse
+    private final MaterialType materialType;
     private static final BigDecimal MAX_CAPACITY = BigDecimal.valueOf(400_000); // Maximum capacity in tonnes
-    private BigDecimal currentCapacity;        // Current filled capacity
-    private final SellerId sellerId;           // ID of the seller using this warehouse
+    private BigDecimal currentCapacity;
+    private final SellerId sellerId;
+    private String dockNumber; // Additional attribute for dock number
 
     public Warehouse(WarehouseId warehouseId, MaterialType materialType, SellerId sellerId) {
         this.warehouseId = Objects.requireNonNull(warehouseId, "Warehouse ID cannot be null");
@@ -17,6 +18,16 @@ public class Warehouse {
         this.sellerId = Objects.requireNonNull(sellerId, "Seller ID cannot be null");
     }
 
+    // Full constructor including dockNumber
+    public Warehouse(WarehouseId warehouseId, MaterialType materialType, SellerId sellerId, String dockNumber) {
+        this.warehouseId = Objects.requireNonNull(warehouseId, "Warehouse ID cannot be null");
+        this.materialType = Objects.requireNonNull(materialType, "Material type cannot be null");
+        this.currentCapacity = BigDecimal.ZERO; // Initialize the current load as empty
+        this.sellerId = Objects.requireNonNull(sellerId, "Seller ID cannot be null");
+        this.dockNumber = dockNumber; // Can be null initially
+    }
+
+    // Getters
     public WarehouseId getWarehouseId() {
         return warehouseId;
     }
@@ -37,9 +48,13 @@ public class Warehouse {
         return MAX_CAPACITY;
     }
 
+    public String getDockNumber() {
+        return dockNumber;
+    }
+
     // Method to check if there is enough storage available for the given payload weight
     public boolean canStore(BigDecimal payloadWeight) {
-        return currentCapacity.add(payloadWeight).compareTo(MAX_CAPACITY) <= 0; // Check against maximum capacity
+        return currentCapacity.add(payloadWeight).compareTo(MAX_CAPACITY) <= 0;
     }
 
     // Method to store the payload (updating the current capacity)
@@ -58,5 +73,26 @@ public class Warehouse {
     // Method to reset current capacity for testing or end-of-day operations
     public void resetCapacity() {
         currentCapacity = BigDecimal.ZERO;
+    }
+
+    // Update method for dock number
+    public void updateDockNumber(String dockNumber) {
+        this.dockNumber = Objects.requireNonNull(dockNumber, "Dock number cannot be null");
+    }
+
+    // Method to get remaining capacity
+    public BigDecimal getRemainingCapacity() {
+        return MAX_CAPACITY.subtract(currentCapacity);
+    }
+
+    @Override
+    public String toString() {
+        return "Warehouse{" +
+                "warehouseId=" + warehouseId +
+                ", materialType=" + materialType +
+                ", currentCapacity=" + currentCapacity +
+                ", sellerId=" + sellerId +
+                ", dockNumber='" + dockNumber + '\'' +
+                '}';
     }
 }

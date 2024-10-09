@@ -1,16 +1,13 @@
 package be.kdg.prgramming6.landside.port.in;
 
-import be.kdg.prgramming6.landside.domain.AppointmentId;
 import be.kdg.prgramming6.landside.domain.LicensePlate;
 import be.kdg.prgramming6.landside.domain.MaterialType;
 import be.kdg.prgramming6.landside.domain.SellerId;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.UUID;
 
 public record MakeAppointmentCommand(
-        AppointmentId appointmentId,
         LicensePlate licensePlate,
         MaterialType materialType,
         LocalDateTime appointmentWindowStart,
@@ -18,7 +15,6 @@ public record MakeAppointmentCommand(
         SellerId sellerId // Added seller field
 ) {
     public MakeAppointmentCommand {
-        Objects.requireNonNull(appointmentId, "Appointment ID cannot be null");
         Objects.requireNonNull(licensePlate, "License plate cannot be null");
         Objects.requireNonNull(materialType, "Material type cannot be null");
         Objects.requireNonNull(appointmentWindowStart, "Appointment window start cannot be null");
