@@ -1,33 +1,31 @@
 package be.kdg.prgramming6.landside.adapters.in;
 
-import com.fasterxml.jackson.annotation.JsonProperty; // Import the necessary annotation
-import org.springframework.format.annotation.DateTimeFormat;
+import be.kdg.prgramming6.common.exception.InvalidOperationException;
+import be.kdg.prgramming6.landside.domain.MaterialType;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class MakeAppointmentRequestDTO {
 
-    @JsonProperty("sellerId") // Optional, use only if you have different names in JSON
-    private UUID sellerId; // Assuming sellerId is passed as a String (UUID in string format)
+    @NotNull(message = "Seller ID cannot be null.")
+    private UUID sellerId;
 
-    @JsonProperty("licensePlate") // Optional, use only if you have different names in JSON
+    @NotEmpty(message = "License plate cannot be empty.")
     private String licensePlate;
 
-    @JsonProperty("materialType") // Optional, use only if you have different names in JSON
+    @NotEmpty(message = "Material type cannot be empty.")
     private String materialType;
 
-    @JsonProperty("appointmentWindowStart") // Optional, use only if you have different names in JSON
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) // Ensures correct parsing of date-time
+    @NotNull(message = "Appointment window start cannot be null.")
     private LocalDateTime appointmentWindowStart;
 
-    @JsonProperty("appointmentWindowEnd") // Optional, use only if you have different names in JSON
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) // Ensures correct parsing of date-time
+    @NotNull(message = "Appointment window end cannot be null.")
     private LocalDateTime appointmentWindowEnd;
 
-    // Constructors
-    public MakeAppointmentRequestDTO() {}
-
+    // Constructors, Getters, and Setters
     public MakeAppointmentRequestDTO(UUID sellerId, String licensePlate, String materialType,
                                      LocalDateTime appointmentWindowStart, LocalDateTime appointmentWindowEnd) {
         this.sellerId = sellerId;
@@ -37,44 +35,36 @@ public class MakeAppointmentRequestDTO {
         this.appointmentWindowEnd = appointmentWindowEnd;
     }
 
-    // Getters and Setters
     public UUID getSellerId() {
         return sellerId;
-    }
-
-    public void setSellerId(UUID sellerId) {
-        this.sellerId = sellerId;
     }
 
     public String getLicensePlate() {
         return licensePlate;
     }
 
-    public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
-    }
-
     public String getMaterialType() {
         return materialType;
-    }
-
-    public void setMaterialType(String materialType) {
-        this.materialType = materialType;
     }
 
     public LocalDateTime getAppointmentWindowStart() {
         return appointmentWindowStart;
     }
 
-    public void setAppointmentWindowStart(LocalDateTime appointmentWindowStart) {
-        this.appointmentWindowStart = appointmentWindowStart;
-    }
-
     public LocalDateTime getAppointmentWindowEnd() {
         return appointmentWindowEnd;
     }
 
-    public void setAppointmentWindowEnd(LocalDateTime appointmentWindowEnd) {
-        this.appointmentWindowEnd = appointmentWindowEnd;
+    public void validate() {
+        if (!isValidWindowTime()) {
+            throw new InvalidOperationException("Start time cannot be after end time.");
+        }
+        if (MaterialType.fromString(materialType) == null) {
+            throw new InvalidOperationException("Invalid material type.");
+        }
+    }
+
+    private boolean isValidWindowTime() {
+        return appointmentWindowStart.isBefore(appointmentWindowEnd);
     }
 }

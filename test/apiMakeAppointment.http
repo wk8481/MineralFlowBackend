@@ -14,8 +14,21 @@ client_id=backend&client_secret=bQG1f1VFFPbGkF8sjtMPryOXQChtU8p4&username=zamlam
 
 
 ### Valid Request APPOINTMENT
-POST http://localhost:8090/api/make-appointment/5c2db01b-1b71-48be-8b93-fa25635a388d/5c2db01b-1b71-48be-8b93-fa25635a388d/ABC-123/PET_COKE/2024-10-30T09:00:00/2024-10-30T10:00:00
+POST http://localhost:8090/api/make-appointment
 Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "sellerId": "5c2db01b-1b71-48be-8b93-fa25635a388d",
+  "licensePlate": "ABC-123",
+  "materialType": "PET_COKE",
+  "appointmentWindowStart": "2024-10-30T09:00:00",
+  "appointmentWindowEnd": "2024-10-30T10:00:00"
+}
+
+
+
+
 
 ### Unauthorized Request APPOINTMENT
 POST http://localhost:8090/api/make-appointment/5c2db01b-1b71-48be-8b93-fa25635a388d/5c2db01b-1b71-48be-8b93-fa25635a388d/ABC-123/PET_COKE/2024-10-30T09:00:00/2024-10-30T10:00:00

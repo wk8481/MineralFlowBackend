@@ -1,5 +1,6 @@
 package be.kdg.prgramming6.landside.domain;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -13,16 +14,16 @@ public class Weighbridge {
         this.currentTruck = Optional.empty();
     }
 
-    // Method to process truck and assign warehouse
-    public Optional<WarehouseId> processTruck(Truck truck, List<Warehouse> warehouses) {
+    // Method to process truck and assign warehouse, now with external payload weight handling
+    public Optional<WarehouseId> processTruck(Truck truck, BigDecimal payloadWeight, List<Warehouse> warehouses) {
         Objects.requireNonNull(truck, "Truck cannot be null");
         Objects.requireNonNull(warehouses, "Warehouses list cannot be null");
 
         updateWithTruck(truck);
 
-        // Business logic to find the appropriate warehouse
+        // Business logic to find the appropriate warehouse based on the provided payload weight
         return warehouses.stream()
-                .filter(warehouse -> warehouse.canStore(truck.getPayloadWeight()))
+                .filter(warehouse -> warehouse.canStore(payloadWeight))  // Use provided payload weight
                 .findFirst()
                 .map(Warehouse::getWarehouseId);
     }

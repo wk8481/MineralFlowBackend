@@ -13,7 +13,7 @@ public record DockTruckCommand(
         WarehouseId warehouseId,                 // ID of the assigned warehouse
         String dockNumber,                   // ID of the conveyor belt for docking
         LocalDateTime deliveryDate,               // Date of delivery for the PDT
-        UUID sellerId                            // ID of the seller
+        UUID sellerId// ID of the seller
 ) {
     public DockTruckCommand {
         Objects.requireNonNull(licensePlate, "License plate cannot be null");

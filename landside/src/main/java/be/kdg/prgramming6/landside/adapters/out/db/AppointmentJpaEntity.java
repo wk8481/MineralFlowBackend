@@ -16,11 +16,11 @@ public class AppointmentJpaEntity {
     @Id
     @Column(name = "appointment_id", columnDefinition = "varchar(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID appointmentId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID appointmentId = UUID.randomUUID();
 
     @ManyToOne
-    @JoinColumn(name = "day", nullable = false)
+    @JoinColumn(name = "schedule_time", nullable = false)
     private ScheduleJpaEntity schedule;
 
     @Column(name = "license_plate", nullable = false)

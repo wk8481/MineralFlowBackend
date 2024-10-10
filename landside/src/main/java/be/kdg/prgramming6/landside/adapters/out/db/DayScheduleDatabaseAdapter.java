@@ -6,7 +6,7 @@ import be.kdg.prgramming6.landside.port.out.UpdateAppointmentPort;
 import be.kdg.prgramming6.landside.port.out.CreateSchedulePort;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
@@ -20,21 +20,21 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
     }
 
     @Override
-    public Optional<Schedule> loadDaySchedule(LocalDate day) {
-        ScheduleJpaEntity scheduleJpaEntity = scheduleJpaRepository.findByDay(day);
+    public Optional<Schedule> loadDaySchedule(LocalDateTime scheduleTime) {
+        ScheduleJpaEntity scheduleJpaEntity = scheduleJpaRepository.findByScheduleTime(scheduleTime);
         return Optional.ofNullable(toSchedule(scheduleJpaEntity));
     }
 
     @Override
-    public Optional<Schedule> createSchedule(LocalDate day) {
+    public Optional<Schedule> createSchedule(LocalDateTime scheduleTime) {
         // Check if a schedule for the given day already exists
-        if (scheduleJpaRepository.findByDay(day) != null) {
+        if (scheduleJpaRepository.findByScheduleTime(scheduleTime) != null) {
             return Optional.empty(); // Schedule already exists
         }
 
-        Schedule schedule = new Schedule(day);
+        Schedule schedule = new Schedule(scheduleTime);
         ScheduleJpaEntity scheduleJpaEntity = new ScheduleJpaEntity();
-        scheduleJpaEntity.setDay(day);
+        scheduleJpaEntity.setScheduleTime(scheduleTime);
 
         // Add appointments to the schedule
         schedule.getAppointments().forEach(appointment -> {
@@ -51,7 +51,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
             return null; // Or throw an exception, depending on your design
         }
 
-        Schedule schedule = new Schedule(scheduleJpaEntity.getDay());
+        Schedule schedule = new Schedule(scheduleJpaEntity.getScheduleTime());
 
         // Add each appointment to the domain Schedule
         scheduleJpaEntity.getAppointments().forEach(appointmentJpaEntity -> {
@@ -86,7 +86,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
     @Override
     public void updateAppointment(Appointment appointment) {
         // Load the existing schedule for the day
-        ScheduleJpaEntity scheduleJpaEntity = scheduleJpaRepository.findByDay(appointment.getWindowStart().toLocalDate());
+        ScheduleJpaEntity scheduleJpaEntity = scheduleJpaRepository.findByScheduleTime(appointment.getWindowStart());
 
         if (scheduleJpaEntity != null) {
             // Update or add the appointment

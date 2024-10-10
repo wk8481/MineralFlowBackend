@@ -8,26 +8,18 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
-public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadTruckPort, LoadWeighbridgePort, UpdateWeighbridgePort, UpdateWarehousePort, UpdateTruckPort {
+public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighbridgePort, UpdateWeighbridgePort, UpdateWarehousePort {
 
     private final WarehouseProjectionJpaRepository warehouseProjectionJpaRepository;
-    private final TruckJpaRepository truckJpaRepository;
     private final WeighbridgeJpaRepository weighbridgeJpaRepository;
 
     public WeighbridgeDatabaseAdapter(WarehouseProjectionJpaRepository warehouseProjectionJpaRepository,
-                                      TruckJpaRepository truckJpaRepository,
                                       WeighbridgeJpaRepository weighbridgeJpaRepository) {
         this.warehouseProjectionJpaRepository = warehouseProjectionJpaRepository;
-        this.truckJpaRepository = truckJpaRepository;
         this.weighbridgeJpaRepository = weighbridgeJpaRepository;
     }
 
 
-    @Override
-    public Optional<Truck> loadTruck(LicensePlate licensePlate) {
-        TruckJpaEntity truckJpaEntity = truckJpaRepository.findByTruckNumber(licensePlate.toString());
-        return Optional.ofNullable(toTruck(truckJpaEntity));
-    }
 
     @Override
     public Optional<Weighbridge> loadWeighbridge(WeighbridgeNumber weighbridgeNumber) {
@@ -40,7 +32,7 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadTruckP
         WarehouseProjectionJpaEntity warehouseProjectionJpaEntity = warehouseProjectionJpaRepository
                 .findFirstBySellerIdAndMaterialTypeAndTimestampLessThanEqualOrderByTimestampDesc(
                         sellerId.getValue(),
-                        materialType.toString(),
+                        materialType,
                         timestamp
                 ).orElse(null);
         return Optional.ofNullable(toWarehouse(warehouseProjectionJpaEntity));
@@ -59,20 +51,6 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadTruckP
     }
 
 
-    // Transform TruckJpaEntity to Truck
-    private Truck toTruck(TruckJpaEntity truckJpaEntity) {
-        if (truckJpaEntity == null) {
-            return null;
-        }
-        return new Truck(
-                new LicensePlate(truckJpaEntity.getLicensePlate()),
-                truckJpaEntity.getPayloadWeight(),
-                truckJpaEntity.getMaterialType(),
-                truckJpaEntity.getDockNumber(),
-                new SellerId(truckJpaEntity.getSellerId())
-        );
-    }
-
 
 
     // Transform WeighbridgeJpaEntity to Weighbridge
@@ -89,30 +67,19 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadTruckP
         return new WarehouseProjectionJpaEntity(
                 warehouse.getWarehouseId().getValue(), // Ensure this returns the UUID or appropriate type
                 warehouse.getMaterialType(),
-                warehouse.getSellerId().getValue()
+                warehouse.getSellerId().getValue(),
+                LocalDateTime.now(), // Use the current timestamp
+                warehouse.getCurrentCapacity()
         );
     }
 
-    // Transform Truck to TruckJpaEntity
-    private TruckJpaEntity fromTruck(Truck truck) {
-        return new TruckJpaEntity(
-                truck.getLicensePlate().toString(),
-                truck.getPayloadWeight(),
-                truck.getMaterialType(),
-                truck.getDockNumber(),
-                truck.getSellerId().toString()
-        );
-    }
+
 
     // Transform Weighbridge to WeighbridgeJpaEntity
     private WeighbridgeJpaEntity fromWeighbridge(Weighbridge weighbridge) {
         return new WeighbridgeJpaEntity(weighbridge.getWeighbridgeNumber().toString());
     }
 
-    public void updateTruck(Truck truck) {
-        TruckJpaEntity truckJpaEntity = fromTruck(truck);
-        truckJpaRepository.save(truckJpaEntity);
-    }
 
     @Override
     public void updateWarehouse(Warehouse warehouse) {

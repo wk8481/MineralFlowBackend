@@ -6,16 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Schedule {
-    private final LocalDate day; // Store the day for this schedule
+    private final LocalDateTime scheduleTime; // Store the day for this schedule
     private final List<Appointment> appointments = new ArrayList<>(); // Store the appointments
 
     // Constructor to initialize the schedule with a specific day
-    public Schedule(LocalDate day) {
-        this.day = day;
+    public Schedule(LocalDateTime scheduleTime) {
+        this.scheduleTime = scheduleTime;
     }
 
-    public LocalDate getDay() {
-        return day;
+    public LocalDateTime getScheduleTime() {
+        return scheduleTime;
     }
 
     public void addAppointment(Appointment appointment) {
