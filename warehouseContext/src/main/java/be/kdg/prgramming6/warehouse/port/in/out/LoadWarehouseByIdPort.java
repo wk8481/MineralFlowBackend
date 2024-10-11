@@ -1,10 +1,11 @@
 package be.kdg.prgramming6.warehouse.port.in.out;
 
+import java.util.Optional;
+
 import be.kdg.prgramming6.warehouse.domain.Warehouse;
-import be.kdg.prgramming6.warehouse.domain.WarehouseActivity;
 import be.kdg.prgramming6.warehouse.domain.WarehouseId;
 
 @FunctionalInterface
-public interface UpdateWarehousePort {
-    void activityCreated(Warehouse warehouse, WarehouseActivity activity);
+public interface LoadWarehouseByIdPort {
+    Optional<Warehouse> loadWarehouseById(WarehouseId warehouseId);
 }

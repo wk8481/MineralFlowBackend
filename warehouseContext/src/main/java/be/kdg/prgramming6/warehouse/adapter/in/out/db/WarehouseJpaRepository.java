@@ -11,4 +11,6 @@ public interface WarehouseJpaRepository extends JpaRepository<WarehouseJpaEntity
 
     Optional<WarehouseJpaEntity> findBySellerIdAndMaterialType(UUID sellerId, MaterialType materialType);
 
+    Optional<WarehouseJpaEntity> findByWarehouseId(UUID warehouseId);
+
 }

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -24,6 +26,8 @@ public class WarehouseJpaEntity {
     @Column(name = "material_type", nullable = false)
     private MaterialType materialType;
 
+    @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
+    private List<WarehouseActivityJpaEntity> activities;
 
 
 
@@ -49,5 +53,17 @@ public class WarehouseJpaEntity {
 
     public MaterialType getMaterialType() {
         return materialType;
+    }
+
+    public void setMaterialType(MaterialType materialType) {
+        this.materialType = materialType;
+    }
+
+    public List<WarehouseActivityJpaEntity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<WarehouseActivityJpaEntity> activities) {
+        this.activities = activities;
     }
 }
