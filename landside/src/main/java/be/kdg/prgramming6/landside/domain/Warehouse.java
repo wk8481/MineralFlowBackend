@@ -1,5 +1,7 @@
 package be.kdg.prgramming6.landside.domain;
 
+import be.kdg.prgramming6.common.domain.WarehouseActivityType;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -27,6 +29,13 @@ public class Warehouse {
         this.dockNumber = dockNumber; // Can be null initially
     }
 
+    public Warehouse(WarehouseId warehouseId, MaterialType materialType, SellerId sellerId, BigDecimal currentCapacity) {
+        this.warehouseId = Objects.requireNonNull(warehouseId, "Warehouse ID cannot be null");
+        this.materialType = Objects.requireNonNull(materialType, "Material type cannot be null");
+        this.currentCapacity = BigDecimal.ZERO; // Initialize the current load as empty
+        this.sellerId = Objects.requireNonNull(sellerId, "Seller ID cannot be null");
+    }
+
     // Getters
     public WarehouseId getWarehouseId() {
         return warehouseId;
@@ -52,6 +61,22 @@ public class Warehouse {
         return dockNumber;
     }
 
+    public void modifyCapacity(final WarehouseActivityType warehouseActivityType, final BigDecimal weight) {
+        if (weight.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Weight must be greater than zero.");
+        }
+        switch (warehouseActivityType) {
+            case DELIVERY -> store(weight);
+            case SHIPMENT -> {
+                if (currentCapacity.compareTo(weight) < 0) {
+                    throw new IllegalStateException("Warehouse does not have enough capacity for shipment.");
+                }
+                currentCapacity = currentCapacity.subtract(weight);
+            }
+        }
+    }
+
+
     // Method to check if there is enough storage available for the given payload weight
     public boolean canStore(BigDecimal payloadWeight) {
         return currentCapacity.add(payloadWeight).compareTo(MAX_CAPACITY) <= 0;
@@ -65,8 +90,9 @@ public class Warehouse {
         currentCapacity = currentCapacity.add(payloadWeight);
     }
 
+
     // Method to check if the warehouse is 80% full
-    public boolean isEightyPercentFull() {
+    public boolean isAppointmentPossible() {
         return currentCapacity.compareTo(MAX_CAPACITY.multiply(BigDecimal.valueOf(0.8))) >= 0;
     }
 

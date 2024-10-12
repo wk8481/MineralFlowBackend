@@ -68,4 +68,24 @@ public class WarehouseProjectionJpaEntity {
     public BigDecimal getCurrentCapacity() {
         return currentCapacity;
     }
+
+    public void setWarehouseId(UUID warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    public void setCurrentCapacity(BigDecimal currentCapacity) {
+        this.currentCapacity = currentCapacity;
+    }
+
+    public void setSellerId(UUID sellerId) {
+        this.sellerId = sellerId;
+    }
+
+    public void setMaterialType(MaterialType materialType) {
+        this.materialType = materialType;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
 }

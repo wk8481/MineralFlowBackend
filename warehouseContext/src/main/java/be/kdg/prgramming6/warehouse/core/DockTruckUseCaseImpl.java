@@ -5,7 +5,6 @@ import be.kdg.prgramming6.warehouse.port.in.DockTruckCommand;
 import be.kdg.prgramming6.warehouse.port.in.DockTruckUseCase;
 import be.kdg.prgramming6.warehouse.port.in.out.*;
 import jakarta.transaction.Transactional;
-import org.hibernate.sql.results.graph.collection.internal.BagInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

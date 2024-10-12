@@ -14,8 +14,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQTopology {
 
     public static final String WAREHOUSE_EVENTS_EXCHANGE = "warehouse_events";
-    public static final String WAREHOUSE_UPDATED_QUEUE = "warehouse_updated";
-
+    public static final String WAREHOUSE_ACTIVITY_CREATED_QUEUE = "warehouse_activity_created";
     @Bean
     TopicExchange warehouseEventsExchange() {
         return new TopicExchange(WAREHOUSE_EVENTS_EXCHANGE);
@@ -23,7 +22,7 @@ public class RabbitMQTopology {
 
     @Bean
     Queue appointmentReceivedQueue() {
-        return new Queue(WAREHOUSE_UPDATED_QUEUE, true);
+        return new Queue(WAREHOUSE_ACTIVITY_CREATED_QUEUE, true);
     }
 
     @Bean
@@ -31,7 +30,7 @@ public class RabbitMQTopology {
         return BindingBuilder
                 .bind(queue)
                 .to(exchange)
-                .with("warehouse.#.warehouse.updated");
+                .with("warehouse.#.activity.created");
     }
 
     @Bean

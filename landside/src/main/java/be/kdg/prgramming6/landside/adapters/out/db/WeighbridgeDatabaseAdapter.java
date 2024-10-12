@@ -4,8 +4,10 @@ import be.kdg.prgramming6.landside.domain.*;
 import be.kdg.prgramming6.landside.port.out.*;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighbridgePort, UpdateWeighbridgePort, UpdateWarehousePort {
@@ -29,13 +31,16 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighb
 
     @Override
     public Optional<Warehouse> loadWarehouse(SellerId sellerId, MaterialType materialType, LocalDateTime timestamp) {
-        WarehouseProjectionJpaEntity warehouseProjectionJpaEntity = warehouseProjectionJpaRepository
-                .findFirstBySellerIdAndMaterialTypeAndTimestampLessThanEqualOrderByTimestampDesc(
-                        sellerId.getValue(),
+        return Optional.of(warehouseProjectionJpaRepository.findFirstBySellerIdAndMaterialTypeAndTimestampLessThanEqualOrderByTimestampDesc(
+                        sellerId.id(),
                         materialType,
-                        timestamp
-                ).orElse(null);
-        return Optional.ofNullable(toWarehouse(warehouseProjectionJpaEntity));
+                        timestamp)
+                .map(warehouseProjection -> new Warehouse(
+                        new WarehouseId(warehouseProjection.getWarehouseId()),
+                        warehouseProjection.getMaterialType(),
+                        new SellerId(warehouseProjection.getSellerId()),
+                        warehouseProjection.getCurrentCapacity()))
+                .orElseGet(() -> new Warehouse(new WarehouseId(UUID.randomUUID()), materialType, sellerId, BigDecimal.ZERO)));
     }
 
     // Transform WarehouseJpaEntity to Warehouse
@@ -75,6 +80,7 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighb
 
 
 
+
     // Transform Weighbridge to WeighbridgeJpaEntity
     private WeighbridgeJpaEntity fromWeighbridge(Weighbridge weighbridge) {
         return new WeighbridgeJpaEntity(weighbridge.getWeighbridgeNumber().toString());
@@ -82,8 +88,14 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighb
 
 
     @Override
-    public void updateWarehouse(Warehouse warehouse) {
-        WarehouseProjectionJpaEntity warehouseProjectionJpaEntity = fromWarehouse(warehouse);
+    public void updateWarehouse(final Warehouse warehouse) {
+       final WarehouseProjectionJpaEntity
+               warehouseProjectionJpaEntity = warehouseProjectionJpaRepository.findFirstBySellerIdAndMaterialTypeAndTimestampLessThanEqualOrderByTimestampDesc(
+                warehouse.getSellerId().getValue(),
+                warehouse.getMaterialType(),
+                LocalDateTime.now())
+               .orElseGet(() -> fromWarehouse(warehouse));
+       warehouseProjectionJpaEntity.setCurrentCapacity(warehouse.getCurrentCapacity());
         warehouseProjectionJpaRepository.save(warehouseProjectionJpaEntity);
     }
 

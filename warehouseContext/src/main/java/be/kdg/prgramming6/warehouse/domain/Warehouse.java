@@ -12,22 +12,25 @@ public class Warehouse {
     private final List<Truck> dockedTrucks; // Changed to store Truck objects
     private final SellerId sellerId;
     private final MaterialType materialType;
+    private final Capacity baseCapacity;
     private final WarehouseActivityWindow activities;
 
 
 
 
     // Constructor
-    public Warehouse(WarehouseId warehouseId, SellerId sellerId, MaterialType materialType, WarehouseActivityWindow activities) {
+    public Warehouse(WarehouseId warehouseId, SellerId sellerId, MaterialType materialType, Capacity baseCapacity, WarehouseActivityWindow activities) {
         this.warehouseId = warehouseId;
         this.sellerId = sellerId;
         this.materialType = materialType;
+        this.baseCapacity = baseCapacity;
         this.activities = activities;
         this.dockedTrucks = new ArrayList<>(); // Initialize the list for docked trucks
     }
 
-    public Warehouse(final WarehouseId warehouseId, final WarehouseActivityWindow activities) {
+    public Warehouse(final WarehouseId warehouseId, Capacity baseCapacity, final WarehouseActivityWindow activities) {
         this.warehouseId = warehouseId;
+        this.baseCapacity = baseCapacity;
         this.activities = activities;
         this.dockedTrucks = new ArrayList<>();
         this.sellerId = null;

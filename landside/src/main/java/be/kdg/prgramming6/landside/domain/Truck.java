@@ -15,7 +15,7 @@ public class Truck {
 
 
 
-    // Constructor with LicensePlate, MaterialType, payloadWeight, dockNumber, and SellerId
+    // Constructor with LicensePlate, MaterialType, payloadWeight, dockNumber, and sellerId
     public Truck(LicensePlate licensePlate, MaterialType materialType, String dockNumber) {
         this.licensePlate = Objects.requireNonNull(licensePlate, "License plate cannot be null");
         this.materialType = Objects.requireNonNull(materialType, "Material type cannot be null");

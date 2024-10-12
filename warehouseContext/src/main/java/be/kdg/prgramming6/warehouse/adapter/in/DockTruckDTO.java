@@ -14,7 +14,7 @@ public class DockTruckDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private final LocalDateTime deliveryDate;
     private final String dockNumber;
-    private final UUID sellerId; // New field for SellerId
+    private final UUID sellerId; // New field for sellerId
     private final BigDecimal weight;
 
     // Constructor
@@ -25,7 +25,7 @@ public class DockTruckDTO {
         this.warehouseId = warehouseId;
         this.deliveryDate = deliveryDate;
         this.dockNumber = dockNumber;
-        this.sellerId = sellerId; // Assigning SellerId
+        this.sellerId = sellerId; // Assigning sellerId
         this.weight = weight;
     }
 
@@ -51,7 +51,7 @@ public class DockTruckDTO {
     }
 
     public UUID getSellerId() {
-        return sellerId; // Getter for SellerId
+        return sellerId; // Getter for sellerId
     }
 
     public BigDecimal getWeight() {

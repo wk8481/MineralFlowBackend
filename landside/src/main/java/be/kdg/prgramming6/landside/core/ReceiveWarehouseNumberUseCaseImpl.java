@@ -36,7 +36,7 @@
 //
 //        // Load the warehouse by sellerId, materialType, and timestamp
 //        Warehouse warehouse = loadWarehousePort.loadWarehouse(
-//                        truck.getSellerId(), // Adjust this as per your method to get SellerId
+//                        truck.getSellerId(), // Adjust this as per your method to get sellerId
 //                        truck.getMaterialType(),
 //                        LocalDateTime.now())  // Assuming current timestamp; adjust as needed
 //                .orElseThrow(() -> new IllegalArgumentException("Warehouse not found for truck with given parameters."));

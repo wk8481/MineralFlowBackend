@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
@@ -18,13 +20,19 @@ public class WarehouseJpaEntity {
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID warehouseId; // UUID for warehouse identification
 
-    @Column(name = "seller_id", nullable = false, columnDefinition = "VARCHAR(36)")
+    @Column(name = "seller_id", columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
-    private UUID sellerId; // Reference to the SellerId
+    private UUID sellerId; // Reference to the sellerId
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "material_type", nullable = false)
+    @Column(name = "material_type")
     private MaterialType materialType;
+
+    @Column(name="capacity")
+    private BigDecimal capacity;
+
+    @Column(name="capacity_time")
+    private LocalDateTime capacityTime;
 
     @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
     private List<WarehouseActivityJpaEntity> activities;
@@ -66,4 +74,27 @@ public class WarehouseJpaEntity {
     public void setActivities(List<WarehouseActivityJpaEntity> activities) {
         this.activities = activities;
     }
+
+    public BigDecimal getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(BigDecimal capacity) {
+        this.capacity = capacity;
+    }
+
+    public LocalDateTime getCapacityTime() {
+        return capacityTime;
+    }
+
+    public void setCapacityTime(LocalDateTime capacityTime) {
+        this.capacityTime = capacityTime;
+    }
+
+
+
+
+
+
+
 }

@@ -2,6 +2,8 @@ package be.kdg.prgramming6.warehouse.adapter.in.out.db;
 
 import be.kdg.prgramming6.warehouse.domain.*;
 import be.kdg.prgramming6.warehouse.port.in.out.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -12,6 +14,9 @@ import java.util.stream.Collectors;
 
 @Component
 public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMaterialPort, UpdatePDTPort, LoadPDTPort, SavePDTPort, UpdateWarehousePort, LoadWarehouseByIdPort{
+    private static final Logger LOGGER = LoggerFactory.getLogger(DockTruckDatabaseAdapter.class);
+
+
     private final WarehouseJpaRepository warehouseJpaRepository;
     private final PayloadDeliveryTicketJpaRepository payloadDeliveryTicketJpaRepository;
     private final WarehouseActivityJpaRepository warehouseActivityJpaRepository;
@@ -96,7 +101,11 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
     public void activityCreated(Warehouse warehouse, WarehouseActivity activity) {
         final UUID warehouseId = warehouse.getWarehouseId().id();
         final WarehouseJpaEntity warehouseEntity = warehouseJpaRepository.findByWarehouseId(warehouseId).orElseThrow();
+        final Capacity capacity = warehouse.calculateCapacity();
+        warehouseEntity.setCapacity(capacity.weight());
+        warehouseEntity.setCapacityTime(capacity.time());
         warehouseEntity.getActivities().add(toWarehouseActivity(warehouseEntity, activity));
+        LOGGER.info("Updated warehouse for {} with capacity {}", warehouseId, capacity);
         warehouseJpaRepository.save(warehouseEntity);
 
 
@@ -117,13 +126,15 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
 
     private Warehouse toWarehouse(final WarehouseJpaEntity warehouseJpaEntity){
         final WarehouseId warehouseId = new WarehouseId(warehouseJpaEntity.getWarehouseId());
-        final WarehouseActivityWindow activities = toWarehouseWindow(warehouseId);
-        return new Warehouse(warehouseId, activities);
+        final WarehouseActivityWindow activities = toWarehouseWindow(warehouseJpaEntity, warehouseId);
+        final Capacity capacity = toCapacity(warehouseJpaEntity);
+        return new Warehouse(warehouseId, capacity, activities);
     }
 
-    private WarehouseActivityWindow toWarehouseWindow(final WarehouseId warehouseId) {
+    private WarehouseActivityWindow toWarehouseWindow(final WarehouseJpaEntity warehouseJpaEntity,
+                                                      final WarehouseId warehouseId) {
         final List<WarehouseActivity> activities = warehouseActivityJpaRepository
-            .findAllById_WarehouseId(warehouseId.id())
+            .findAllById_WarehouseIdAndTimeAfter(warehouseId.id(), warehouseJpaEntity.getCapacityTime())
             .stream()
             .map(DockTruckDatabaseAdapter::toWarehouseActivity)
             .collect(Collectors.toList());
@@ -141,6 +152,10 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
 
 
         );
+    }
+
+    private static Capacity toCapacity(final WarehouseJpaEntity warehouseJpaEntity) {
+        return new Capacity(warehouseJpaEntity.getCapacityTime(), warehouseJpaEntity.getCapacity());
     }
 
     @Override
