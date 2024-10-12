@@ -31,7 +31,8 @@ public class DockTruckController {
                     new WarehouseId(dockTruckDTO.getWarehouseId()), // Use the warehouseId from the DTO
                     dockTruckDTO.getDockNumber(),
                     dockTruckDTO.getDeliveryDate(),
-                    dockTruckDTO.getSellerId()
+                    dockTruckDTO.getSellerId(),
+                    dockTruckDTO.getWeight()
                     // sellerId can be added later when available
             );
 

@@ -4,10 +4,7 @@ import be.kdg.prgramming6.common.domain.WarehouseActivityType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class WarehouseActivityWindow {
     private final WarehouseId warehouseId;
@@ -16,6 +13,17 @@ public class WarehouseActivityWindow {
     public WarehouseActivityWindow(WarehouseId warehouseId, List<WarehouseActivity> activities) {
         this.warehouseId = warehouseId;
         this.activities = activities;
+    }
+
+    public Capacity calculateCapacity() {
+        final LocalDateTime time = activities.stream()
+            .max(Comparator.comparing(WarehouseActivity::time))
+            .orElseThrow()
+            .time();
+        final BigDecimal weight = activities.stream()
+                .map(WarehouseActivity::getChangeToCapacity)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return new Capacity(time, weight);
     }
 
     WarehouseActivity addActivity(final WarehouseActivityType type, SellerId sellerId, MaterialType materialType, BigDecimal weight) {

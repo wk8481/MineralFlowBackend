@@ -27,5 +27,13 @@ public record WarehouseActivity( WarehouseActivityId activityId, LocalDateTime t
         }
 
 
+        }
+
+        public BigDecimal getChangeToCapacity() {
+            return switch (warehouseActivityType) {
+                case DELIVERY -> weight;
+                case SHIPMENT-> weight.negate();
+            };
+
     }
 }

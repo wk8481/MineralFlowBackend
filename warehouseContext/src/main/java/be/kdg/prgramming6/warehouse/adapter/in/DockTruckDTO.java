@@ -1,7 +1,9 @@
 package be.kdg.prgramming6.warehouse.adapter.in;
 
+import be.kdg.prgramming6.common.security.messages.SecuredMessage;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -9,22 +11,22 @@ public class DockTruckDTO {
     private final String licensePlate;
     private final String materialType;
     private final UUID warehouseId;
-
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private final LocalDateTime deliveryDate;
-
     private final String dockNumber;
     private final UUID sellerId; // New field for SellerId
+    private final BigDecimal weight;
 
     // Constructor
     public DockTruckDTO(String licensePlate, String materialType, UUID warehouseId,
-                        LocalDateTime deliveryDate, String dockNumber, UUID sellerId) {
+                        LocalDateTime deliveryDate, String dockNumber, UUID sellerId, BigDecimal weight) {
         this.licensePlate = licensePlate;
         this.materialType = materialType;
         this.warehouseId = warehouseId;
         this.deliveryDate = deliveryDate;
         this.dockNumber = dockNumber;
         this.sellerId = sellerId; // Assigning SellerId
+        this.weight = weight;
     }
 
     // Getters
@@ -50,5 +52,9 @@ public class DockTruckDTO {
 
     public UUID getSellerId() {
         return sellerId; // Getter for SellerId
+    }
+
+    public BigDecimal getWeight() {
+        return weight;
     }
 }

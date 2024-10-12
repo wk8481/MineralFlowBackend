@@ -1,5 +1,8 @@
 package be.kdg.prgramming6.warehouse.domain;
 
+import be.kdg.prgramming6.common.domain.WarehouseActivityType;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,19 @@ public class Warehouse {
 
 
     }
+
+    public Capacity calculateCapacity() {
+        return activities.calculateCapacity();
+    }
+
+    public WarehouseActivity loadWarehouse(final BigDecimal weight) {
+        return activities.addActivity(WarehouseActivityType.DELIVERY, sellerId, materialType, weight);
+    }
+
+    public List<WarehouseActivity> getActivities() {
+        return activities.getActivities();
+    }
+
 
     public WarehouseId getId() {
         return warehouseId;
