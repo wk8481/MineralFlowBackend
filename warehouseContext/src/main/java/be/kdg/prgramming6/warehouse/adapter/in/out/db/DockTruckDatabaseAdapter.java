@@ -13,9 +13,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
-public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMaterialPort, UpdatePDTPort, LoadPDTPort, SavePDTPort, UpdateWarehousePort, LoadWarehouseByIdPort{
+public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMaterialPort, UpdatePDTPort, LoadPDTPort, SavePDTPort, UpdateWarehousePort, LoadWarehouseByIdPort {
     private static final Logger LOGGER = LoggerFactory.getLogger(DockTruckDatabaseAdapter.class);
-
 
     private final WarehouseJpaRepository warehouseJpaRepository;
     private final PayloadDeliveryTicketJpaRepository payloadDeliveryTicketJpaRepository;
@@ -27,36 +26,22 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
         this.warehouseActivityJpaRepository = warehouseActivityJpaRepository;
     }
 
-
-
-
     @Override
     public WarehouseId findWarehouseIdBySellerIdAndMaterialType(UUID sellerId, MaterialType materialType) {
-        // Find the warehouse entity by sellerId and materialType
         Optional<WarehouseJpaEntity> warehouseEntity = warehouseJpaRepository.findBySellerIdAndMaterialType(sellerId, materialType);
-
-        // Map the WarehouseJpaEntity to WarehouseId if found
         return warehouseEntity.map(entity -> new WarehouseId(entity.getWarehouseId())).orElse(null);
     }
 
-
-
-
     @Override
     public void updatePDT(String licensePlate, String materialType, UUID warehouseId, String conveyorBeltId, LocalDateTime deliveryDate) {
-        // Create a new PayloadDeliveryTicketJpaEntity with the updated values
         PayloadDeliveryTicketJpaEntity updatedPDT = new PayloadDeliveryTicketJpaEntity(
                 warehouseId,
                 licensePlate,
-                MaterialType.valueOf(materialType), // Ensure materialType is a valid enum
+                MaterialType.valueOf(materialType),
                 conveyorBeltId,
                 deliveryDate
         );
-
-        // Persist the updated Payload Delivery Ticket entity
         payloadDeliveryTicketJpaRepository.save(updatedPDT);
-
-        // Optionally, log the update
         System.out.println("Updated Payload Delivery Ticket for license plate: " + licensePlate);
     }
 
@@ -72,28 +57,20 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
 
     @Override
     public Optional<PayloadDeliveryTicket> loadPDTByPlate(LicensePlate licensePlate) {
-        // Load the Payload Delivery Ticket from the repository
         Optional<PayloadDeliveryTicketJpaEntity> pdtEntity = payloadDeliveryTicketJpaRepository.findByLicensePlate(licensePlate.toString());
-
-        // Map the entity to the domain model and return
         return pdtEntity.map(this::toPayloadDeliveryTicket);
     }
 
     @Override
     public PayloadDeliveryTicket savePDT(LicensePlate licensePlate, MaterialType materialType, WarehouseId warehouseId, String dockNumber, LocalDateTime deliveryDate) {
-        // Create a new PayloadDeliveryTicketJpaEntity for saving
         PayloadDeliveryTicketJpaEntity newPDT = new PayloadDeliveryTicketJpaEntity(
-                warehouseId.id(), // Use getId() to retrieve the UUID of the WarehouseId
+                warehouseId.id(),
                 licensePlate.toString(),
                 materialType,
                 dockNumber,
                 deliveryDate
         );
-
-        // Save the new Payload Delivery Ticket entity
         PayloadDeliveryTicketJpaEntity savedEntity = payloadDeliveryTicketJpaRepository.save(newPDT);
-
-        // Map the saved entity back to the domain model and return
         return toPayloadDeliveryTicket(savedEntity);
     }
 
@@ -107,12 +84,9 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
         warehouseEntity.getActivities().add(toWarehouseActivity(warehouseEntity, activity));
         LOGGER.info("Updated warehouse for {} with capacity {}", warehouseId, capacity);
         warehouseJpaRepository.save(warehouseEntity);
-
-
     }
 
-    private WarehouseActivityJpaEntity toWarehouseActivity(final WarehouseJpaEntity warehouseJpaEntity,
-                                                           final WarehouseActivity activity) {
+    private WarehouseActivityJpaEntity toWarehouseActivity(final WarehouseJpaEntity warehouseJpaEntity, final WarehouseActivity activity) {
         final WarehouseActivityJpaEntity warehouseActivityJpaEntity = new WarehouseActivityJpaEntity();
         warehouseActivityJpaEntity.setId(WarehouseActivityJpaId.of(activity.activityId()));
         warehouseActivityJpaEntity.setType(activity.warehouseActivityType());
@@ -124,33 +98,32 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
         return warehouseActivityJpaEntity;
     }
 
-    private Warehouse toWarehouse(final WarehouseJpaEntity warehouseJpaEntity){
+    private Warehouse toWarehouse(final WarehouseJpaEntity warehouseJpaEntity) {
         final WarehouseId warehouseId = new WarehouseId(warehouseJpaEntity.getWarehouseId());
+        final SellerId sellerId = new SellerId(warehouseJpaEntity.getSellerId());
+        final MaterialType materialType = warehouseJpaEntity.getMaterialType();
         final WarehouseActivityWindow activities = toWarehouseWindow(warehouseJpaEntity, warehouseId);
         final Capacity capacity = toCapacity(warehouseJpaEntity);
-        return new Warehouse(warehouseId, capacity, activities);
+        return new Warehouse(warehouseId, sellerId, materialType, capacity, activities);
     }
 
-    private WarehouseActivityWindow toWarehouseWindow(final WarehouseJpaEntity warehouseJpaEntity,
-                                                      final WarehouseId warehouseId) {
+    private WarehouseActivityWindow toWarehouseWindow(final WarehouseJpaEntity warehouseJpaEntity, final WarehouseId warehouseId) {
         final List<WarehouseActivity> activities = warehouseActivityJpaRepository
-            .findAllById_WarehouseIdAndTimeAfter(warehouseId.id(), warehouseJpaEntity.getCapacityTime())
-            .stream()
-            .map(DockTruckDatabaseAdapter::toWarehouseActivity)
-            .collect(Collectors.toList());
+                .findAllById_WarehouseIdAndTimeAfter(warehouseId.id(), warehouseJpaEntity.getCapacityTime())
+                .stream()
+                .map(DockTruckDatabaseAdapter::toWarehouseActivity)
+                .collect(Collectors.toList());
         return new WarehouseActivityWindow(warehouseId, activities);
     }
 
     private static WarehouseActivity toWarehouseActivity(final WarehouseActivityJpaEntity activity) {
         return new WarehouseActivity(
-            new WarehouseActivityId(new WarehouseId(activity.getId().getWarehouseId()), activity.getId().getActivityId()),
-            activity.getTime(),
-            activity.getType(),
-            new SellerId(activity.getSellerId()),
-            activity.getMaterialType(),
-            activity.getWeight()
-
-
+                new WarehouseActivityId(new WarehouseId(activity.getId().getWarehouseId()), activity.getId().getActivityId()),
+                activity.getTime(),
+                activity.getType(),
+                new SellerId(activity.getSellerId()),
+                activity.getMaterialType(),
+                activity.getWeight()
         );
     }
 

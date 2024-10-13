@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ActivityCreatedListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(ActivityCreatedListener.class);
-    private static final String CREATED_ACTIVITIES_QUEUE = "created_activities";
+    private static final String WAREHOUSE_ACTIVITY_CREATED_QUEUE = "warehouse_activity_created";
 
     private final WarehouseProjector warehouseProjector;
 
@@ -19,7 +19,7 @@ public class ActivityCreatedListener {
     }
     //include da checkCapacityForAppointmentUseCase
 
-    @RabbitListener(queues = CREATED_ACTIVITIES_QUEUE)
+    @RabbitListener(queues = WAREHOUSE_ACTIVITY_CREATED_QUEUE)
     public void activityCreated(final WarehouseActivityCreatedEvent event) {
         LOGGER.info(
             "{} activity got created on warehouse of {} with weight of {}",

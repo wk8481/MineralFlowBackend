@@ -57,6 +57,7 @@ Content-Type: application/json
   "warehouseId": "e2f7bcdc-69da-4b0e-b73f-6adf79e8d5f9",
   "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
   "deliveryDate": "2024-10-30T09:00:00",
-  "dockNumber": "WB-10"
+  "dockNumber": "WB-10",
+  "weight": 20
 }
 

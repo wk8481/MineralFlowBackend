@@ -77,7 +77,7 @@ public class DockTruckUseCaseImpl implements DockTruckUseCase {
         }
 
         // Calculate and return warehouse capacity after docking
-        return calculateWarehouseCapacity(warehouseId, command.weight());
+        return updateWarehouseCapacity(warehouseId, weight);
     }
 
     private void printPDTAndWeighbridge(PayloadDeliveryTicket pdt, WeighbridgeNumber weighbridgeNumber) {
@@ -95,10 +95,7 @@ public class DockTruckUseCaseImpl implements DockTruckUseCase {
         logger.info("Updated existing PDT for License Plate: {}", pdt.getLicensePlate());
         printPDTAndWeighbridge(pdt, weighbridgeNumber);
 
-        Optional<Warehouse> optionalWarehouse = loadWarehouseByIdPort.loadWarehouseById(warehouseId);
-        Warehouse warehouse = optionalWarehouse.orElseThrow(() -> new IllegalArgumentException("Warehouse not found for ID: " + warehouseId));
-        final WarehouseActivity warehouseActivity = warehouse.loadWarehouse(command.weight());
-        updateWarehousePorts.forEach(updateWarehousePort -> updateWarehousePort.activityCreated(warehouse, warehouseActivity));
+        updateWarehouseCapacity(warehouseId, command.weight());
     }
 
     private void createAndSaveNewPDT(LicensePlate licensePlate, MaterialType materialType, LocalDateTime deliveryDate, WarehouseId warehouseId, String dockNumber, WeighbridgeNumber weighbridgeNumber) {
@@ -110,9 +107,15 @@ public class DockTruckUseCaseImpl implements DockTruckUseCase {
         printPDTAndWeighbridge(newPDT, weighbridgeNumber);
     }
 
-    private Capacity calculateWarehouseCapacity(WarehouseId warehouseId, BigDecimal weight) {
+    private Capacity updateWarehouseCapacity(WarehouseId warehouseId, BigDecimal weight) {
         Optional<Warehouse> optionalWarehouse = loadWarehouseByIdPort.loadWarehouseById(warehouseId);
         Warehouse warehouse = optionalWarehouse.orElseThrow(() -> new IllegalArgumentException("Warehouse not found for ID: " + warehouseId));
-        return warehouse.calculateCapacity(); // Assuming calculateCapacity is defined in Warehouse
+
+        // Add the activity with the given weight
+        final WarehouseActivity warehouseActivity = warehouse.loadWarehouse(weight);
+        updateWarehousePorts.forEach(updateWarehousePort -> updateWarehousePort.activityCreated(warehouse, warehouseActivity));
+
+        // Calculate and return the capacity
+        return warehouse.calculateCapacity();
     }
 }

@@ -63,4 +63,6 @@ public class Appointment {
                                                   SellerId sellerId) {
         return new Appointment(truck, materialType, windowStart, windowEnd, sellerId);
     }
+
+
 }

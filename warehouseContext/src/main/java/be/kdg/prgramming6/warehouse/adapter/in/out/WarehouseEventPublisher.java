@@ -24,7 +24,7 @@ public class WarehouseEventPublisher implements UpdateWarehousePort {
 
     @Override
     public void activityCreated(Warehouse warehouse, WarehouseActivity warehouseActivity) {
-        final String routingKey = "warehouse." + warehouse.getId() + ".activity.created";
+        final String routingKey = "warehouse." + warehouse.getId().id() + ".activity.created";
         LOGGER.info("Notifying RabbitMQ: {}", routingKey);
         rabbitTemplate.convertAndSend(EXCHANGE_NAME, routingKey, new WarehouseActivityCreatedEvent(
                 warehouse.getId().id(), // Assuming getId() returns a WarehouseId, and getValue() returns a UUID

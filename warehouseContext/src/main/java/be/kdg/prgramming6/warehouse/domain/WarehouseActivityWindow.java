@@ -15,26 +15,33 @@ public class WarehouseActivityWindow {
         this.activities = activities;
     }
 
+
     public Capacity calculateCapacity() {
-        final LocalDateTime time = activities.stream()
-            .max(Comparator.comparing(WarehouseActivity::time))
-            .orElseThrow()
-            .time();
-        final BigDecimal weight = activities.stream()
+        if (activities.isEmpty()) {
+            throw new NoSuchElementException("No activities present");
+        }
+
+        BigDecimal totalCapacity = activities.stream()
                 .map(WarehouseActivity::getChangeToCapacity)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        return new Capacity(time, weight);
+
+        LocalDateTime lastActivityTime = activities.stream()
+                .map(WarehouseActivity::time)
+                .max(LocalDateTime::compareTo)
+                .orElseThrow(() -> new NoSuchElementException("No activities present"));
+
+        return new Capacity(lastActivityTime, totalCapacity);
     }
 
     WarehouseActivity addActivity(final WarehouseActivityType type, SellerId sellerId, MaterialType materialType, BigDecimal weight) {
         final WarehouseActivityId activityId = new WarehouseActivityId(warehouseId, UUID.randomUUID());
         final WarehouseActivity activity = new WarehouseActivity(
-            activityId,
-            LocalDateTime.now(),
-            type,
-            sellerId,
-            materialType,
-            weight
+                activityId,
+                LocalDateTime.now(),
+                type,
+                sellerId,
+                materialType,
+                weight
         );
         activities.add(activity);
         return activity;

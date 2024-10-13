@@ -13,7 +13,10 @@ import java.util.UUID;
 @Component
 public class AppointmentUpdatedPublisher implements UpdateAppointmentPort {
     private final RabbitTemplate rabbitTemplate;
-    private static final Logger logger = LoggerFactory.getLogger(AppointmentUpdatedPublisher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppointmentUpdatedPublisher.class);
+
+    private static final String EXCHANGE_NAME = "landside_events";
+
 
     public AppointmentUpdatedPublisher(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
@@ -21,37 +24,13 @@ public class AppointmentUpdatedPublisher implements UpdateAppointmentPort {
 
     @Override
     public void updateAppointment(Appointment appointment) {
-        logger.info("Received appointment update request.");
+        final String routingKey = "landside." + appointment.getSellerId().id() + ".appointment.updated";
+        LOGGER.info("Notifying RabbitMQ: {}", routingKey);
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, routingKey, new AppointmentUpdatedEvent(
+                appointment.getSellerId().id(),
+                appointment.getTruck().getLicensePlate().plateNumber()
+        ));
 
-        // Extract primitive types
-        UUID sellerIdValue = appointment.getSellerId().id(); // Use the correct method to get sellerId
-        String licensePlateValue = appointment.getTruck().getLicensePlate().plateNumber(); // Extract the plate number string
-
-        // Log the appointment update
-        logger.info("Updating appointment for Seller ID: {} with License Plate: {}", sellerIdValue, licensePlateValue);
-
-        // Publish event using primitive values
-        AppointmentUpdatedEvent appointmentUpdatedEvent = new AppointmentUpdatedEvent(
-                sellerIdValue,
-                licensePlateValue
-        );
-
-        // Use a dynamic routing key based on seller ID
-        String routingKey = String.format("landslide.%s.appointment.updated", sellerIdValue);
-
-        try {
-            // Send the message to the RabbitMQ exchange
-            this.rabbitTemplate.convertAndSend(
-                    RabbitMQTopology.LANDSLIDE_EVENTS_EXCHANGE,
-                    routingKey,
-                    appointmentUpdatedEvent
-            );
-
-            // Log the event publication
-            logger.info("Published AppointmentUpdatedEvent for Seller ID: {} and License Plate: {}", sellerIdValue, licensePlateValue);
-        } catch (Exception e) {
-            // Log any errors that occur during message publishing
-            logger.error("Failed to publish AppointmentUpdatedEvent for Seller ID: {} and License Plate: {}. Error: {}", sellerIdValue, licensePlateValue, e.getMessage());
-        }
     }
 }
+

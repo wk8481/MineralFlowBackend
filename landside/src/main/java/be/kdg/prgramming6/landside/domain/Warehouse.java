@@ -3,6 +3,7 @@ package be.kdg.prgramming6.landside.domain;
 import be.kdg.prgramming6.common.domain.WarehouseActivityType;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Warehouse {
@@ -91,9 +92,11 @@ public class Warehouse {
     }
 
 
-    // Method to check if the warehouse is 80% full
-    public boolean isAppointmentPossible() {
-        return currentCapacity.compareTo(MAX_CAPACITY.multiply(BigDecimal.valueOf(0.8))) >= 0;
+
+    // Method to check if the warehouse is 80% full and there are less than 40 appointments in the same hour
+    public boolean isAppointmentPossible(Schedule schedule, LocalDateTime start, LocalDateTime end) {
+        return currentCapacity.compareTo(MAX_CAPACITY.multiply(BigDecimal.valueOf(0.8))) >= 0
+                && schedule.hasAvailability(start, end);
     }
 
     // Method to reset current capacity for testing or end-of-day operations

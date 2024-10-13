@@ -5,6 +5,7 @@ import be.kdg.prgramming6.warehouse.domain.MaterialType;
 import be.kdg.prgramming6.warehouse.domain.WarehouseId;
 import be.kdg.prgramming6.warehouse.port.in.DockTruckCommand;
 import be.kdg.prgramming6.warehouse.port.in.DockTruckUseCase;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class DockTruckController {
     }
 
     @PostMapping("/dock-truck")
-    public ResponseEntity<String> dockTruck(@RequestBody DockTruckDTO dockTruckDTO) {
+    public ResponseEntity<String> dockTruck(@Valid @RequestBody DockTruckDTO dockTruckDTO) {
         try {
             // Create the command object with required parameters
             DockTruckCommand command = new DockTruckCommand(
