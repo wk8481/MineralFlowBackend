@@ -7,11 +7,14 @@ public class Truck {
     private final LicensePlate licensePlate;
     private MaterialType materialType;
     private String dockNumber; // Conveyor belt/dock number
+    private final SellerId sellerId; // Added seller field
 
 
     public Truck(LicensePlate licensePlate) {
         this.licensePlate = licensePlate;
+        this.sellerId = null;
     }
+
 
 
 
@@ -20,6 +23,14 @@ public class Truck {
         this.licensePlate = Objects.requireNonNull(licensePlate, "License plate cannot be null");
         this.materialType = Objects.requireNonNull(materialType, "Material type cannot be null");
         this.dockNumber = dockNumber; // Can be null initially
+        this.sellerId = null; // Seller ID is not required for this constructor
+    }
+
+    public Truck(LicensePlate licensePlate, MaterialType materialType, String dockNumber, SellerId sellerId) {
+        this.licensePlate = Objects.requireNonNull(licensePlate, "License plate cannot be null");
+        this.materialType = Objects.requireNonNull(materialType, "Material type cannot be null");
+        this.dockNumber = dockNumber; // Can be null initially
+        this.sellerId = Objects.requireNonNull(sellerId, "Seller ID cannot be null");
     }
 
     // Getters
@@ -66,5 +77,9 @@ public class Truck {
 
     public void setDockNumber(String dockNumber) {
         this.dockNumber = dockNumber;
+    }
+
+    public SellerId getSellerId() {
+        return sellerId;
     }
 }

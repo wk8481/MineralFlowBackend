@@ -21,12 +21,32 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighb
         this.weighbridgeJpaRepository = weighbridgeJpaRepository;
     }
 
-
-
     @Override
     public Optional<Weighbridge> loadWeighbridge(WeighbridgeNumber weighbridgeNumber) {
-        WeighbridgeJpaEntity weighbridgeJpaEntity = weighbridgeJpaRepository.findByWeighbridgeNumber(weighbridgeNumber.getValue());
+        WeighbridgeJpaEntity weighbridgeJpaEntity = weighbridgeJpaRepository.findByWeighbridgeNumber(weighbridgeNumber.toString());
         return Optional.ofNullable(toWeighbridge(weighbridgeJpaEntity));
+    }
+
+    private Weighbridge toWeighbridge(WeighbridgeJpaEntity weighbridgeJpaEntity) {
+        if (weighbridgeJpaEntity == null) {
+            return null;
+        }
+        WeighbridgeNumber weighbridgeNumber = new WeighbridgeNumber(weighbridgeJpaEntity.getWeighbridgeNumber());
+        LicensePlate licensePlate = new LicensePlate(weighbridgeJpaEntity.getLicensePlate());
+        return new Weighbridge(weighbridgeNumber, licensePlate);
+    }
+
+    private WeighbridgeJpaEntity fromWeighbridge(Weighbridge weighbridge) {
+        return new WeighbridgeJpaEntity(
+                weighbridge.getWeighbridgeNumber().toString(),
+                weighbridge.getLicensePlate().plateNumber()
+        );
+    }
+
+    @Override
+    public void updateWeighbridge(Weighbridge weighbridge) {
+        WeighbridgeJpaEntity weighbridgeJpaEntity = fromWeighbridge(weighbridge);
+        weighbridgeJpaRepository.save(weighbridgeJpaEntity);
     }
 
     @Override
@@ -43,65 +63,24 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighb
                 .orElseGet(() -> new Warehouse(new WarehouseId(UUID.randomUUID()), materialType, sellerId, BigDecimal.ZERO)));
     }
 
-    // Transform WarehouseJpaEntity to Warehouse
-    private Warehouse toWarehouse(WarehouseProjectionJpaEntity warehouseProjectionJpaEntity) {
-        if (warehouseProjectionJpaEntity == null) {
-            return null;
-        }
-        return new Warehouse(
-                new WarehouseId(warehouseProjectionJpaEntity.getWarehouseId()),
-                warehouseProjectionJpaEntity.getMaterialType(),
-                new SellerId(warehouseProjectionJpaEntity.getSellerId())
-        );
-    }
-
-
-
-
-    // Transform WeighbridgeJpaEntity to Weighbridge
-    private Weighbridge toWeighbridge(WeighbridgeJpaEntity weighbridgeJpaEntity) {
-        if (weighbridgeJpaEntity == null) {
-            return null;
-        }
-        WeighbridgeNumber weighbridgeNumber = new WeighbridgeNumber(weighbridgeJpaEntity.getWeighbridgeNumber());
-        return new Weighbridge(weighbridgeNumber);
-    }
-
-    // Transform Warehouse to WarehouseJpaEntity
-    private WarehouseProjectionJpaEntity fromWarehouse(Warehouse warehouse) {
-        return new WarehouseProjectionJpaEntity(
-                warehouse.getWarehouseId().getValue(), // Ensure this returns the UUID or appropriate type
-                warehouse.getMaterialType(),
-                warehouse.getSellerId().getValue(),
-                LocalDateTime.now(), // Use the current timestamp
-                warehouse.getCurrentCapacity()
-        );
-    }
-
-
-
-
-    // Transform Weighbridge to WeighbridgeJpaEntity
-    private WeighbridgeJpaEntity fromWeighbridge(Weighbridge weighbridge) {
-        return new WeighbridgeJpaEntity(weighbridge.getWeighbridgeNumber().toString());
-    }
-
-
     @Override
     public void updateWarehouse(final Warehouse warehouse) {
-       final WarehouseProjectionJpaEntity
-               warehouseProjectionJpaEntity = warehouseProjectionJpaRepository.findFirstBySellerIdAndMaterialTypeAndTimestampLessThanEqualOrderByTimestampDesc(
-                warehouse.getSellerId().getValue(),
-                warehouse.getMaterialType(),
-                LocalDateTime.now())
-               .orElseGet(() -> fromWarehouse(warehouse));
-       warehouseProjectionJpaEntity.setCurrentCapacity(warehouse.getCurrentCapacity());
+        final WarehouseProjectionJpaEntity warehouseProjectionJpaEntity = warehouseProjectionJpaRepository.findFirstBySellerIdAndMaterialTypeAndTimestampLessThanEqualOrderByTimestampDesc(
+                        warehouse.getSellerId().getValue(),
+                        warehouse.getMaterialType(),
+                        LocalDateTime.now())
+                .orElseGet(() -> fromWarehouse(warehouse));
+        warehouseProjectionJpaEntity.setCurrentCapacity(warehouse.getCurrentCapacity());
         warehouseProjectionJpaRepository.save(warehouseProjectionJpaEntity);
     }
 
-    @Override
-    public void updateWeighbridge(Weighbridge weighbridge) {
-        WeighbridgeJpaEntity weighbridgeJpaEntity = fromWeighbridge(weighbridge);
-        weighbridgeJpaRepository.save(weighbridgeJpaEntity);
+    private WarehouseProjectionJpaEntity fromWarehouse(Warehouse warehouse) {
+        return new WarehouseProjectionJpaEntity(
+                warehouse.getWarehouseId().getValue(),
+                warehouse.getMaterialType(),
+                warehouse.getSellerId().getValue(),
+                LocalDateTime.now(),
+                warehouse.getCurrentCapacity()
+        );
     }
 }

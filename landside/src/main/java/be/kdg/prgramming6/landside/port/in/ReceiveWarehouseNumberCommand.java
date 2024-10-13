@@ -1,18 +1,12 @@
 package be.kdg.prgramming6.landside.port.in;
 
-import be.kdg.prgramming6.landside.domain.LicensePlate;
-import be.kdg.prgramming6.landside.domain.WeighbridgeNumber;
-
-import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.UUID;
 
-public record ReceiveWarehouseNumberCommand(LicensePlate licensePlate, WeighbridgeNumber weighbridgeNumber, BigDecimal payloadWeight
-) {
+public record ReceiveWarehouseNumberCommand(String licensePlate, UUID sellerId, String materialType) {
     public ReceiveWarehouseNumberCommand {
         Objects.requireNonNull(licensePlate, "License plate cannot be null");
-        Objects.requireNonNull(weighbridgeNumber, "Weigh bridge ID cannot be null");
-        Objects.requireNonNull(payloadWeight, "Payload weight cannot be null");
-
+        Objects.requireNonNull(sellerId, "Seller ID cannot be null");
+        Objects.requireNonNull(materialType, "Material type cannot be null");
     }
-
 }

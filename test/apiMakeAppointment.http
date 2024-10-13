@@ -61,3 +61,14 @@ Content-Type: application/json
   "weight": 20
 }
 
+
+### Receive Warehouse Number
+POST http://localhost:8090/api/receive-warehouse-number
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "licensePlate": "ABC-123",
+  "materialType": "PET_COKE",
+  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b"
+}

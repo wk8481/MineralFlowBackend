@@ -1,18 +1,10 @@
 package be.kdg.prgramming6.landside.domain;
 
- public record WeighbridgeNumber(String value) {
-
-    // Primary constructor with validation logic
+public record WeighbridgeNumber(String value) {
     public WeighbridgeNumber {
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException("Weighbridge number cannot be null or blank");
         }
-    }
-
-    // Static factory method to generate a unique weighbridge number
-    public static WeighbridgeNumber generate(Truck truck) {
-        String uniqueNumber = "WB-" + truck.getLicensePlate().plateNumber() + "-" + System.nanoTime();
-        return new WeighbridgeNumber(uniqueNumber);
     }
 
     @Override
@@ -20,7 +12,8 @@ package be.kdg.prgramming6.landside.domain;
         return value;
     }
 
-     public String getValue() {
-         return "";
-     }
- }
+    public static WeighbridgeNumber generate(LicensePlate licensePlate) {
+        String generatedValue = licensePlate.plateNumber() + "-WB";
+        return new WeighbridgeNumber(generatedValue);
+    }
+}

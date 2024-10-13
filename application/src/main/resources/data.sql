@@ -29,3 +29,10 @@ VALUES
     ('3f23dd36-cbd9-4025-b476-c9a24c3e6c19', 'b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6', 'CEMENT', 0, NOW()),
     ('bf838cb6-6463-4b77-a70d-cb9f7b52af24', 'b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6', 'PET_COKE', 0, NOW()),
     ('ee5e9b7f-56b7-4f4a-a7df-561ff0cf720e', 'b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6', 'SLAG', 0, NOW());
+
+-- Dummy data for Weighbridge
+INSERT INTO landside.weighbridge (weighbridge_number, license_plate)
+VALUES
+    ('ABC-123-WB', 'ABC-123'),
+    ('XYZ-789-WB', 'XYZ-789'),
+    ('LMN-456-WB', 'LMN-456');
