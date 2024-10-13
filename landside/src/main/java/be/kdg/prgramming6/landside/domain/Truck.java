@@ -1,6 +1,5 @@
 package be.kdg.prgramming6.landside.domain;
 
-
 import java.util.Objects;
 
 public class Truck {
@@ -9,16 +8,12 @@ public class Truck {
     private String dockNumber; // Conveyor belt/dock number
     private final SellerId sellerId; // Added seller field
 
-
     public Truck(LicensePlate licensePlate) {
-        this.licensePlate = licensePlate;
+        this.licensePlate = Objects.requireNonNull(licensePlate, "License plate cannot be null");
         this.sellerId = null;
     }
 
-
-
-
-    // Constructor with LicensePlate, MaterialType, payloadWeight, dockNumber, and sellerId
+    // Constructor with LicensePlate, MaterialType, and dockNumber
     public Truck(LicensePlate licensePlate, MaterialType materialType, String dockNumber) {
         this.licensePlate = Objects.requireNonNull(licensePlate, "License plate cannot be null");
         this.materialType = Objects.requireNonNull(materialType, "Material type cannot be null");
@@ -33,6 +28,15 @@ public class Truck {
         this.sellerId = Objects.requireNonNull(sellerId, "Seller ID cannot be null");
     }
 
+    // Business logic methods
+    public boolean isValidLicensePlate() {
+        return !licensePlate.toString().isEmpty();
+    }
+
+    public boolean canDock() {
+        return dockNumber != null && !dockNumber.isEmpty();
+    }
+
     // Getters
     public LicensePlate getLicensePlate() {
         return licensePlate;
@@ -42,27 +46,23 @@ public class Truck {
         return materialType;
     }
 
-
-
     public String getDockNumber() {
         return dockNumber;
     }
 
+    public SellerId getSellerId() {
+        return sellerId;
+    }
 
-    // Update method for payload weight, material type, and dock number
-    public Truck update( MaterialType newMaterialType, String newDockNumber) {
-
-
+    // Update method for material type and dock number
+    public Truck update(MaterialType newMaterialType, String newDockNumber) {
         if (newMaterialType != null) {
             this.materialType = newMaterialType;
         }
-
         if (newDockNumber != null) {
             this.dockNumber = newDockNumber;
         }
-
-        // Return a new instance with updated values (optional)
-        return new Truck(this.licensePlate, this.materialType, this.dockNumber);
+        return new Truck(this.licensePlate, this.materialType, this.dockNumber, this.sellerId);
     }
 
     // Optional setters if needed
@@ -73,13 +73,7 @@ public class Truck {
         this.materialType = materialType;
     }
 
-
-
     public void setDockNumber(String dockNumber) {
         this.dockNumber = dockNumber;
-    }
-
-    public SellerId getSellerId() {
-        return sellerId;
     }
 }
