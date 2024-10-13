@@ -1,6 +1,7 @@
 package be.kdg.prgramming6.landside.adapters.in;
 
 import be.kdg.prgramming6.landside.port.in.ReceiveWarehouseNumberCommand;
+import be.kdg.prgramming6.landside.port.in.ReceiveWarehouseNumberResponse;
 import be.kdg.prgramming6.landside.port.in.ReceiveWarehouseNumberUseCase;
 import be.kdg.prgramming6.landside.domain.WarehouseId;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class ReceiveWarehouseNumberController {
     }
 
     @PostMapping("/receive-warehouse-number")
-    public WarehouseId receiveWarehouseNumber(@RequestBody @Valid ReceiveWarehouseNumberDTO dto) {
+    public ReceiveWarehouseNumberResponse receiveWarehouseNumber(@RequestBody @Valid ReceiveWarehouseNumberDTO dto) {
         ReceiveWarehouseNumberCommand command = new ReceiveWarehouseNumberCommand(
                 dto.getLicensePlate(),
                 dto.getSellerId(),

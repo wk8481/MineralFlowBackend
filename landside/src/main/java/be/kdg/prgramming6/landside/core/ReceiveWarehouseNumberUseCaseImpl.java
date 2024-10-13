@@ -2,6 +2,7 @@ package be.kdg.prgramming6.landside.core;
 
 import be.kdg.prgramming6.landside.domain.*;
 import be.kdg.prgramming6.landside.port.in.ReceiveWarehouseNumberCommand;
+import be.kdg.prgramming6.landside.port.in.ReceiveWarehouseNumberResponse;
 import be.kdg.prgramming6.landside.port.in.ReceiveWarehouseNumberUseCase;
 import be.kdg.prgramming6.landside.port.out.*;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ public class ReceiveWarehouseNumberUseCaseImpl implements ReceiveWarehouseNumber
     }
 
     @Override
-    public WarehouseId receiveWarehouseNumber(ReceiveWarehouseNumberCommand command) {
+    public ReceiveWarehouseNumberResponse receiveWarehouseNumber(ReceiveWarehouseNumberCommand command) {
         // Generate WeighbridgeNumber using LicensePlate
         WeighbridgeNumber weighbridgeNumber = WeighbridgeNumber.generate(new LicensePlate(command.licensePlate()));
 
@@ -55,6 +56,6 @@ public class ReceiveWarehouseNumberUseCaseImpl implements ReceiveWarehouseNumber
         LOGGER.info("Warehouse ID: {}", warehouse.getWarehouseId());
         LOGGER.info("Weighbridge Number: {}", weighbridge.getWeighbridgeNumber());
 
-        return warehouse.getWarehouseId();
+        return new ReceiveWarehouseNumberResponse(warehouse.getWarehouseId(), weighbridge.getWeighbridgeNumber());
     }
 }

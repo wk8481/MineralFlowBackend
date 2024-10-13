@@ -1,15 +1,14 @@
 package be.kdg.prgramming6.landside.domain;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Schedule {
-    private final LocalDateTime scheduleTime; // Store the day for this schedule
-    private final List<Appointment> appointments = new ArrayList<>(); // Store the appointments
+    private final LocalDateTime scheduleTime;
+    private final List<Appointment> appointments = new ArrayList<>();
 
-    // Constructor to initialize the schedule with a specific day
     public Schedule(LocalDateTime scheduleTime) {
         this.scheduleTime = scheduleTime;
     }
@@ -22,15 +21,12 @@ public class Schedule {
         appointments.add(appointment);
     }
 
-    // Method to check availability and schedule an appointment
     public Appointment scheduleAppointment(SellerId sellerId, LicensePlate licensePlate, MaterialType materialType,
-                                           LocalDateTime windowStart, LocalDateTime windowEnd) {
-        // Check if there is availability in the schedule
-        if (!hasAvailability(windowStart, windowEnd)) {
-            throw new IllegalStateException("No available slots for the selected time window");
+                                           LocalDateTime windowStart, LocalDateTime windowEnd, Warehouse warehouse) {
+        if (!isAppointmentPossible(windowStart, windowEnd, warehouse)) {
+            throw new IllegalStateException("Cannot schedule appointment: either the warehouse is over 80% full or there are already 40 appointments in the same hour.");
         }
 
-        // Create and store the appointment
         Appointment appointment = Appointment.scheduleAppointment(
                 new Truck(licensePlate),
                 materialType,
@@ -39,28 +35,25 @@ public class Schedule {
                 sellerId
         );
 
-        addAppointment(appointment); // Add the appointment to the schedule
-
-        // Output a message indicating the appointment has been created.
-        // You can modify this to include a message based on your needs, like showing the truck's license plate
+        addAppointment(appointment);
         System.out.println("Appointment created for truck with license plate: " + licensePlate);
-
-        // Return the newly created appointment
         return appointment;
     }
 
-    // Method to check if the requested time window is available
     public boolean hasAvailability(LocalDateTime start, LocalDateTime end) {
-        // Business rule: Only allow 40 trucks per time window
         long overlappingAppointments = appointments.stream()
                 .filter(appointment -> appointment.overlapsWith(start, end))
                 .count();
 
-        return overlappingAppointments < 40; // Limiting to 40 trucks per time window
+        return overlappingAppointments < 40;
     }
 
-    // Method to get all appointments
+    private boolean isAppointmentPossible(LocalDateTime start, LocalDateTime end, Warehouse warehouse) {
+        return warehouse.getCurrentCapacity().compareTo(Warehouse.getMaxCapacity().multiply(BigDecimal.valueOf(0.8))) < 0
+                && hasAvailability(start, end);
+    }
+
     public List<Appointment> getAppointments() {
-        return new ArrayList<>(appointments); // Return a copy of the appointments list to maintain encapsulation
+        return new ArrayList<>(appointments);
     }
 }

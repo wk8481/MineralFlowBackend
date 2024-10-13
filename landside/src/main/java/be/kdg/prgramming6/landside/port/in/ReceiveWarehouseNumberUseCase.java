@@ -4,6 +4,6 @@ import be.kdg.prgramming6.landside.domain.WarehouseId;
 
 @FunctionalInterface
 public interface ReceiveWarehouseNumberUseCase {
-WarehouseId receiveWarehouseNumber(ReceiveWarehouseNumberCommand command);
+ReceiveWarehouseNumberResponse receiveWarehouseNumber(ReceiveWarehouseNumberCommand command);
 
 }
