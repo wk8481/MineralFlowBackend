@@ -74,15 +74,13 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
         return toPayloadDeliveryTicket(savedEntity);
     }
 
+
     @Override
     public void activityCreated(Warehouse warehouse, WarehouseActivity activity) {
         final UUID warehouseId = warehouse.getWarehouseId().id();
         final WarehouseJpaEntity warehouseEntity = warehouseJpaRepository.findByWarehouseId(warehouseId).orElseThrow();
-        final Capacity capacity = warehouse.calculateCapacity();
-        warehouseEntity.setCapacity(capacity.weight());
-        warehouseEntity.setCapacityTime(capacity.time());
         warehouseEntity.getActivities().add(toWarehouseActivity(warehouseEntity, activity));
-        LOGGER.info("Updated warehouse for {} with capacity {}", warehouseId, capacity);
+        LOGGER.info("Updated warehouse for {} with new activity", warehouseId);
         warehouseJpaRepository.save(warehouseEntity);
     }
 
@@ -103,13 +101,12 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
         final SellerId sellerId = new SellerId(warehouseJpaEntity.getSellerId());
         final MaterialType materialType = warehouseJpaEntity.getMaterialType();
         final WarehouseActivityWindow activities = toWarehouseWindow(warehouseJpaEntity, warehouseId);
-        final Capacity capacity = toCapacity(warehouseJpaEntity);
-        return new Warehouse(warehouseId, sellerId, materialType, capacity, activities);
+        return new Warehouse(warehouseId, sellerId, materialType, activities);
     }
 
     private WarehouseActivityWindow toWarehouseWindow(final WarehouseJpaEntity warehouseJpaEntity, final WarehouseId warehouseId) {
         final List<WarehouseActivity> activities = warehouseActivityJpaRepository
-                .findAllById_WarehouseIdAndTimeAfter(warehouseId.id(), warehouseJpaEntity.getCapacityTime())
+                .findAllById_WarehouseIdAndTimeAfter(warehouseId.id(), LocalDateTime.now())
                 .stream()
                 .map(DockTruckDatabaseAdapter::toWarehouseActivity)
                 .collect(Collectors.toList());
@@ -127,9 +124,7 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
         );
     }
 
-    private static Capacity toCapacity(final WarehouseJpaEntity warehouseJpaEntity) {
-        return new Capacity(warehouseJpaEntity.getCapacityTime(), warehouseJpaEntity.getCapacity());
-    }
+
 
     @Override
     public Optional<Warehouse> loadWarehouseById(WarehouseId warehouseId) {

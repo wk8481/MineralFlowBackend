@@ -28,11 +28,6 @@ public class WarehouseJpaEntity {
     @Column(name = "material_type")
     private MaterialType materialType;
 
-    @Column(name="capacity")
-    private BigDecimal capacity;
-
-    @Column(name="capacity_time")
-    private LocalDateTime capacityTime;
 
     @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
     private List<WarehouseActivityJpaEntity> activities;
@@ -75,21 +70,6 @@ public class WarehouseJpaEntity {
         this.activities = activities;
     }
 
-    public BigDecimal getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(BigDecimal capacity) {
-        this.capacity = capacity;
-    }
-
-    public LocalDateTime getCapacityTime() {
-        return capacityTime;
-    }
-
-    public void setCapacityTime(LocalDateTime capacityTime) {
-        this.capacityTime = capacityTime;
-    }
 
 
 

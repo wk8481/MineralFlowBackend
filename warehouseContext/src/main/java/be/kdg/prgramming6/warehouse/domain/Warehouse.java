@@ -12,27 +12,23 @@ public class Warehouse {
     private final List<Truck> dockedTrucks; // Changed to store Truck objects
     private final SellerId sellerId;
     private final MaterialType materialType;
-    private final Capacity baseCapacity;
     private final WarehouseActivityWindow activities;
 
 
 
 
     // Constructor
-    public Warehouse(final WarehouseId warehouseId, final SellerId sellerId, final MaterialType materialType, final Capacity baseCapacity, final WarehouseActivityWindow activities) {
+    public Warehouse(final WarehouseId warehouseId, final SellerId sellerId, final MaterialType materialType, final WarehouseActivityWindow activities) {
         this.warehouseId = warehouseId;
         this.sellerId = sellerId;
         this.materialType = materialType;
-        this.baseCapacity = baseCapacity;
         this.activities = activities;
         this.dockedTrucks = new ArrayList<>();
     }
 
 
 
-    public Capacity calculateCapacity() {
-        return activities.calculateCapacity();
-    }
+
 
     public WarehouseActivity addActivity(final BigDecimal weight) {
         return activities.addActivity(WarehouseActivityType.DELIVERY, sellerId, materialType, weight);
@@ -87,7 +83,5 @@ public class Warehouse {
     }
 
 
-    public Capacity getBaseCapacity() {
-        return baseCapacity;
-    }
+
 }

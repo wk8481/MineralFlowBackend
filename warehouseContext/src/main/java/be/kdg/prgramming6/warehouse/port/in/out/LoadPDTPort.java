@@ -5,6 +5,7 @@ import be.kdg.prgramming6.warehouse.domain.LicensePlate;
 
 import java.util.Optional;
 
+@FunctionalInterface
 public interface LoadPDTPort {
 
     /**

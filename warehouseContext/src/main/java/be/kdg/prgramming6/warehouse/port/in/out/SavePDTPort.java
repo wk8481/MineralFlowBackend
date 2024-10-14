@@ -7,6 +7,7 @@ import be.kdg.prgramming6.warehouse.domain.WarehouseId;
 
 import java.time.LocalDateTime;
 
+@FunctionalInterface
 public interface SavePDTPort {
     /**
      * Save a new Payload Delivery Ticket.

@@ -43,7 +43,7 @@ public class DockTruckUseCaseImpl implements DockTruckUseCase {
 
     @Override
     @Transactional
-    public Capacity dockTruck(final DockTruckCommand command) {
+    public void dockTruck(final DockTruckCommand command) {
         LicensePlate licensePlate = command.licensePlate();
         MaterialType materialType = command.materialType();
         String dockNumber = command.dockNumber();
@@ -76,8 +76,8 @@ public class DockTruckUseCaseImpl implements DockTruckUseCase {
             createAndSaveNewPDT(licensePlate, materialType, deliveryDate, warehouseId, dockNumber, weighbridgeNumber);
         }
 
-        // Calculate and return warehouse capacity after docking
-        return updateWarehouseCapacity(warehouseId, weight);
+        // Update warehouse capacity after docking
+        updateWarehouseCapacity(warehouseId, weight);
     }
 
     private void printPDTAndWeighbridge(PayloadDeliveryTicket pdt, WeighbridgeNumber weighbridgeNumber) {
@@ -105,15 +105,12 @@ public class DockTruckUseCaseImpl implements DockTruckUseCase {
         printPDTAndWeighbridge(newPDT, weighbridgeNumber);
     }
 
-    private Capacity updateWarehouseCapacity(WarehouseId warehouseId, BigDecimal weight) {
+    private void updateWarehouseCapacity(WarehouseId warehouseId, BigDecimal weight) {
         Optional<Warehouse> optionalWarehouse = loadWarehouseByIdPort.loadWarehouseById(warehouseId);
         Warehouse warehouse = optionalWarehouse.orElseThrow(() -> new IllegalArgumentException("Warehouse not found for ID: " + warehouseId));
 
         // Add the activity with the given weight
         final WarehouseActivity warehouseActivity = warehouse.addActivity(weight);
         updateWarehousePorts.forEach(updateWarehousePort -> updateWarehousePort.activityCreated(warehouse, warehouseActivity));
-
-        // Calculate and return the capacity
-        return warehouse.calculateCapacity();
     }
 }
