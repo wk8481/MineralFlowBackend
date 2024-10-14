@@ -94,8 +94,6 @@ public class DockTruckUseCaseImpl implements DockTruckUseCase {
         updatePDTPort.updatePDT(pdt.getLicensePlate().toString(), pdt.getMaterialType().toString(), warehouseId.id(), command.dockNumber(), command.deliveryDate());
         logger.info("Updated existing PDT for License Plate: {}", pdt.getLicensePlate());
         printPDTAndWeighbridge(pdt, weighbridgeNumber);
-
-        updateWarehouseCapacity(warehouseId, command.weight());
     }
 
     private void createAndSaveNewPDT(LicensePlate licensePlate, MaterialType materialType, LocalDateTime deliveryDate, WarehouseId warehouseId, String dockNumber, WeighbridgeNumber weighbridgeNumber) {
@@ -112,7 +110,7 @@ public class DockTruckUseCaseImpl implements DockTruckUseCase {
         Warehouse warehouse = optionalWarehouse.orElseThrow(() -> new IllegalArgumentException("Warehouse not found for ID: " + warehouseId));
 
         // Add the activity with the given weight
-        final WarehouseActivity warehouseActivity = warehouse.loadWarehouse(weight);
+        final WarehouseActivity warehouseActivity = warehouse.addActivity(weight);
         updateWarehousePorts.forEach(updateWarehousePort -> updateWarehousePort.activityCreated(warehouse, warehouseActivity));
 
         // Calculate and return the capacity

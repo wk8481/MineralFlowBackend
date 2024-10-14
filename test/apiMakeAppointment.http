@@ -58,11 +58,11 @@ Content-Type: application/json
   "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
   "deliveryDate": "2024-10-30T09:00:00",
   "dockNumber": "WB-10",
-  "weight": 20
+  "weight": 111
 }
 
 
-### Receive Warehouse Number
+### Receive Warehouse Number and Weighbridge
 POST http://localhost:8090/api/receive-warehouse-number
 Authorization: Bearer {{access_token}}
 Content-Type: application/json

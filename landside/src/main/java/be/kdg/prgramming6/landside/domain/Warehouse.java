@@ -84,11 +84,11 @@ public class Warehouse {
     }
 
     // Method to store the payload (updating the current capacity)
-    public void store(BigDecimal payloadWeight) {
-        if (!canStore(payloadWeight)) {
+    public void store(BigDecimal weight) {
+        if (!canStore(weight)) {
             throw new IllegalStateException("Warehouse has exceeded its maximum capacity.");
         }
-        currentCapacity = currentCapacity.add(payloadWeight);
+        currentCapacity = currentCapacity.add(weight);
     }
 
 

@@ -34,7 +34,7 @@ public class Warehouse {
         return activities.calculateCapacity();
     }
 
-    public WarehouseActivity loadWarehouse(final BigDecimal weight) {
+    public WarehouseActivity addActivity(final BigDecimal weight) {
         return activities.addActivity(WarehouseActivityType.DELIVERY, sellerId, materialType, weight);
     }
 

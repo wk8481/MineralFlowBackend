@@ -70,7 +70,11 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighb
                         warehouse.getMaterialType(),
                         LocalDateTime.now())
                 .orElseGet(() -> fromWarehouse(warehouse));
-        warehouseProjectionJpaEntity.setCurrentCapacity(warehouse.getCurrentCapacity());
+
+        // Accumulate the current capacity
+        BigDecimal newCapacity = warehouseProjectionJpaEntity.getCurrentCapacity().add(warehouse.getCurrentCapacity());
+        warehouseProjectionJpaEntity.setCurrentCapacity(newCapacity);
+
         warehouseProjectionJpaRepository.save(warehouseProjectionJpaEntity);
     }
 
