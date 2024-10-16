@@ -6,6 +6,6 @@ import be.kdg.prgramming6.landside.domain.Truck;
 import java.util.Optional;
 
 public interface LoadTruckPort {
-    Optional<Truck> loadTruckbyLicensePlate(LicensePlate licensePlate);
+    Optional<Truck> loadTruckByLicensePlate(LicensePlate licensePlate);
 
 }

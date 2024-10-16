@@ -9,7 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class ReceiveWarehouseNumberUseCaseImpl implements ReceiveWarehouseNumberUseCase {
@@ -17,16 +20,22 @@ public class ReceiveWarehouseNumberUseCaseImpl implements ReceiveWarehouseNumber
     private final UpdateWarehousePort updateWarehousePort;
     private final LoadWarehousePort loadWarehousePort;
     private final LoadWeighbridgePort loadWeighbridgePort;
+    private final LoadTruckPort loadTruckPort;
+    private final SaveWBTPort saveWBTPort;
     private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveWarehouseNumberUseCaseImpl.class);
 
     public ReceiveWarehouseNumberUseCaseImpl(UpdateWeighbridgePort updateWeighbridgePort,
                                              UpdateWarehousePort updateWarehousePort,
                                              LoadWarehousePort loadWarehousePort,
-                                             LoadWeighbridgePort loadWeighbridgePort) {
+                                             LoadWeighbridgePort loadWeighbridgePort,
+                                             LoadTruckPort loadTruckPort,
+                                             SaveWBTPort saveWBTPort) {
         this.updateWeighbridgePort = updateWeighbridgePort;
         this.updateWarehousePort = updateWarehousePort;
         this.loadWarehousePort = loadWarehousePort;
         this.loadWeighbridgePort = loadWeighbridgePort;
+        this.loadTruckPort = loadTruckPort;
+        this.saveWBTPort = saveWBTPort;
     }
 
     @Override
@@ -38,15 +47,30 @@ public class ReceiveWarehouseNumberUseCaseImpl implements ReceiveWarehouseNumber
         Weighbridge weighbridge = loadWeighbridgePort.loadWeighbridge(weighbridgeNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Weighbridge not found with number: " + weighbridgeNumber));
 
-        // Create a new Truck object
-        Truck truck = new Truck(new LicensePlate(command.licensePlate()), MaterialType.valueOf(command.materialType()), null, new SellerId(command.sellerId()));
-
-        // Set the current truck on the weighbridge
-        weighbridge.setCurrentTruck(truck);
+        // Load the truck by license plate
+        Truck truck = loadTruckPort.loadTruckByLicensePlate(new LicensePlate(command.licensePlate()))
+                .orElseThrow(() -> new IllegalArgumentException("Truck not found with license plate: " + command.licensePlate()));
 
         // Load the warehouse by sellerId, materialType, and timestamp
         Warehouse warehouse = loadWarehousePort.loadWarehouse(new SellerId(command.sellerId()), MaterialType.valueOf(command.materialType()), LocalDateTime.now())
                 .orElseThrow(() -> new IllegalArgumentException("Warehouse not found for given parameters."));
+
+        // Generate a random net weight
+        BigDecimal netWeight = command.netWeight();
+
+        // Calculate the gross weight
+        BigDecimal grossWeight = truck.getTareWeight().add(netWeight);
+
+        // Create a partial WeighbridgeTicket
+        WeighbridgeTicket partialTicket = new WeighbridgeTicket(
+                command.licensePlate(),
+                grossWeight,
+                truck.getTareWeight(),
+                LocalDateTime.now()
+        );
+
+        // Save the partial ticket
+        saveWBTPort.save(partialTicket);
 
         // Save updated state back to the repositories
         updateWeighbridgePort.updateWeighbridge(weighbridge);

@@ -18,6 +18,13 @@ public class WeighbridgeTicket {
         this.timestamp = timestamp;
     }
 
+    public WeighbridgeTicket(String licensePlate, BigDecimal grossWeight, LocalDateTime timestamp) {
+        this.licensePlate = licensePlate;
+        this.grossWeight = grossWeight;
+        this.netWeight = null;
+        this.tareWeight = null;
+        this.timestamp = timestamp;
+    }
     public String getLicensePlate() {
         return licensePlate;
     }
@@ -40,6 +47,10 @@ public class WeighbridgeTicket {
 
     private BigDecimal calculateNetWeight() {
         return grossWeight.subtract(tareWeight);
+    }
+
+    private BigDecimal calculateGrossWeight() {
+       return netWeight.add(tareWeight);
     }
 
 

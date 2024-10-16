@@ -20,13 +20,13 @@ public class RecognizeLicensePlateDBAdapter implements LoadTruckPort, SaveTruckP
     private Truck mapToDomain(TruckJpaEntity entity) {
         return new Truck(
                 new LicensePlate(entity.getLicensePlate()),
-                MaterialType.valueOf(entity.getMaterialType()),
+                entity.getMaterialType(), // Directly use the MaterialType object
                 entity.getDockNumber()
         );
     }
 
     @Override
-    public Optional<Truck> loadTruckbyLicensePlate(LicensePlate licensePlate) {
+    public Optional<Truck> loadTruckByLicensePlate(LicensePlate licensePlate) {
         return truckRepository.findByLicensePlate(licensePlate.toString())
                 .map(this::mapToDomain);
     }
@@ -35,7 +35,7 @@ public class RecognizeLicensePlateDBAdapter implements LoadTruckPort, SaveTruckP
     public void saveTruck(Truck truck) {
         TruckJpaEntity entity = new TruckJpaEntity();
         entity.setLicensePlate(truck.getLicensePlate().toString());
-        entity.setMaterialType(truck.getMaterialType().toString());
+        entity.setMaterialType(truck.getMaterialType()); // Directly use the MaterialType object
         entity.setDockNumber(truck.getDockNumber());
         truckRepository.save(entity);
     }

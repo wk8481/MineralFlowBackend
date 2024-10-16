@@ -1,7 +1,7 @@
 package be.kdg.prgramming6.landside.adapters.in;
 
 import jakarta.validation.constraints.NotNull;
-
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class ReceiveWarehouseNumberDTO {
@@ -9,20 +9,20 @@ public class ReceiveWarehouseNumberDTO {
     private String licensePlate;
 
     @NotNull
-    private UUID sellerId;
+    private BigDecimal netWeight;
 
     @NotNull
     private String materialType;
 
-    // Default constructor needed for deserialization
-    public ReceiveWarehouseNumberDTO() {
-    }
+    @NotNull
+    private UUID sellerId;
 
     // Constructor with parameters
-    public ReceiveWarehouseNumberDTO(String licensePlate, UUID sellerId, String materialType) {
+    public ReceiveWarehouseNumberDTO(String licensePlate, BigDecimal netWeight, String materialType, UUID sellerId) {
         this.licensePlate = licensePlate;
-        this.sellerId = sellerId;
+        this.netWeight = netWeight;
         this.materialType = materialType;
+        this.sellerId = sellerId;
     }
 
     // Getters and Setters
@@ -34,12 +34,12 @@ public class ReceiveWarehouseNumberDTO {
         this.licensePlate = licensePlate;
     }
 
-    public UUID getSellerId() {
-        return sellerId;
+    public BigDecimal getNetWeight() {
+        return netWeight;
     }
 
-    public void setSellerId(UUID sellerId) {
-        this.sellerId = sellerId;
+    public void setNetWeight(BigDecimal netWeight) {
+        this.netWeight = netWeight;
     }
 
     public String getMaterialType() {
@@ -48,5 +48,13 @@ public class ReceiveWarehouseNumberDTO {
 
     public void setMaterialType(String materialType) {
         this.materialType = materialType;
+    }
+
+    public UUID getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(UUID sellerId) {
+        this.sellerId = sellerId;
     }
 }

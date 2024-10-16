@@ -27,7 +27,7 @@ public class RecognizeTruckUseCaseImpl implements RecognizeTruckUseCase {
         MaterialType materialType = MaterialType.valueOf(command.materialType());
         String dockNumber = command.dockNumber();
 
-        Truck truck = loadTruckPort.loadTruckbyLicensePlate(licensePlate)
+        Truck truck = loadTruckPort.loadTruckByLicensePlate(licensePlate)
                 .orElseGet(() -> {
                     Truck newTruck = new Truck(licensePlate, materialType, dockNumber);
                     saveTruckPort.saveTruck(newTruck);

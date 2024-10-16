@@ -1,9 +1,14 @@
 package be.kdg.prgramming6.landside.domain;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
+
+//on entry take tare weight + some random number when u enter, and call that the gross and then when exit can subrtratct
 public class Truck {
     private final LicensePlate licensePlate;
+
+    private static final BigDecimal TARE_WEIGHT = new BigDecimal("10000"); // Example constant tare weight
     private MaterialType materialType;
     private String dockNumber; // Conveyor belt/dock number
     private final SellerId sellerId; // Added seller field
@@ -52,6 +57,10 @@ public class Truck {
 
     public SellerId getSellerId() {
         return sellerId;
+    }
+
+    public BigDecimal getTareWeight() {
+        return TARE_WEIGHT;
     }
 
     // Update method for material type and dock number
