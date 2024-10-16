@@ -19,7 +19,7 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "sellerId": "5c2db01b-1b71-48be-8b93-fa25635a388d",
+  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
   "licensePlate": "ABC-123",
   "materialType": "PET_COKE",
   "appointmentWindowStart": "2024-10-30T09:00:00",
@@ -69,6 +69,7 @@ Content-Type: application/json
 
 {
   "licensePlate": "ABC-123",
+  "netWeight": 3000,
   "materialType": "PET_COKE",
   "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b"
 }
@@ -82,6 +83,6 @@ Content-Type: application/json
 {
   "licensePlate": "ABC-123",
   "materialType": "PET_COKE",
-  "dockNumber": "WB-10"
+  "dockNumber": "WD-10"
 }
 

@@ -1,13 +1,15 @@
+// landside/src/main/java/be/kdg/prgramming6/landside/domain/LicensePlate.java
 package be.kdg.prgramming6.landside.domain;
 
-import java.util.Objects;
-
-public record LicensePlate(String plateNumber) {
+public record LicensePlate(String value) {
     public LicensePlate {
-        Objects.requireNonNull(plateNumber, "Plate number cannot be null");
-        if (plateNumber.isEmpty()) {
-            throw new IllegalArgumentException("Plate number cannot be empty");
+        if (value == null || value.isEmpty()) {
+            throw new IllegalArgumentException("License plate cannot be null or empty");
         }
-        // Additional validation can be added here if needed
+    }
+
+    @Override
+    public String toString() {
+        return value;
     }
 }

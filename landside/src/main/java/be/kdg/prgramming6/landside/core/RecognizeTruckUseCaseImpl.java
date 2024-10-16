@@ -1,3 +1,4 @@
+// landside/src/main/java/be/kdg/prgramming6/landside/core/RecognizeTruckUseCaseImpl.java
 package be.kdg.prgramming6.landside.core;
 
 import be.kdg.prgramming6.landside.domain.*;

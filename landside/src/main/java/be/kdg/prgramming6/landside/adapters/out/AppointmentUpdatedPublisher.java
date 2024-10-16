@@ -28,7 +28,7 @@ public class AppointmentUpdatedPublisher implements UpdateAppointmentPort {
         LOGGER.info("Notifying RabbitMQ: {}", routingKey);
         rabbitTemplate.convertAndSend(EXCHANGE_NAME, routingKey, new AppointmentUpdatedEvent(
                 appointment.getSellerId().id(),
-                appointment.getTruck().getLicensePlate().plateNumber()
+                appointment.getTruck().getLicensePlate().value()
         ));
 
     }

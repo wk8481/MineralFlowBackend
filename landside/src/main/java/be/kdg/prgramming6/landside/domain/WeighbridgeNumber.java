@@ -13,7 +13,7 @@ public record WeighbridgeNumber(String value) {
     }
 
     public static WeighbridgeNumber generate(LicensePlate licensePlate) {
-        String generatedValue = licensePlate.plateNumber() + "-WB";
+        String generatedValue = licensePlate.toString() + "-WB";
         return new WeighbridgeNumber(generatedValue);
     }
 }

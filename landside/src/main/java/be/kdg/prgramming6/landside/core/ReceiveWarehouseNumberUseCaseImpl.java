@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.Random;
 
 @Service
 public class ReceiveWarehouseNumberUseCaseImpl implements ReceiveWarehouseNumberUseCase {
@@ -21,7 +19,7 @@ public class ReceiveWarehouseNumberUseCaseImpl implements ReceiveWarehouseNumber
     private final LoadWarehousePort loadWarehousePort;
     private final LoadWeighbridgePort loadWeighbridgePort;
     private final LoadTruckPort loadTruckPort;
-    private final SaveWBTPort saveWBTPort;
+    private final SavePartialWBTport savePartialWBTport;
     private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveWarehouseNumberUseCaseImpl.class);
 
     public ReceiveWarehouseNumberUseCaseImpl(UpdateWeighbridgePort updateWeighbridgePort,
@@ -29,13 +27,13 @@ public class ReceiveWarehouseNumberUseCaseImpl implements ReceiveWarehouseNumber
                                              LoadWarehousePort loadWarehousePort,
                                              LoadWeighbridgePort loadWeighbridgePort,
                                              LoadTruckPort loadTruckPort,
-                                             SaveWBTPort saveWBTPort) {
+                                             SavePartialWBTport savePartialWBTport) {
         this.updateWeighbridgePort = updateWeighbridgePort;
         this.updateWarehousePort = updateWarehousePort;
         this.loadWarehousePort = loadWarehousePort;
         this.loadWeighbridgePort = loadWeighbridgePort;
         this.loadTruckPort = loadTruckPort;
-        this.saveWBTPort = saveWBTPort;
+        this.savePartialWBTport = savePartialWBTport;
     }
 
     @Override
@@ -50,6 +48,11 @@ public class ReceiveWarehouseNumberUseCaseImpl implements ReceiveWarehouseNumber
         // Load the truck by license plate
         Truck truck = loadTruckPort.loadTruckByLicensePlate(new LicensePlate(command.licensePlate()))
                 .orElseThrow(() -> new IllegalArgumentException("Truck not found with license plate: " + command.licensePlate()));
+
+        // Validate that the license plates match
+        if (!truck.getLicensePlate().toString().equals(command.licensePlate())) {
+            throw new IllegalArgumentException("License plate mismatch between command and truck");
+        }
 
         // Load the warehouse by sellerId, materialType, and timestamp
         Warehouse warehouse = loadWarehousePort.loadWarehouse(new SellerId(command.sellerId()), MaterialType.valueOf(command.materialType()), LocalDateTime.now())
@@ -70,7 +73,7 @@ public class ReceiveWarehouseNumberUseCaseImpl implements ReceiveWarehouseNumber
         );
 
         // Save the partial ticket
-        saveWBTPort.save(partialTicket);
+        savePartialWBTport.savePartial(partialTicket);
 
         // Save updated state back to the repositories
         updateWeighbridgePort.updateWeighbridge(weighbridge);

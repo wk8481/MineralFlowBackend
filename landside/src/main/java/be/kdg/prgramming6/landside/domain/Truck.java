@@ -2,6 +2,7 @@ package be.kdg.prgramming6.landside.domain;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.UUID;
 
 
 //on entry take tare weight + some random number when u enter, and call that the gross and then when exit can subrtratct
@@ -31,6 +32,13 @@ public class Truck {
         this.materialType = Objects.requireNonNull(materialType, "Material type cannot be null");
         this.dockNumber = dockNumber; // Can be null initially
         this.sellerId = Objects.requireNonNull(sellerId, "Seller ID cannot be null");
+    }
+
+    public Truck(LicensePlate licensePlate, MaterialType materialType, String dockNumber, UUID sellerId) {
+        this.licensePlate = Objects.requireNonNull(licensePlate, "License plate cannot be null");
+        this.materialType = Objects.requireNonNull(materialType, "Material type cannot be null");
+        this.dockNumber = dockNumber; // Can be null initially
+        this.sellerId = new SellerId(sellerId);
     }
 
     // Business logic methods

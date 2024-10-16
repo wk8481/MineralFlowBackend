@@ -37,11 +37,12 @@ VALUES
     ('XYZ-789-WB', 'XYZ-789'),
     ('LMN-456-WB', 'LMN-456');
 
-INSERT into landside.trucks (license_plate, material_type, seller_id)
+INSERT into landside.trucks (license_plate, dock_number, material_type, seller_id)
 VALUES
-    ('ABC-123', 'GYPSUM', 'dd2e2b7d-4622-441f-9200-123f8bb3e29b'),
-    ('XYZ-789', 'IRON_ORE', 'b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6'),
-    ('LMN-456', 'CEMENT', 'dd2e2b7d-4622-441f-9200-123f8bb3e29b');
+    ('ABC-123', 'WD-10','PET_COKE','dd2e2b7d-4622-441f-9200-123f8bb3e29b' ),
+    ('XYZ-789', 'WD-2','GYPSUM','b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6' ),
+    ('LMN-456', 'WD-5', 'IRON_ORE','dd2e2b7d-4622-441f-9200-123f8bb3e29b' );
+
 
 # -- Dummy data for Appointment 39 records
 INSERT INTO landside.appointment (appointment_id, schedule_time, license_plate, material_type, window_start, window_end, seller_id)

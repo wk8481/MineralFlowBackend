@@ -21,7 +21,8 @@ public class RecognizeLicensePlateDBAdapter implements LoadTruckPort, SaveTruckP
         return new Truck(
                 new LicensePlate(entity.getLicensePlate()),
                 entity.getMaterialType(), // Directly use the MaterialType object
-                entity.getDockNumber()
+                entity.getDockNumber(),
+                entity.getSellerId() // Include sellerId
         );
     }
 
@@ -37,6 +38,7 @@ public class RecognizeLicensePlateDBAdapter implements LoadTruckPort, SaveTruckP
         entity.setLicensePlate(truck.getLicensePlate().toString());
         entity.setMaterialType(truck.getMaterialType()); // Directly use the MaterialType object
         entity.setDockNumber(truck.getDockNumber());
+        entity.setSellerId(truck.getSellerId().id()); // Save sellerId
         truckRepository.save(entity);
     }
 }

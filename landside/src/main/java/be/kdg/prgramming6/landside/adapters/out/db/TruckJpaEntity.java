@@ -1,6 +1,7 @@
 package be.kdg.prgramming6.landside.adapters.out.db;
 
 import be.kdg.prgramming6.landside.domain.MaterialType;
+import be.kdg.prgramming6.landside.domain.SellerId;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -8,6 +9,7 @@ import org.hibernate.type.SqlTypes;
 import java.util.UUID;
 
 @Entity
+@Table(name = "trucks", catalog = "landside")
 public class TruckJpaEntity {
     @Id
     private String licensePlate;

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "weighbridge_ticket")
+@Table(name = "weighbridge_ticket", catalog = "landside")
 public class WeighbridgeTicketJpaEntity {
 
     @Id
@@ -28,7 +28,7 @@ public class WeighbridgeTicketJpaEntity {
     private BigDecimal tareWeight;
 
     // Assuming timestamp is a field in WeighbridgeTicketJpaEntity
-    @Column(name = "timestamp", nullable = false)
+    @Column(name = "timestamp")
     private LocalDateTime timestamp;
 
     // Getters and setters

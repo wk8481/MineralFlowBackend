@@ -74,7 +74,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
 
     private AppointmentJpaEntity createAppointmentJpaEntity(Appointment appointment, ScheduleJpaEntity scheduleJpaEntity) {
         AppointmentJpaEntity appointmentJpaEntity = new AppointmentJpaEntity();
-        appointmentJpaEntity.setLicensePlate(appointment.getTruck().getLicensePlate().plateNumber());
+        appointmentJpaEntity.setLicensePlate(appointment.getTruck().getLicensePlate().toString());
         appointmentJpaEntity.setMaterialType(appointment.getMaterialType().name());
         appointmentJpaEntity.setWindowStart(appointment.getWindowStart());
         appointmentJpaEntity.setWindowEnd(appointment.getWindowEnd());
@@ -93,19 +93,19 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
             updateOrAddAppointment(appointment, scheduleJpaEntity);
             // Save all appointments to the database
             scheduleJpaRepository.save(scheduleJpaEntity);
-            System.out.println("Updated/Saved Appointment for License Plate: " + appointment.getTruck().getLicensePlate().plateNumber());
+            System.out.println("Updated/Saved Appointment for License Plate: " + appointment.getTruck().getLicensePlate().toString());
         }
     }
 
     private void updateOrAddAppointment(Appointment appointment, ScheduleJpaEntity scheduleJpaEntity) {
         // Check if the appointment exists and update it
         boolean appointmentExists = scheduleJpaEntity.getAppointments().stream()
-                .anyMatch(existingAppointment -> existingAppointment.getLicensePlate().equals(appointment.getTruck().getLicensePlate().plateNumber()));
+                .anyMatch(existingAppointment -> existingAppointment.getLicensePlate().equals(appointment.getTruck().getLicensePlate().toString()));
 
         if (appointmentExists) {
             // Update existing appointment
             scheduleJpaEntity.getAppointments().stream()
-                    .filter(existingAppointment -> existingAppointment.getLicensePlate().equals(appointment.getTruck().getLicensePlate().plateNumber()))
+                    .filter(existingAppointment -> existingAppointment.getLicensePlate().equals(appointment.getTruck().getLicensePlate().toString()))
                     .forEach(existingAppointment -> updateAppointmentDetails(existingAppointment, appointment));
         } else {
             // Create and add a new appointment
@@ -115,7 +115,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
     }
 
     private void updateAppointmentDetails(AppointmentJpaEntity existingAppointment, Appointment appointment) {
-        existingAppointment.setLicensePlate(appointment.getTruck().getLicensePlate().plateNumber());
+        existingAppointment.setLicensePlate(appointment.getTruck().getLicensePlate().toString());
         existingAppointment.setMaterialType(appointment.getMaterialType().name());
         existingAppointment.setWindowStart(appointment.getWindowStart());
         existingAppointment.setWindowEnd(appointment.getWindowEnd());

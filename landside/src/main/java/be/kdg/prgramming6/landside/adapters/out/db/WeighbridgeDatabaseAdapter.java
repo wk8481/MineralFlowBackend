@@ -39,7 +39,7 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighb
     private WeighbridgeJpaEntity fromWeighbridge(Weighbridge weighbridge) {
         return new WeighbridgeJpaEntity(
                 weighbridge.getWeighbridgeNumber().toString(),
-                weighbridge.getLicensePlate().plateNumber()
+                weighbridge.getLicensePlate().toString()
         );
     }
 
