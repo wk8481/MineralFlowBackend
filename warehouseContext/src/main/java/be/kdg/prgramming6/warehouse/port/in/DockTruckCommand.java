@@ -15,8 +15,8 @@ public record DockTruckCommand(
         WarehouseId warehouseId,                 // ID of the assigned warehouse
         String dockNumber,                   // ID of the conveyor belt for docking
         LocalDateTime deliveryDate,               // Date of delivery for the PDT
-        UUID sellerId,                            // ID of the seller
-        BigDecimal weight                         // Weight of the material being delivered
+        UUID sellerId                            // ID of the seller
+        // Weight of the material being delivered
 ) {
     public DockTruckCommand {
         Objects.requireNonNull(licensePlate, "License plate cannot be null");
@@ -25,8 +25,6 @@ public record DockTruckCommand(
         Objects.requireNonNull(dockNumber, "Conveyor belt ID cannot be null");
         Objects.requireNonNull(deliveryDate, "Delivery date cannot be null");
         Objects.requireNonNull(sellerId, "Seller ID cannot be null");
-        if (weight.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Weight must be greater than 0");
-        }
+
     }
 }

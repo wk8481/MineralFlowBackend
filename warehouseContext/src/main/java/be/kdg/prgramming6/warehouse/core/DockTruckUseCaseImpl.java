@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,25 +19,19 @@ public class DockTruckUseCaseImpl implements DockTruckUseCase {
     private static final Logger logger = LoggerFactory.getLogger(DockTruckUseCaseImpl.class);
 
     private final LoadWarehouseBySellerAndMaterialPort loadWarehouseBySellerAndMaterialPort;
-    private final LoadWarehouseByIdPort loadWarehouseByIdPort;
     private final SavePDTPort savePDTPort;
     private final UpdatePDTPort updatePDTPort;
     private final LoadPDTPort loadPDTPort;
-    private final List<UpdateWarehousePort> updateWarehousePorts;
 
     public DockTruckUseCaseImpl(
             LoadWarehouseBySellerAndMaterialPort loadWarehouseBySellerAndMaterialPort,
-            LoadWarehouseByIdPort loadWarehouseByIdPort,
             SavePDTPort savePDTPort,
             UpdatePDTPort updatePDTPort,
-            LoadPDTPort loadPDTPort,
-            List<UpdateWarehousePort> updateWarehousePorts) {
+            LoadPDTPort loadPDTPort) {
         this.loadWarehouseBySellerAndMaterialPort = loadWarehouseBySellerAndMaterialPort;
-        this.loadWarehouseByIdPort = loadWarehouseByIdPort;
         this.savePDTPort = savePDTPort;
         this.updatePDTPort = updatePDTPort;
         this.loadPDTPort = loadPDTPort;
-        this.updateWarehousePorts = updateWarehousePorts;
     }
 
     @Override
@@ -49,11 +42,10 @@ public class DockTruckUseCaseImpl implements DockTruckUseCase {
         String dockNumber = command.dockNumber();
         LocalDateTime deliveryDate = command.deliveryDate();
         UUID sellerId = command.sellerId();
-        BigDecimal weight = command.weight();
 
         logger.debug("Starting docking process for Truck with License Plate: {}", licensePlate);
-        logger.debug("Command Details - Material Type: {}, Dock Number: {}, Delivery Date: {}, Seller ID: {}, Weight: {}",
-                materialType, dockNumber, deliveryDate, sellerId, weight);
+        logger.debug("Command Details - Material Type: {}, Dock Number: {}, Delivery Date: {}, Seller ID: {}",
+                materialType, dockNumber, deliveryDate, sellerId);
 
         WarehouseId warehouseId = loadWarehouseBySellerAndMaterialPort.findWarehouseIdBySellerIdAndMaterialType(sellerId, materialType);
         if (warehouseId == null) {
@@ -75,9 +67,6 @@ public class DockTruckUseCaseImpl implements DockTruckUseCase {
         } else {
             createAndSaveNewPDT(licensePlate, materialType, deliveryDate, warehouseId, dockNumber, weighbridgeNumber);
         }
-
-        // Update warehouse capacity after docking
-        updateWarehouseCapacity(warehouseId, weight);
     }
 
     private void printPDTAndWeighbridge(PayloadDeliveryTicket pdt, WeighbridgeNumber weighbridgeNumber) {
@@ -103,14 +92,5 @@ public class DockTruckUseCaseImpl implements DockTruckUseCase {
         savePDTPort.savePDT(licensePlate, materialType, warehouseId, dockNumber, deliveryDate);
         logger.info("Created and saved new PDT: {}", newPDT);
         printPDTAndWeighbridge(newPDT, weighbridgeNumber);
-    }
-
-    private void updateWarehouseCapacity(WarehouseId warehouseId, BigDecimal weight) {
-        Optional<Warehouse> optionalWarehouse = loadWarehouseByIdPort.loadWarehouseById(warehouseId);
-        Warehouse warehouse = optionalWarehouse.orElseThrow(() -> new IllegalArgumentException("Warehouse not found for ID: " + warehouseId));
-
-        // Add the activity with the given weight
-        final WarehouseActivity warehouseActivity = warehouse.addActivity(weight);
-        updateWarehousePorts.forEach(updateWarehousePort -> updateWarehousePort.activityCreated(warehouse, warehouseActivity));
     }
 }

@@ -59,6 +59,23 @@ public class MessagingTopology {
                 .with("landside.#.appointment.updated");
     }
 
+    // Landside configuration for WBTUpdatedEvent
+    public static final String WBT_UPDATED_QUEUE = "wbt_updated";
+
+    @Bean
+    Queue wbtUpdatedQueue() {
+        return new Queue(WBT_UPDATED_QUEUE, true);
+    }
+
+    @Bean
+    Binding wbtUpdatedBinding(TopicExchange landSideEventsExchange, Queue wbtUpdatedQueue) {
+        return BindingBuilder
+                .bind(wbtUpdatedQueue)
+                .to(landSideEventsExchange)
+                .with("landside.#.weighbridgeTicket.updated");
+    }
+
+
     // Common configuration
     @Bean
     RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
@@ -73,4 +90,6 @@ public class MessagingTopology {
         objectMapper.registerModule(new JavaTimeModule());
         return new Jackson2JsonMessageConverter(objectMapper);
     }
+
+
 }

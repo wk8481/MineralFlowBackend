@@ -30,9 +30,6 @@ public class DockTruckDTO {
     @NotNull(message = "Seller ID is mandatory")
     private final UUID sellerId;
 
-    @NotNull(message = "Weight is mandatory")
-    @DecimalMin(value = "0.0", inclusive = false, message = "Weight must be greater than zero")
-    private final BigDecimal weight;
 
     // Constructor
     public DockTruckDTO(String licensePlate, String materialType, UUID warehouseId,
@@ -43,7 +40,7 @@ public class DockTruckDTO {
         this.deliveryDate = deliveryDate;
         this.dockNumber = dockNumber;
         this.sellerId = sellerId; // Assigning sellerId
-        this.weight = weight;
+
     }
 
     // Getters
@@ -71,7 +68,5 @@ public class DockTruckDTO {
         return sellerId; // Getter for sellerId
     }
 
-    public BigDecimal getWeight() {
-        return weight;
-    }
+
 }
