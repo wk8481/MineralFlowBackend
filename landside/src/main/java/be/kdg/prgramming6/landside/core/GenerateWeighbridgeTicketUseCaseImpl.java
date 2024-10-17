@@ -6,6 +6,7 @@ import be.kdg.prgramming6.landside.domain.WarehouseId;
 import be.kdg.prgramming6.landside.domain.WeighbridgeTicket;
 import be.kdg.prgramming6.landside.port.in.*;
 import be.kdg.prgramming6.landside.port.out.*;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -37,13 +38,18 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
     }
 
     @Override
+    @Transactional
     public GenerateWeighbridgeTicketResponse generateWeighbridgeTicket(GenerateWeighbridgeTicketCommand command) {
+        logger.debug("Generating weighbridge ticket for license plate: {}", command.licensePlate());
+
         LicensePlate licensePlate = new LicensePlate(command.licensePlate());
         Truck truck = loadTruckPort.loadTruckByLicensePlate(licensePlate)
                 .orElseThrow(() -> new IllegalArgumentException("Truck not found with license plate: " + command.licensePlate()));
 
         BigDecimal tareWeight = truck.getTareWeight();
         BigDecimal netWeight = command.netWeight() != null ? command.netWeight() : command.grossWeight().subtract(tareWeight);
+
+        logger.debug("Tare weight: {}, Net weight: {}", tareWeight, netWeight);
 
         Optional<WeighbridgeTicket> existingTicket = loadWBTPort.loadByLicensePlate(command.licensePlate());
         LocalDateTime timestamp = LocalDateTime.now().plusHours(1);
@@ -60,10 +66,17 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
                     timestamp
             );
 
+            logger.debug("Existing ticket found. Updating ticket: {}", ticket);
+
             ReceiveWarehouseNumberResponse response = receiveWarehouseNumberUseCaseImpl.receiveWarehouseNumber(new ReceiveWarehouseNumberCommand(licensePlate.toString(), netWeight, truck.getMaterialType().toString(), truck.getSellerId().id() ));
             warehouseId = response.getWarehouseId();
 
-            updateWBTPorts.forEach(updateWBTPort -> updateWBTPort.update(ticket, warehouseId));
+            logger.debug("Received warehouse ID: {}", warehouseId);
+
+            updateWBTPorts.forEach(updateWBTPort -> {
+                logger.debug("Updating WBT port with ticket: {} and warehouse ID: {}", ticket, warehouseId);
+                updateWBTPort.update(ticket, warehouseId);
+            });
         } else {
             ticket = new WeighbridgeTicket(
                     command.licensePlate(),
@@ -72,6 +85,8 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
                     netWeight,
                     timestamp
             );
+
+            logger.debug("No existing ticket found. Saving new ticket: {}", ticket);
             saveWBTPort.save(ticket);
         }
 

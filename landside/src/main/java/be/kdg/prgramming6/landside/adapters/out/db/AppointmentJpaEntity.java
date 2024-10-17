@@ -14,10 +14,8 @@ import java.util.UUID;
 public class AppointmentJpaEntity {
 
     @Id
-    @Column(name = "appointment_id", columnDefinition = "varchar(36)")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID appointmentId = UUID.randomUUID();
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int appointmentId;
 
     @ManyToOne
     @JoinColumn(name = "schedule_time", nullable = false)
@@ -44,14 +42,13 @@ public class AppointmentJpaEntity {
 
     // Getters and setters...
 
-    public UUID getAppointmentId() {
+    public int getAppointmentId() {
         return appointmentId;
     }
 
-    public void setAppointmentId(UUID appointmentId) {
+    public void setAppointmentId(int appointmentId) {
         this.appointmentId = appointmentId;
     }
-
 
 
     public String getLicensePlate() {

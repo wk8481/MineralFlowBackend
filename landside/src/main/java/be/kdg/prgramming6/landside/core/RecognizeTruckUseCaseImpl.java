@@ -7,6 +7,7 @@ import be.kdg.prgramming6.landside.port.in.RecognizeTruckResponse;
 import be.kdg.prgramming6.landside.port.in.RecognizeTruckUseCase;
 import be.kdg.prgramming6.landside.port.out.LoadTruckPort;
 import be.kdg.prgramming6.landside.port.out.SaveTruckPort;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class RecognizeTruckUseCaseImpl implements RecognizeTruckUseCase {
     }
 
     @Override
+    @Transactional
     public RecognizeTruckResponse recognizeTruck(RecognizeTruckCommand command) {
         LicensePlate licensePlate = new LicensePlate(command.licensePlate());
         MaterialType materialType = MaterialType.valueOf(command.materialType());

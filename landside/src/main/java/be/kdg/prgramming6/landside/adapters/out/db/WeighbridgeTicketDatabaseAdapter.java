@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -76,11 +77,15 @@ public class WeighbridgeTicketDatabaseAdapter implements SaveWBTPort, LoadWBTPor
     }
 
     private WeighbridgeTicket toWBT(WeighbridgeTicketJpaEntity entity) {
+        BigDecimal netWeight = entity.getNetWeight();
+        if (netWeight == null) {
+            netWeight = entity.getGrossWeight().subtract(entity.getTareWeight());
+        }
         return new WeighbridgeTicket(
                 entity.getLicensePlate(),
                 entity.getGrossWeight(),
                 entity.getTareWeight(),
-                entity.getNetWeight(),
+                netWeight,
                 entity.getTimestamp()
         );
     }

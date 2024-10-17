@@ -5,6 +5,7 @@ import be.kdg.prgramming6.warehouse.port.in.UpdateWarehouseCapacityCommand;
 import be.kdg.prgramming6.warehouse.port.in.UpdateWarehouseCapacityUseCase;
 import be.kdg.prgramming6.warehouse.port.in.out.LoadWarehouseByIdPort;
 import be.kdg.prgramming6.warehouse.port.in.out.UpdateWarehousePort;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class UpdateWarehouseCapacityUseCaseImpl implements UpdateWarehouseCapaci
     }
 
     @Override
+    @Transactional
     public void updateWarehouseCapacity(UpdateWarehouseCapacityCommand command) {
         WarehouseId warehouseId = command.warehouseId();
         BigDecimal weight = command.weight();
