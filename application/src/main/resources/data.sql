@@ -43,6 +43,11 @@ VALUES
     ('XYZ-789', 'WD-2','GYPSUM','b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6' ),
     ('LMN-456', 'WD-5', 'IRON_ORE','dd2e2b7d-4622-441f-9200-123f8bb3e29b' );
 
+# -- insert into schedule table
+
+INSERT INTO landside.schedule (schedule_time)
+VALUE
+    ('2024-10-30 10:00:00');
 
 # -- Dummy data for Appointment 39 records
 INSERT INTO landside.appointment (schedule_time, license_plate, material_type, window_start, window_end, seller_id)
