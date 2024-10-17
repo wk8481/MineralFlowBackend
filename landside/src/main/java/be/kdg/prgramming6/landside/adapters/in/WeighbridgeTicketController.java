@@ -22,7 +22,8 @@ public class WeighbridgeTicketController {
         GenerateWeighbridgeTicketCommand command = new GenerateWeighbridgeTicketCommand(
                 dto.getLicensePlate(),
                 dto.getGrossWeight(),
-                dto.getTareWeight()
+                dto.getTareWeight(),
+                dto.getNetWeight()
         );
         GenerateWeighbridgeTicketResponse response = generateWeighbridgeTicketUseCase.generateWeighbridgeTicket(command);
         return ResponseEntity.ok(response);

@@ -18,14 +18,17 @@ public class WeighbridgeTicketJpaEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID ticketId = UUID.randomUUID();
 
-    @Column(name = "license_plate", nullable = false)
+    @Column(name = "license_plate")
     private String licensePlate;
 
-    @Column(name = "gross_weight", nullable = false)
+    @Column(name = "gross_weight")
     private BigDecimal grossWeight;
 
-    @Column(name = "tare_weight", nullable = false)
+    @Column(name = "tare_weight")
     private BigDecimal tareWeight;
+
+    @Column(name = "net_weight")
+    private BigDecimal netWeight;
 
     // Assuming timestamp is a field in WeighbridgeTicketJpaEntity
     @Column(name = "timestamp")
@@ -70,5 +73,12 @@ public class WeighbridgeTicketJpaEntity {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public void setNetWeight(BigDecimal netWeight) {
+    }
+
+    public BigDecimal getNetWeight() {
+        return netWeight;
     }
 }

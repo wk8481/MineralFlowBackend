@@ -2,6 +2,7 @@ package be.kdg.prgramming6.landside.adapters.out;
 
 import be.kdg.prgramming6.common.events.WBTUpdatedEvent;
 import be.kdg.prgramming6.landside.domain.Truck;
+import be.kdg.prgramming6.landside.domain.WarehouseId;
 import be.kdg.prgramming6.landside.domain.WeighbridgeTicket;
 import be.kdg.prgramming6.landside.port.out.UpdateWBTPort;
 import org.slf4j.Logger;
@@ -23,24 +24,22 @@ public class WBTUpdatedPublisher implements UpdateWBTPort {
 
 
     @Override
-    public void update(WeighbridgeTicket weighbridgeTicket, Truck truck) {
+    public void update(WeighbridgeTicket weighbridgeTicket, WarehouseId warehouseId) {
         final String routingKey = "landside." + weighbridgeTicket.getLicensePlate() + ".weighbridgeTicket.updated";
         LOGGER.info("Notifying RabbitMQ: {}", routingKey);
         rabbitTemplate.convertAndSend(EXCHANGE_NAME, routingKey, new WBTUpdatedEvent(
-                truck.getSellerId().id(),
+                weighbridgeTicket.getLicensePlate(),
                 weighbridgeTicket.getNetWeight(),
-                truck.getMaterialType().toString(),
-                weighbridgeTicket.getLicensePlate()
+                warehouseId.id()
 
 
         ));
 
     }
 
-    @Override
-    public void update(WeighbridgeTicket weighbridgeTicket) {
-
-    }
 
 
 }
+
+
+//in publisher u have from wbt, the licenseplate, netweight, and timestamp, and the warehouse number

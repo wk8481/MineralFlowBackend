@@ -8,31 +8,24 @@ public class WeighbridgeTicket {
     private final BigDecimal grossWeight;
     private final BigDecimal tareWeight;
     private final BigDecimal netWeight;
-    private final LocalDateTime timestamp;
+    private final  LocalDateTime timestamp;
 
     public WeighbridgeTicket(String licensePlate, BigDecimal grossWeight, BigDecimal tareWeight, BigDecimal netWeight, LocalDateTime timestamp) {
         this.licensePlate = licensePlate;
         this.grossWeight = grossWeight;
         this.tareWeight = tareWeight;
-        this.netWeight = calculateNetWeight();
-        this.timestamp = LocalDateTime.now();
-    }
-
-    public WeighbridgeTicket(String licensePlate, BigDecimal grossWeight) {
-        this.licensePlate = licensePlate;
-        this.grossWeight = grossWeight;
-        this.netWeight = null;
-        this.tareWeight = null;
-        this.timestamp = LocalDateTime.now();
+        this.netWeight = netWeight != null ? netWeight : calculateNetWeight(grossWeight, tareWeight);
+        this.timestamp = timestamp;
     }
 
     public WeighbridgeTicket(String licensePlate, BigDecimal grossWeight, BigDecimal tareWeight, LocalDateTime timestamp) {
         this.licensePlate = licensePlate;
         this.grossWeight = grossWeight;
         this.tareWeight = tareWeight;
-        this.netWeight = calculateNetWeight();
+        this.netWeight = calculateNetWeight(grossWeight, tareWeight);
         this.timestamp = timestamp;
     }
+
 
     public String getLicensePlate() {
         return licensePlate;
@@ -54,11 +47,15 @@ public class WeighbridgeTicket {
         return timestamp;
     }
 
-    private BigDecimal calculateNetWeight() {
+    private static BigDecimal calculateNetWeight(BigDecimal grossWeight, BigDecimal tareWeight) {
         return grossWeight.subtract(tareWeight);
     }
 
     private BigDecimal calculateGrossWeight() {
         return netWeight.add(tareWeight);
     }
+
+
+
+
 }
