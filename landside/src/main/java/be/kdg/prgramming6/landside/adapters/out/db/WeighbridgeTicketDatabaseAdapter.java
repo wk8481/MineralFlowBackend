@@ -1,18 +1,22 @@
-// landside/src/main/java/be/kdg/prgramming6/landside/adapters/out/db/WeighbridgeTicketDatabaseAdapter.java
 package be.kdg.prgramming6.landside.adapters.out.db;
 
+import be.kdg.prgramming6.landside.domain.WarehouseId;
 import be.kdg.prgramming6.landside.domain.WeighbridgeTicket;
 import be.kdg.prgramming6.landside.port.out.LoadWBTPort;
 import be.kdg.prgramming6.landside.port.out.SavePartialWBTport;
 import be.kdg.prgramming6.landside.port.out.SaveWBTPort;
 import be.kdg.prgramming6.landside.port.out.UpdateWBTPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
 public class WeighbridgeTicketDatabaseAdapter implements SaveWBTPort, LoadWBTPort, UpdateWBTPort, SavePartialWBTport {
+    private final static Logger LOGGER = LoggerFactory.getLogger(WeighbridgeTicketDatabaseAdapter.class.getName());
 
     private final WeighbridgeTicketJpaRepository repository;
 
@@ -26,7 +30,8 @@ public class WeighbridgeTicketDatabaseAdapter implements SaveWBTPort, LoadWBTPor
         entity.setLicensePlate(ticket.getLicensePlate());
         entity.setGrossWeight(ticket.getGrossWeight());
         entity.setTareWeight(ticket.getTareWeight());
-        entity.setTimestamp(LocalDateTime.now()); // Set the current timestamp
+        entity.setNetWeight(ticket.getNetWeight());
+        entity.setTimestamp(ticket.getTimestamp());
         repository.save(entity);
         return ticket;
     }
@@ -37,12 +42,15 @@ public class WeighbridgeTicketDatabaseAdapter implements SaveWBTPort, LoadWBTPor
     }
 
     @Override
-    public void update(WeighbridgeTicket ticket) {
+    public void update(WeighbridgeTicket ticket, WarehouseId warehouseId) {
+        LOGGER.info("Updating weighbridge ticket for license plate: {}", ticket.getLicensePlate());
+
         WeighbridgeTicketJpaEntity entity = repository.findByLicensePlate(ticket.getLicensePlate())
                 .orElseThrow(() -> new IllegalArgumentException("Weighbridge ticket not found"));
         entity.setGrossWeight(ticket.getGrossWeight());
         entity.setTareWeight(ticket.getTareWeight());
-        entity.setTimestamp(LocalDateTime.now()); // Update the timestamp
+        entity.setNetWeight(ticket.getNetWeight());
+        entity.setTimestamp(ticket.getTimestamp());
         repository.save(entity);
     }
 
@@ -52,7 +60,7 @@ public class WeighbridgeTicketDatabaseAdapter implements SaveWBTPort, LoadWBTPor
                 .orElseGet(() -> {
                     WeighbridgeTicketJpaEntity newEntity = new WeighbridgeTicketJpaEntity();
                     newEntity.setLicensePlate(ticket.getLicensePlate());
-                    newEntity.setTimestamp(LocalDateTime.now()); // Set the current timestamp
+                    newEntity.setTimestamp(LocalDateTime.now());
                     return newEntity;
                 });
 
@@ -62,15 +70,23 @@ public class WeighbridgeTicketDatabaseAdapter implements SaveWBTPort, LoadWBTPor
         if (ticket.getTareWeight() != null) {
             entity.setTareWeight(ticket.getTareWeight());
         }
+        if (ticket.getNetWeight() != null) {
+            entity.setNetWeight(ticket.getNetWeight());
+        }
         repository.save(entity);
     }
 
     private WeighbridgeTicket toWBT(WeighbridgeTicketJpaEntity entity) {
+        BigDecimal netWeight = entity.getNetWeight();
+        if (netWeight == null) {
+            netWeight = entity.getGrossWeight().subtract(entity.getTareWeight());
+        }
         return new WeighbridgeTicket(
                 entity.getLicensePlate(),
                 entity.getGrossWeight(),
                 entity.getTareWeight(),
-                entity.getTimestamp() // Assuming timestamp is a field in WeighbridgeTicketJpaEntity
+                netWeight,
+                entity.getTimestamp()
         );
     }
 }

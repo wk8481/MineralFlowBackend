@@ -5,6 +5,7 @@ import be.kdg.prgramming6.landside.port.in.ReceiveWarehouseNumberCommand;
 import be.kdg.prgramming6.landside.port.in.ReceiveWarehouseNumberResponse;
 import be.kdg.prgramming6.landside.port.in.ReceiveWarehouseNumberUseCase;
 import be.kdg.prgramming6.landside.port.out.*;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ public class ReceiveWarehouseNumberUseCaseImpl implements ReceiveWarehouseNumber
     }
 
     @Override
+    @Transactional
     public ReceiveWarehouseNumberResponse receiveWarehouseNumber(ReceiveWarehouseNumberCommand command) {
         // Generate WeighbridgeNumber using LicensePlate
         WeighbridgeNumber weighbridgeNumber = WeighbridgeNumber.generate(new LicensePlate(command.licensePlate()));

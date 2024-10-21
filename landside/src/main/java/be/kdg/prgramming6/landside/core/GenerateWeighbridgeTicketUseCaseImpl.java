@@ -1,19 +1,19 @@
 package be.kdg.prgramming6.landside.core;
 
+import be.kdg.prgramming6.landside.domain.LicensePlate;
 import be.kdg.prgramming6.landside.domain.Truck;
-import be.kdg.prgramming6.landside.domain.Weighbridge;
+import be.kdg.prgramming6.landside.domain.WarehouseId;
 import be.kdg.prgramming6.landside.domain.WeighbridgeTicket;
-import be.kdg.prgramming6.landside.port.in.GenerateWeighbridgeTicketCommand;
-import be.kdg.prgramming6.landside.port.in.GenerateWeighbridgeTicketResponse;
-import be.kdg.prgramming6.landside.port.in.GenerateWeighbridgeTicketUseCase;
+import be.kdg.prgramming6.landside.port.in.*;
 import be.kdg.prgramming6.landside.port.out.*;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,64 +23,81 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
 
     private final SaveWBTPort saveWBTPort;
     private final LoadWBTPort loadWBTPort;
-    private final UpdateWBTPort updateWBTPort;
-    private final LoadWeighbridgePort loadWeighbridgePort;
+    private final List<UpdateWBTPort> updateWBTPorts;
+    private final SavePartialWBTport savePartialWBTport;
     private final LoadTruckPort loadTruckPort;
+    private final ReceiveWarehouseNumberUseCase receiveWarehouseNumberUseCase;
+    private final CheckArrivalTruckUseCase checkArrivalTruckUseCase;
 
-    public GenerateWeighbridgeTicketUseCaseImpl(SaveWBTPort saveWBTPort, LoadWBTPort loadWBTPort, UpdateWBTPort updateWBTPort, LoadWeighbridgePort loadWeighbridgePort, LoadTruckPort loadTruckPort) {
+    public GenerateWeighbridgeTicketUseCaseImpl(SaveWBTPort saveWBTPort, LoadWBTPort loadWBTPort, List<UpdateWBTPort> updateWBTPorts, SavePartialWBTport savePartialWBTport, LoadTruckPort loadTruckPort, ReceiveWarehouseNumberUseCase receiveWarehouseNumberUseCase, CheckArrivalTruckUseCase checkArrivalTruckUseCase) {
         this.saveWBTPort = saveWBTPort;
         this.loadWBTPort = loadWBTPort;
-        this.updateWBTPort = updateWBTPort;
-        this.loadWeighbridgePort = loadWeighbridgePort;
+        this.updateWBTPorts = updateWBTPorts;
+        this.savePartialWBTport = savePartialWBTport;
         this.loadTruckPort = loadTruckPort;
+        this.receiveWarehouseNumberUseCase = receiveWarehouseNumberUseCase;
+        this.checkArrivalTruckUseCase = checkArrivalTruckUseCase;
     }
 
-
-
     @Override
+    @Transactional
     public GenerateWeighbridgeTicketResponse generateWeighbridgeTicket(GenerateWeighbridgeTicketCommand command) {
-        // Load the weighbridge by license plate
+        logger.debug("Generating weighbridge ticket for license plate: {}", command.licensePlate());
 
-        // Calculate net weight
-        BigDecimal netWeight = command.grossWeight().subtract(command.tareWeight());
+        LicensePlate licensePlate = new LicensePlate(command.licensePlate());
+        Truck truck = loadTruckPort.loadTruckByLicensePlate(licensePlate)
+                .orElseThrow(() -> new IllegalArgumentException("Truck not found with license plate: " + command.licensePlate()));
 
-        // Generate or load the weighbridge ticket
+        // Check if the truck arrived on time
+//        CheckArrivalTruckCommand arrivalCommand = new CheckArrivalTruckCommand(command.licensePlate(), LocalDateTime.now());
+//        CheckArrivalTruckResponse arrivalResponse = checkArrivalTruckUseCase.checkArrivalTruck(arrivalCommand);
+//
+//        if (!arrivalResponse.onTime()) {
+//            throw new IllegalStateException("Truck did not arrive on time");
+//        }
+
+        BigDecimal tareWeight = truck.getTareWeight();
+        BigDecimal netWeight = command.netWeight() != null ? command.netWeight() : command.grossWeight().subtract(tareWeight);
+
+        logger.debug("Tare weight: {}, Net weight: {}", tareWeight, netWeight);
+
         Optional<WeighbridgeTicket> existingTicket = loadWBTPort.loadByLicensePlate(command.licensePlate());
-
         LocalDateTime timestamp = LocalDateTime.now().plusHours(1);
 
-        WeighbridgeTicket ticket = existingTicket.orElseGet(() -> {
-            WeighbridgeTicket newTicket = new WeighbridgeTicket(
-                    command.licensePlate(),
-                    command.grossWeight(),
-                    command.tareWeight(),
-                    netWeight,
-                    timestamp
-            );
-            saveWBTPort.save(newTicket);
-            return newTicket;
-        });
-
+        WeighbridgeTicket ticket;
+        WarehouseId warehouseId;
         if (existingTicket.isPresent()) {
+            ticket = existingTicket.get();
+            ticket.setGrossWeight(command.grossWeight());
+            ticket.setNetWeight(netWeight);
+            ticket.setTimestamp(timestamp);
+
+            logger.debug("Existing ticket found. Updating ticket: {}", ticket);
+
+            ReceiveWarehouseNumberResponse response = receiveWarehouseNumberUseCase.receiveWarehouseNumber(new ReceiveWarehouseNumberCommand(licensePlate.toString(), netWeight, truck.getMaterialType().toString(), truck.getSellerId().id()));
+            warehouseId = response.getWarehouseId();
+
+            logger.debug("Received warehouse ID: {}", warehouseId);
+
+            updateWBTPorts.forEach(updateWBTPort -> {
+                logger.debug("Updating WBT port with ticket: {} and warehouse ID: {}", ticket, warehouseId);
+                updateWBTPort.update(ticket, warehouseId);
+            });
+        } else {
             ticket = new WeighbridgeTicket(
                     command.licensePlate(),
                     command.grossWeight(),
-                    command.tareWeight(),
+                    tareWeight,
                     netWeight,
                     timestamp
             );
-            updateWBTPort.update(ticket);
+
+            logger.debug("No existing ticket found. Saving new ticket: {}", ticket);
+            saveWBTPort.save(ticket);
         }
 
         logger.info("Generated or Loaded Weighbridge Ticket: {}", ticket);
-        // Publish event with net weight
-        publishEvent(ticket);
 
         return new GenerateWeighbridgeTicketResponse(ticket);
-    }
-
-    private void publishEvent(WeighbridgeTicket ticket) {
-        // Logic to publish event with net weight
-        logger.info("Publishing event with net weight: {}", ticket.getNetWeight());
     }
 }

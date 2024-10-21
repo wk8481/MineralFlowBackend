@@ -1,7 +1,7 @@
+// landside/src/main/java/be/kdg/prgramming6/landside/domain/Appointment.java
 package be.kdg.prgramming6.landside.domain;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class Appointment {
     private final Truck truck;
@@ -9,6 +9,7 @@ public class Appointment {
     private final LocalDateTime windowStart;
     private final LocalDateTime windowEnd;
     private final SellerId sellerId;
+    private LocalDateTime arrivalTime;
 
     public Appointment(final Truck truck, final MaterialType materialType,
                        final LocalDateTime windowStart, final LocalDateTime windowEnd, final SellerId sellerId) {
@@ -31,12 +32,26 @@ public class Appointment {
         this.sellerId = sellerId;
     }
 
-    // Method to check if this appointment overlaps with another time window
-    public boolean overlapsWith(LocalDateTime start, LocalDateTime end) {
-        return (start.isBefore(windowEnd) && end.isAfter(windowStart));
+    // Method to check the arrival status
+    public String checkArrivalStatus() {
+        if (arrivalTime == null) {
+            return "unknown";
+        }
+        if (isWithinWindow(arrivalTime)) {
+            return "on time";
+        } else if (arrivalTime.isBefore(windowStart)) {
+            return "early";
+        } else {
+            return "late";
+        }
     }
 
-    // Getters
+    // Method to check if a given time is within the appointment window
+    public boolean isWithinWindow(LocalDateTime time) {
+        return !time.isBefore(windowStart) && !time.isAfter(windowEnd);
+    }
+
+    // Getters and setters
     public Truck getTruck() {
         return truck;
     }
@@ -57,12 +72,18 @@ public class Appointment {
         return sellerId;
     }
 
+    public LocalDateTime getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public void setArrivalTime(LocalDateTime arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
     // Method to create a new Appointment instance
     public static Appointment scheduleAppointment(Truck truck, MaterialType materialType,
                                                   LocalDateTime windowStart, LocalDateTime windowEnd,
                                                   SellerId sellerId) {
         return new Appointment(truck, materialType, windowStart, windowEnd, sellerId);
     }
-
-
 }

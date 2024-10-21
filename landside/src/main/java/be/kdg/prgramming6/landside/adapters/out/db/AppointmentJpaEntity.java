@@ -1,23 +1,20 @@
+// landside/src/main/java/be/kdg/prgramming6/landside/adapters/out/db/AppointmentJpaEntity.java
 package be.kdg.prgramming6.landside.adapters.out.db;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
 @Entity
 @Table(catalog = "landside", name = "appointment")
 public class AppointmentJpaEntity {
 
     @Id
-    @Column(name = "appointment_id", columnDefinition = "varchar(36)")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID appointmentId = UUID.randomUUID();
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int appointmentId;
 
     @ManyToOne
     @JoinColumn(name = "schedule_time", nullable = false)
@@ -39,20 +36,18 @@ public class AppointmentJpaEntity {
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID sellerId;
 
-    public AppointmentJpaEntity() {
-    }
+    @Column(name = "arrival_time")
+    private LocalDateTime arrivalTime;
 
     // Getters and setters...
 
-    public UUID getAppointmentId() {
+    public int getAppointmentId() {
         return appointmentId;
     }
 
-    public void setAppointmentId(UUID appointmentId) {
+    public void setAppointmentId(int appointmentId) {
         this.appointmentId = appointmentId;
     }
-
-
 
     public String getLicensePlate() {
         return licensePlate;
@@ -100,5 +95,13 @@ public class AppointmentJpaEntity {
 
     public void setSchedule(ScheduleJpaEntity schedule) {
         this.schedule = schedule;
+    }
+
+    public LocalDateTime getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public void setArrivalTime(LocalDateTime arrivalTime) {
+        this.arrivalTime = arrivalTime;
     }
 }

@@ -1,16 +1,17 @@
+// landside/src/main/java/be/kdg/prgramming6/landside/adapters/out/db/DayScheduleDatabaseAdapter.java
 package be.kdg.prgramming6.landside.adapters.out.db;
 
 import be.kdg.prgramming6.landside.domain.*;
-import be.kdg.prgramming6.landside.port.out.LoadDaySchedulePort;
-import be.kdg.prgramming6.landside.port.out.UpdateAppointmentPort;
-import be.kdg.prgramming6.landside.port.out.CreateSchedulePort;
+import be.kdg.prgramming6.landside.port.out.*;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
-public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAppointmentPort, CreateSchedulePort {
+public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAppointmentPort, CreateSchedulePort, LoadAppointmentPort, LoadTrucksByDaySchedulePort {
     private final ScheduleJpaRepository scheduleJpaRepository;
     private final AppointmentJpaRepository appointmentJpaRepository;
 
@@ -62,14 +63,36 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
         return schedule; // Return the new schedule with the appointments
     }
 
+    @Override
+    public List<Appointment> loadTrucksByDaySchedule(LocalDateTime scheduleTime) {
+        return scheduleJpaRepository.findByScheduleTime(scheduleTime)
+                .getAppointments().stream()
+                .map(appointmentJpaEntity -> new Appointment(
+                        new Truck(
+                                new LicensePlate(appointmentJpaEntity.getLicensePlate()),
+                                MaterialType.valueOf(appointmentJpaEntity.getMaterialType()),
+                                null, // Assuming dockNumber is not available in AppointmentJpaEntity
+                                new SellerId(appointmentJpaEntity.getSellerId())
+                        ),
+                        MaterialType.valueOf(appointmentJpaEntity.getMaterialType()),
+                        appointmentJpaEntity.getWindowStart(),
+                        appointmentJpaEntity.getWindowEnd(),
+                        new SellerId(appointmentJpaEntity.getSellerId())
+                ))
+                .collect(Collectors.toList());
+    }
+
+
     private Appointment toAppointment(AppointmentJpaEntity appointmentJpaEntity) {
-        return new Appointment(
+        Appointment appointment = new Appointment(
                 new Truck(new LicensePlate(appointmentJpaEntity.getLicensePlate())),
                 MaterialType.valueOf(appointmentJpaEntity.getMaterialType()),
                 appointmentJpaEntity.getWindowStart(),
                 appointmentJpaEntity.getWindowEnd(),
                 new SellerId(appointmentJpaEntity.getSellerId())
         );
+        appointment.setArrivalTime(appointmentJpaEntity.getArrivalTime());
+        return appointment;
     }
 
     private AppointmentJpaEntity createAppointmentJpaEntity(Appointment appointment, ScheduleJpaEntity scheduleJpaEntity) {
@@ -80,6 +103,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
         appointmentJpaEntity.setWindowEnd(appointment.getWindowEnd());
         appointmentJpaEntity.setSellerId(appointment.getSellerId().id());
         appointmentJpaEntity.setSchedule(scheduleJpaEntity); // Set the schedule reference
+        appointmentJpaEntity.setArrivalTime(appointment.getArrivalTime());
         return appointmentJpaEntity;
     }
 
@@ -120,6 +144,12 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
         existingAppointment.setWindowStart(appointment.getWindowStart());
         existingAppointment.setWindowEnd(appointment.getWindowEnd());
         existingAppointment.setSellerId(appointment.getSellerId().id());
+        existingAppointment.setArrivalTime(appointment.getArrivalTime());
         existingAppointment.setSchedule(existingAppointment.getSchedule()); // Ensure the schedule reference is set
+    }
+
+    @Override
+    public Optional<Appointment> loadAppointmentByLicensePlate(String licensePlate) {
+        return appointmentJpaRepository.findByLicensePlate(licensePlate).map(this::toAppointment);
     }
 }

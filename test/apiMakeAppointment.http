@@ -85,3 +85,14 @@ Content-Type: application/json
   "dockNumber": "WD-10"
 }
 
+### Final WBT Created
+POST http://localhost:8090/api/generate-weighbridge-ticket
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "licensePlate": "ABC-123",
+  "grossWeight": 13000,
+  "tareWeight": 10000,
+  "netWeight": 3000
+}

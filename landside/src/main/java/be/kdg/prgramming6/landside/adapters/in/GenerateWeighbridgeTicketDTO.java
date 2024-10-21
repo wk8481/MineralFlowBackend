@@ -17,6 +17,10 @@ public class GenerateWeighbridgeTicketDTO {
     @Positive(message = "Tare weight must be positive")
     private BigDecimal tareWeight;
 
+    @NotNull(message = "Net weight cannot be null")
+    @Positive(message = "Net weight must be positive")
+    private BigDecimal netWeight;
+
     // Getters and Setters
     public String getLicensePlate() {
         return licensePlate;
@@ -40,5 +44,13 @@ public class GenerateWeighbridgeTicketDTO {
 
     public void setTareWeight(BigDecimal tareWeight) {
         this.tareWeight = tareWeight;
+    }
+
+    public BigDecimal getNetWeight() {
+        return netWeight;
+    }
+
+    public void setNetWeight(BigDecimal netWeight) {
+        this.netWeight = netWeight;
     }
 }
