@@ -2,6 +2,7 @@ package be.kdg.prgramming6.landside.core;
 
 import be.kdg.prgramming6.landside.domain.LicensePlate;
 import be.kdg.prgramming6.landside.domain.Truck;
+import be.kdg.prgramming6.landside.domain.Warehouse;
 import be.kdg.prgramming6.landside.domain.WarehouseId;
 import be.kdg.prgramming6.landside.domain.WeighbridgeTicket;
 import be.kdg.prgramming6.landside.port.in.*;
@@ -24,19 +25,19 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
     private final SaveWBTPort saveWBTPort;
     private final LoadWBTPort loadWBTPort;
     private final List<UpdateWBTPort> updateWBTPorts;
-    private final SavePartialWBTport savePartialWBTport;
-    private final LoadTruckPort loadTruckPort;
-    private final ReceiveWarehouseNumberUseCase receiveWarehouseNumberUseCase;
-    private final CheckArrivalTruckUseCase checkArrivalTruckUseCase;
 
-    public GenerateWeighbridgeTicketUseCaseImpl(SaveWBTPort saveWBTPort, LoadWBTPort loadWBTPort, List<UpdateWBTPort> updateWBTPorts, SavePartialWBTport savePartialWBTport, LoadTruckPort loadTruckPort, ReceiveWarehouseNumberUseCase receiveWarehouseNumberUseCase, CheckArrivalTruckUseCase checkArrivalTruckUseCase) {
+    private final LoadTruckPort loadTruckPort;
+    private final LoadWarehousePort loadWarehousePort;
+
+
+    public GenerateWeighbridgeTicketUseCaseImpl(SaveWBTPort saveWBTPort, LoadWBTPort loadWBTPort, List<UpdateWBTPort> updateWBTPorts, LoadTruckPort loadTruckPort, LoadWarehousePort loadWarehousePort) {
         this.saveWBTPort = saveWBTPort;
         this.loadWBTPort = loadWBTPort;
         this.updateWBTPorts = updateWBTPorts;
-        this.savePartialWBTport = savePartialWBTport;
+
         this.loadTruckPort = loadTruckPort;
-        this.receiveWarehouseNumberUseCase = receiveWarehouseNumberUseCase;
-        this.checkArrivalTruckUseCase = checkArrivalTruckUseCase;
+        this.loadWarehousePort = loadWarehousePort;
+
     }
 
     @Override
@@ -47,14 +48,6 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
         LicensePlate licensePlate = new LicensePlate(command.licensePlate());
         Truck truck = loadTruckPort.loadTruckByLicensePlate(licensePlate)
                 .orElseThrow(() -> new IllegalArgumentException("Truck not found with license plate: " + command.licensePlate()));
-
-        // Check if the truck arrived on time
-//        CheckArrivalTruckCommand arrivalCommand = new CheckArrivalTruckCommand(command.licensePlate(), LocalDateTime.now());
-//        CheckArrivalTruckResponse arrivalResponse = checkArrivalTruckUseCase.checkArrivalTruck(arrivalCommand);
-//
-//        if (!arrivalResponse.onTime()) {
-//            throw new IllegalStateException("Truck did not arrive on time");
-//        }
 
         BigDecimal tareWeight = truck.getTareWeight();
         BigDecimal netWeight = command.netWeight() != null ? command.netWeight() : command.grossWeight().subtract(tareWeight);
@@ -74,10 +67,11 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
 
             logger.debug("Existing ticket found. Updating ticket: {}", ticket);
 
-            ReceiveWarehouseNumberResponse response = receiveWarehouseNumberUseCase.receiveWarehouseNumber(new ReceiveWarehouseNumberCommand(licensePlate.toString(), netWeight, truck.getMaterialType().toString(), truck.getSellerId().id()));
-            warehouseId = response.getWarehouseId();
+            Warehouse warehouse = loadWarehousePort.loadWarehouse(truck.getSellerId(), truck.getMaterialType(), timestamp)
+                    .orElseThrow(() -> new IllegalArgumentException("Warehouse not found for seller ID: " + truck.getSellerId().id() + " and material type: " + truck.getMaterialType()));
+            warehouseId = warehouse.getWarehouseId();
 
-            logger.debug("Received warehouse ID: {}", warehouseId);
+            logger.debug("Loaded warehouse ID: {}", warehouseId);
 
             updateWBTPorts.forEach(updateWBTPort -> {
                 logger.debug("Updating WBT port with ticket: {} and warehouse ID: {}", ticket, warehouseId);

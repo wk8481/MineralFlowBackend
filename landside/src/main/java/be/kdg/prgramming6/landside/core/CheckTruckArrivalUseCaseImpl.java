@@ -2,7 +2,6 @@ package be.kdg.prgramming6.landside.core;
 
 import be.kdg.prgramming6.landside.domain.Appointment;
 import be.kdg.prgramming6.landside.port.in.CheckArrivalTruckCommand;
-import be.kdg.prgramming6.landside.adapters.in.CheckArrivalTruckResponseDTO;
 import be.kdg.prgramming6.landside.port.in.CheckArrivalTruckResponse;
 import be.kdg.prgramming6.landside.port.in.CheckArrivalTruckUseCase;
 import be.kdg.prgramming6.landside.port.out.LoadAppointmentPort;
@@ -44,6 +43,6 @@ public class CheckTruckArrivalUseCaseImpl implements CheckArrivalTruckUseCase {
 
         LOGGER.info("Truck is {}", status);
 
-        return new CheckArrivalTruckResponse("on time".equals(status));
+        return new CheckArrivalTruckResponse("on time".equals(status), app.getSellerId().toString(), app.getMaterialType().toString());
     }
 }
