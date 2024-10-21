@@ -32,6 +32,16 @@ public class Appointment {
         this.sellerId = sellerId;
     }
 
+    // Method to check if this appointment overlaps with another time window
+    public boolean overlapsWith(LocalDateTime start, LocalDateTime end) {
+        return (start.isBefore(windowEnd) && end.isAfter(windowStart));
+    }
+
+    // Method to check if a given time is within the appointment window
+    public boolean isWithinWindow(LocalDateTime time) {
+        return !time.isBefore(windowStart) && !time.isAfter(windowEnd);
+    }
+
     // Method to check the arrival status
     public String checkArrivalStatus() {
         if (arrivalTime == null) {
@@ -46,10 +56,9 @@ public class Appointment {
         }
     }
 
-    // Method to check if a given time is within the appointment window
-    public boolean isWithinWindow(LocalDateTime time) {
-        return !time.isBefore(windowStart) && !time.isAfter(windowEnd);
-    }
+
+
+
 
     // Getters and setters
     public Truck getTruck() {
