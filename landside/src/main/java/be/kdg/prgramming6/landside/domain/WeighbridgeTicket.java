@@ -5,10 +5,10 @@ import java.time.LocalDateTime;
 
 public class WeighbridgeTicket {
     private final String licensePlate;
-    private final BigDecimal grossWeight;
+    private  BigDecimal grossWeight;
     private final BigDecimal tareWeight;
-    private final BigDecimal netWeight;
-    private final  LocalDateTime timestamp;
+    private  BigDecimal netWeight;
+    private LocalDateTime timestamp;
 
     public WeighbridgeTicket(String licensePlate, BigDecimal grossWeight, BigDecimal tareWeight, BigDecimal netWeight, LocalDateTime timestamp) {
         this.licensePlate = licensePlate;
@@ -55,7 +55,15 @@ public class WeighbridgeTicket {
         return netWeight.add(tareWeight);
     }
 
+    public void setGrossWeight(BigDecimal grossWeight) {
+        this.grossWeight = grossWeight;
+    }
 
+    public void setNetWeight(BigDecimal netWeight) {
+        this.netWeight = netWeight;
+    }
 
-
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
 }

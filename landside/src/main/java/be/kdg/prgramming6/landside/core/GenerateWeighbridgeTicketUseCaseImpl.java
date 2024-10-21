@@ -26,15 +26,17 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
     private final List<UpdateWBTPort> updateWBTPorts;
     private final SavePartialWBTport savePartialWBTport;
     private final LoadTruckPort loadTruckPort;
-    private final ReceiveWarehouseNumberUseCaseImpl receiveWarehouseNumberUseCaseImpl;
+    private final ReceiveWarehouseNumberUseCase receiveWarehouseNumberUseCase;
+    private final CheckArrivalTruckUseCase checkArrivalTruckUseCase;
 
-    public GenerateWeighbridgeTicketUseCaseImpl(SaveWBTPort saveWBTPort, LoadWBTPort loadWBTPort, List<UpdateWBTPort> updateWBTPorts, SavePartialWBTport savePartialWBTport, LoadTruckPort loadTruckPort, ReceiveWarehouseNumberUseCaseImpl receiveWarehouseNumberUseCaseImpl) {
+    public GenerateWeighbridgeTicketUseCaseImpl(SaveWBTPort saveWBTPort, LoadWBTPort loadWBTPort, List<UpdateWBTPort> updateWBTPorts, SavePartialWBTport savePartialWBTport, LoadTruckPort loadTruckPort, ReceiveWarehouseNumberUseCase receiveWarehouseNumberUseCase, CheckArrivalTruckUseCase checkArrivalTruckUseCase) {
         this.saveWBTPort = saveWBTPort;
         this.loadWBTPort = loadWBTPort;
         this.updateWBTPorts = updateWBTPorts;
         this.savePartialWBTport = savePartialWBTport;
         this.loadTruckPort = loadTruckPort;
-        this.receiveWarehouseNumberUseCaseImpl = receiveWarehouseNumberUseCaseImpl;
+        this.receiveWarehouseNumberUseCase = receiveWarehouseNumberUseCase;
+        this.checkArrivalTruckUseCase = checkArrivalTruckUseCase;
     }
 
     @Override
@@ -45,6 +47,14 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
         LicensePlate licensePlate = new LicensePlate(command.licensePlate());
         Truck truck = loadTruckPort.loadTruckByLicensePlate(licensePlate)
                 .orElseThrow(() -> new IllegalArgumentException("Truck not found with license plate: " + command.licensePlate()));
+
+        // Check if the truck arrived on time
+//        CheckArrivalTruckCommand arrivalCommand = new CheckArrivalTruckCommand(command.licensePlate(), LocalDateTime.now());
+//        CheckArrivalTruckResponse arrivalResponse = checkArrivalTruckUseCase.checkArrivalTruck(arrivalCommand);
+//
+//        if (!arrivalResponse.onTime()) {
+//            throw new IllegalStateException("Truck did not arrive on time");
+//        }
 
         BigDecimal tareWeight = truck.getTareWeight();
         BigDecimal netWeight = command.netWeight() != null ? command.netWeight() : command.grossWeight().subtract(tareWeight);
@@ -57,18 +67,14 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
         WeighbridgeTicket ticket;
         WarehouseId warehouseId;
         if (existingTicket.isPresent()) {
-            WeighbridgeTicket oldTicket = existingTicket.get();
-            ticket = new WeighbridgeTicket(
-                    oldTicket.getLicensePlate(),
-                    command.grossWeight(),
-                    tareWeight,
-                    netWeight,
-                    timestamp
-            );
+            ticket = existingTicket.get();
+            ticket.setGrossWeight(command.grossWeight());
+            ticket.setNetWeight(netWeight);
+            ticket.setTimestamp(timestamp);
 
             logger.debug("Existing ticket found. Updating ticket: {}", ticket);
 
-            ReceiveWarehouseNumberResponse response = receiveWarehouseNumberUseCaseImpl.receiveWarehouseNumber(new ReceiveWarehouseNumberCommand(licensePlate.toString(), netWeight, truck.getMaterialType().toString(), truck.getSellerId().id() ));
+            ReceiveWarehouseNumberResponse response = receiveWarehouseNumberUseCase.receiveWarehouseNumber(new ReceiveWarehouseNumberCommand(licensePlate.toString(), netWeight, truck.getMaterialType().toString(), truck.getSellerId().id()));
             warehouseId = response.getWarehouseId();
 
             logger.debug("Received warehouse ID: {}", warehouseId);
