@@ -1,13 +1,10 @@
-package be.kdg.prgramming6.warehouse.adapter.in.out.db;
+package be.kdg.prgramming6.warehouse.adapter.out.db;
 
 import be.kdg.prgramming6.warehouse.domain.MaterialType;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 

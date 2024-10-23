@@ -1,9 +1,8 @@
-package be.kdg.prgramming6.warehouse.adapter.in.out.db;
+package be.kdg.prgramming6.warehouse.adapter.out.db;
 
 import be.kdg.prgramming6.warehouse.domain.WarehouseActivityId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.EmbeddedId;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 

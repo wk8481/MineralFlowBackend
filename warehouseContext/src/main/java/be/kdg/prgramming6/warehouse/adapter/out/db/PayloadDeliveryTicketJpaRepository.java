@@ -1,4 +1,4 @@
-package be.kdg.prgramming6.warehouse.adapter.in.out.db;
+package be.kdg.prgramming6.warehouse.adapter.out.db;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;

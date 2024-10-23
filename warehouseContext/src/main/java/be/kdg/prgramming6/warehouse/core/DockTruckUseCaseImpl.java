@@ -3,13 +3,15 @@ package be.kdg.prgramming6.warehouse.core;
 import be.kdg.prgramming6.warehouse.domain.*;
 import be.kdg.prgramming6.warehouse.port.in.DockTruckCommand;
 import be.kdg.prgramming6.warehouse.port.in.DockTruckUseCase;
-import be.kdg.prgramming6.warehouse.port.in.out.*;
+import be.kdg.prgramming6.warehouse.port.out.LoadPDTPort;
+import be.kdg.prgramming6.warehouse.port.out.LoadWarehouseBySellerAndMaterialPort;
+import be.kdg.prgramming6.warehouse.port.out.SavePDTPort;
+import be.kdg.prgramming6.warehouse.port.out.UpdatePDTPort;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;

@@ -1,7 +1,7 @@
-package be.kdg.prgramming6.warehouse.adapter.in.out.db;
+package be.kdg.prgramming6.warehouse.adapter.out.db;
 
 import be.kdg.prgramming6.warehouse.domain.*;
-import be.kdg.prgramming6.warehouse.port.in.out.*;
+import be.kdg.prgramming6.warehouse.port.out.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

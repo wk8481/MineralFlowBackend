@@ -1,6 +1,5 @@
-package be.kdg.prgramming6.warehouse.adapter.in.out.db;
+package be.kdg.prgramming6.warehouse.adapter.out.db;
 
-import org.springframework.cglib.core.Local;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;

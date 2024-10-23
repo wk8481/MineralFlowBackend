@@ -1,4 +1,4 @@
-package be.kdg.prgramming6.warehouse.port.in.out;
+package be.kdg.prgramming6.warehouse.port.out;
 
 import be.kdg.prgramming6.warehouse.domain.PayloadDeliveryTicket;
 import be.kdg.prgramming6.warehouse.domain.LicensePlate;

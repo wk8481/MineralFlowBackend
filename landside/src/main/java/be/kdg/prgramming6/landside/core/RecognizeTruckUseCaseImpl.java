@@ -1,10 +1,10 @@
-// landside/src/main/java/be/kdg/prgramming6/landside/core/RecognizeTruckUseCaseImpl.java
 package be.kdg.prgramming6.landside.core;
 
 import be.kdg.prgramming6.landside.domain.*;
 import be.kdg.prgramming6.landside.port.in.RecognizeTruckCommand;
 import be.kdg.prgramming6.landside.port.in.RecognizeTruckResponse;
 import be.kdg.prgramming6.landside.port.in.RecognizeTruckUseCase;
+import be.kdg.prgramming6.landside.port.out.LoadAppointmentPort;
 import be.kdg.prgramming6.landside.port.out.LoadTruckPort;
 import be.kdg.prgramming6.landside.port.out.SaveTruckPort;
 import jakarta.transaction.Transactional;
@@ -16,11 +16,13 @@ import org.springframework.stereotype.Service;
 public class RecognizeTruckUseCaseImpl implements RecognizeTruckUseCase {
     private final LoadTruckPort loadTruckPort;
     private final SaveTruckPort saveTruckPort;
+    private final LoadAppointmentPort loadAppointmentPort;
     private static final Logger LOGGER = LoggerFactory.getLogger(RecognizeTruckUseCaseImpl.class);
 
-    public RecognizeTruckUseCaseImpl(LoadTruckPort loadTruckPort, SaveTruckPort saveTruckPort) {
+    public RecognizeTruckUseCaseImpl(LoadTruckPort loadTruckPort, SaveTruckPort saveTruckPort, LoadAppointmentPort loadAppointmentPort) {
         this.loadTruckPort = loadTruckPort;
         this.saveTruckPort = saveTruckPort;
+        this.loadAppointmentPort = loadAppointmentPort;
     }
 
     @Override
@@ -38,9 +40,20 @@ public class RecognizeTruckUseCaseImpl implements RecognizeTruckUseCase {
                 });
 
         boolean gateOpened = truck.isValidLicensePlate() && truck.canDock();
+
         if (gateOpened) {
-            LOGGER.info("Truck recognized: {}", truck.getLicensePlate());
-            // Logic to open the gate
+            // Check if the truck matches an appointment
+            boolean hasAppointment = loadAppointmentPort.loadAppointmentByLicensePlate(licensePlate.toString())
+                    .map(appointment -> appointment.matches(truck))
+                    .orElse(false);
+
+            if (hasAppointment) {
+                LOGGER.info("Truck recognized and has a matching appointment: {}", truck.getLicensePlate());
+                // Logic to open the gate
+            } else {
+                gateOpened = false;
+                LOGGER.warn("Truck recognized but no matching appointment found: {}", command.licensePlate());
+            }
         } else {
             LOGGER.warn("Truck not recognized: {}", command.licensePlate());
         }

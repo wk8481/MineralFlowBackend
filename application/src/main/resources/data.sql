@@ -92,4 +92,28 @@ VALUES
     ( '2024-10-30 10:00:00', 'ABC-038', 'CEMENT', '2024-10-30 10:00:00', '2024-10-30 10:59:00', '88888888-8888-8888-8888-888888888888', '2024-10-30 11:00:00'),
     ( '2024-10-30 10:00:00', 'ABC-039', 'PET_COKE', '2024-10-30 10:00:00', '2024-10-30 10:59:00', '88888888-8888-8888-8888-888888888888', '2024-10-30 11:00:00');
 
-# # # okay
+-- Insert into purchase_order table
+INSERT INTO warehouse.purchase_order (po_number, date, customer_number, customer_name, status)
+VALUES
+    ('PO123456', '2024-10-23 13:31:00', '550e8400-e29b-41d4-a716-446655440000', 'Joske Vermeulen', 'OUTSTANDING'),
+    ('PO123457', '2024-10-24 14:00:00', '550e8400-e29b-41d4-a716-446655440001', 'Jan Peeters', 'FULFILLED'),
+    ('PO123458', '2024-10-25 15:30:00', '550e8400-e29b-41d4-a716-446655440002', 'Marie Janssens', 'OUTSTANDING'),
+    ('PO123459', '2024-10-26 16:45:00', '550e8400-e29b-41d4-a716-446655440003', 'Karel De Grote', 'FULFILLED'),
+    ('PO123460', '2024-10-27 17:15:00', '550e8400-e29b-41d4-a716-446655440004', 'Sofie De Smet', 'OUTSTANDING'),
+    ('PO123461', '2024-10-28 18:00:00', '550e8400-e29b-41d4-a716-446655440005', 'Tom De Vries', 'OUTSTANDING');
+
+-- Insert into order_line table
+INSERT INTO warehouse.order_line (po_number, material_type, amount_in_tons, price_per_ton)
+VALUES
+    ('PO123456', 'PET_COKE', 100, 50.0),
+    ('PO123456', 'SLAG', 50, 30.0),
+    ('PO123457', 'IRON_ORE', 200, 70.0),
+    ('PO123457', 'CEMENT', 150, 40.0),
+    ('PO123458', 'GYPSUM', 120, 35.0),
+    ('PO123458', 'PET_COKE', 80, 55.0),
+    ('PO123459', 'SLAG', 60, 32.0),
+    ('PO123459', 'IRON_ORE', 90, 75.0),
+    ('PO123460', 'CEMENT', 110, 45.0),
+    ('PO123460', 'GYPSUM', 130, 38.0),
+    ('PO123461', 'PET_COKE', 140, 60.0),
+    ('PO123461', 'SLAG', 70, 35.0);

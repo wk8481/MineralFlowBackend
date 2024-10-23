@@ -100,3 +100,36 @@ Content-Type: application/json
 
 ### Get Truck onTime
 
+
+
+
+### Get Truck onSIte
+
+
+### PO rabbit
+POST http://localhost:15672/api/exchanges/%2f/purchase_order_exchange/publish
+Authorization: Basic bXl1c2VyOm15cGFzc3dvcmQ=
+Content-Type: application/json
+
+{
+  "properties": {},
+  "routing_key": "purchase.order.created",
+  "payload": "{\"purchaseOrder\":{\"date\":\"2024-10-23T13:31:00\",\"poNumber\":\"PO123456\",\"customerNumber\":\"550e8400-e29b-41d4-a716-446655440000\",\"customerName\":\"Joske Vermeulen\",\"status\":\"OUTSTANDING\",\"orderLines\":[{\"materialType\":\"PET_COKE\",\"amountInTons\":100,\"pricePerTon\":50.0},{\"materialType\":\"SLAG\",\"amountInTons\":50,\"pricePerTon\":30.0}]}}",
+  "payload_encoding": "string"
+}
+
+
+### Get one purchase order
+GET http://localhost:8090/api/purchase-order
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{ "poNumber": "PO123456" }
+
+
+### Get list of purchase orders by customer
+GET http://localhost:8090/api/customer
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{ "customerNumber": "550e8400-e29b-41d4-a716-446655440000" }

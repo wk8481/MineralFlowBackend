@@ -15,7 +15,7 @@ spring:
       show-sql: true
     defer-datasource-initialization: true
   datasource:
-    url: "jdbc:mysql://localhost:3306/app_db"
+    url: "jdbc:mysql://localhost:3306"
     username: user
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver

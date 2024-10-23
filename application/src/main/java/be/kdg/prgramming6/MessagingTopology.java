@@ -76,6 +76,29 @@ public class MessagingTopology {
     }
 
 
+    // New configuration for purchase orders
+    public static final String PURCHASE_ORDER_EXCHANGE = "purchase_order_exchange";
+    public static final String PURCHASE_ORDER_QUEUE = "purchase_order_queue";
+
+    @Bean
+    TopicExchange purchaseOrderExchange() {
+        return new TopicExchange(PURCHASE_ORDER_EXCHANGE);
+    }
+
+    @Bean
+    Queue purchaseOrderQueue() {
+        return new Queue(PURCHASE_ORDER_QUEUE, true);
+    }
+
+    @Bean
+    Binding purchaseOrderBinding(TopicExchange purchaseOrderExchange, Queue purchaseOrderQueue) {
+        return BindingBuilder
+                .bind(purchaseOrderQueue)
+                .to(purchaseOrderExchange)
+                .with("purchase.order.#");
+    }
+
+
     // Common configuration
     @Bean
     RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {

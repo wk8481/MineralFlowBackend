@@ -1,9 +1,9 @@
-package be.kdg.prgramming6.warehouse.adapter.in.out;
+package be.kdg.prgramming6.warehouse.adapter.out;
 
 import be.kdg.prgramming6.common.events.WarehouseActivityCreatedEvent;
 import be.kdg.prgramming6.warehouse.domain.Warehouse;
 import be.kdg.prgramming6.warehouse.domain.WarehouseActivity;
-import be.kdg.prgramming6.warehouse.port.in.out.UpdateWarehousePort;
+import be.kdg.prgramming6.warehouse.port.out.UpdateWarehousePort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

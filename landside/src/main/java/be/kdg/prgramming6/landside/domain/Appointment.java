@@ -56,6 +56,11 @@ public class Appointment {
         }
     }
 
+    // Method to check if the truck matches the appointment
+    public boolean matches(Truck truck) {
+        return this.truck.getLicensePlate().equals(truck.getLicensePlate()) &&
+                this.materialType == truck.getMaterialType();
+    }
 
 
 
