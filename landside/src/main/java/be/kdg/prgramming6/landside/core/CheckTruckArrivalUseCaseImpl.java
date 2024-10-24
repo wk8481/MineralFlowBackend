@@ -1,8 +1,6 @@
 package be.kdg.prgramming6.landside.core;
 
 import be.kdg.prgramming6.landside.domain.Appointment;
-import be.kdg.prgramming6.landside.port.in.CheckArrivalTruckCommand;
-import be.kdg.prgramming6.landside.port.in.CheckArrivalTruckResponse;
 import be.kdg.prgramming6.landside.port.in.CheckArrivalTruckUseCase;
 import be.kdg.prgramming6.landside.port.out.LoadAppointmentPort;
 import org.slf4j.Logger;
@@ -11,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class CheckTruckArrivalUseCaseImpl implements CheckArrivalTruckUseCase {
@@ -24,25 +22,16 @@ public class CheckTruckArrivalUseCaseImpl implements CheckArrivalTruckUseCase {
     }
 
     @Override
-    @Transactional
-    public CheckArrivalTruckResponse checkArrivalTruck(CheckArrivalTruckCommand command) {
-        LOGGER.info("Checking arrival for license plate: {}", command.licensePlate());
-        String licensePlate = command.licensePlate();
-        LocalDateTime arrivalTime = command.arrivalTime();
-        Optional<Appointment> appointment = loadAppointmentPort.loadAppointmentByLicensePlate(licensePlate);
-
-        if (appointment.isEmpty()) {
-            throw new IllegalStateException("No appointment found for license plate: " + licensePlate);
-        }
-
-        Appointment app = appointment.get();
-        if (app.getArrivalTime() == null) {
-            app.setArrivalTime(arrivalTime);
-        }
-        String status = app.checkArrivalStatus();
-
-        LOGGER.info("Truck is {}", status);
-
-        return new CheckArrivalTruckResponse("on time".equals(status), app.getSellerId().toString(), app.getMaterialType().toString());
+    @Transactional(readOnly = true)
+    public List<Appointment> loadAllAppointments() {
+        List<Appointment> appointments = loadAppointmentPort.loadAllAppointments();
+        appointments.forEach(app -> {
+            if (app.getArrivalTime() == null) {
+                app.setArrivalTime(LocalDateTime.now());
+            }
+            String status = app.checkArrivalStatus();
+            LOGGER.info("Appointment for truck {} is {}", app.getTruck().getLicensePlate(), status);
+        });
+        return appointments;
     }
 }

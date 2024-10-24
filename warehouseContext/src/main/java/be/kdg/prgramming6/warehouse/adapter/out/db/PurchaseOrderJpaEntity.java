@@ -33,7 +33,7 @@ public class PurchaseOrderJpaEntity {
     @Column(name = "status")
     private PurchaseOrderStatus status;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "purchaseOrder")
     private List<OrderLineJpaEntity> orderLines;
 
     // Getters and setters

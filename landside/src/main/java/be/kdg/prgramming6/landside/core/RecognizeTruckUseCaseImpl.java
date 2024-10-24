@@ -4,6 +4,7 @@ import be.kdg.prgramming6.landside.domain.*;
 import be.kdg.prgramming6.landside.port.in.RecognizeTruckCommand;
 import be.kdg.prgramming6.landside.port.in.RecognizeTruckResponse;
 import be.kdg.prgramming6.landside.port.in.RecognizeTruckUseCase;
+import be.kdg.prgramming6.landside.port.out.LoadAppointmentByLicensePlatePort;
 import be.kdg.prgramming6.landside.port.out.LoadAppointmentPort;
 import be.kdg.prgramming6.landside.port.out.LoadTruckPort;
 import be.kdg.prgramming6.landside.port.out.SaveTruckPort;
@@ -16,13 +17,14 @@ import org.springframework.stereotype.Service;
 public class RecognizeTruckUseCaseImpl implements RecognizeTruckUseCase {
     private final LoadTruckPort loadTruckPort;
     private final SaveTruckPort saveTruckPort;
-    private final LoadAppointmentPort loadAppointmentPort;
+    private final LoadAppointmentByLicensePlatePort loadAppointmentPort;
     private static final Logger LOGGER = LoggerFactory.getLogger(RecognizeTruckUseCaseImpl.class);
 
-    public RecognizeTruckUseCaseImpl(LoadTruckPort loadTruckPort, SaveTruckPort saveTruckPort, LoadAppointmentPort loadAppointmentPort) {
+    public RecognizeTruckUseCaseImpl(LoadTruckPort loadTruckPort, SaveTruckPort saveTruckPort, LoadAppointmentByLicensePlatePort loadAppointmentPort) {
         this.loadTruckPort = loadTruckPort;
         this.saveTruckPort = saveTruckPort;
         this.loadAppointmentPort = loadAppointmentPort;
+
     }
 
     @Override

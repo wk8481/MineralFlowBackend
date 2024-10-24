@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAppointmentPort, CreateSchedulePort, LoadAppointmentPort, LoadTrucksByDaySchedulePort {
+public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAppointmentPort, CreateSchedulePort, LoadAppointmentPort, LoadTrucksByDaySchedulePort, LoadAppointmentByLicensePlatePort {
     private final ScheduleJpaRepository scheduleJpaRepository;
     private final AppointmentJpaRepository appointmentJpaRepository;
 
@@ -62,6 +62,8 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
 
         return schedule; // Return the new schedule with the appointments
     }
+
+
 
     @Override
     public List<Appointment> loadTrucksByDaySchedule(LocalDateTime scheduleTime) {
@@ -148,8 +150,16 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
         existingAppointment.setSchedule(existingAppointment.getSchedule()); // Ensure the schedule reference is set
     }
 
+
+
     @Override
-    public Optional<Appointment> loadAppointmentByLicensePlate(String licensePlate) {
-        return appointmentJpaRepository.findByLicensePlate(licensePlate).map(this::toAppointment);
+    public List<Appointment> loadAllAppointments() {
+        return appointmentJpaRepository.findAll().stream()
+                .map(this::toAppointment)
+                .collect(Collectors.toList());
     }
-}
+
+    public Optional<Appointment> loadAppointmentByLicensePlate(String licensePlate) {
+        Optional<AppointmentJpaEntity> appointmentJpaEntity = appointmentJpaRepository.findByLicensePlate(licensePlate);
+        return appointmentJpaEntity.map(this::toAppointment);
+    }}

@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/")
-public class TruckController {
+public class TruckOnSiteController {
     private final GetAllTrucksOnSiteUseCase getAllTrucksOnSiteUseCase;
 
-    public TruckController(GetAllTrucksOnSiteUseCase getAllTrucksOnSiteUseCase) {
+    public TruckOnSiteController(GetAllTrucksOnSiteUseCase getAllTrucksOnSiteUseCase) {
         this.getAllTrucksOnSiteUseCase = getAllTrucksOnSiteUseCase;
     }
 
