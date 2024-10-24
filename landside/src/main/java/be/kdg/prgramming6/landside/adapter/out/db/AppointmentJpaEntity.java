@@ -32,8 +32,7 @@ public class AppointmentJpaEntity {
     @Column(name = "window_end", nullable = false)
     private LocalDateTime windowEnd;
 
-    @Column(name = "seller_id", nullable = false, columnDefinition = "VARCHAR(36)")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "seller_id", nullable = false)
     private UUID sellerId;
 
     @Column(name = "arrival_time")

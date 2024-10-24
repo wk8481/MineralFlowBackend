@@ -14,8 +14,7 @@ import java.util.UUID;
 public class WarehouseProjectionJpaEntity {
 
     @Id
-    @Column(name = "warehouse_id", columnDefinition = "varchar(36)")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "warehouse_id")
     private UUID warehouseId;
 
     @Column(name = "timestamp", nullable = false)
@@ -25,8 +24,7 @@ public class WarehouseProjectionJpaEntity {
     @Column(name = "material_type", nullable = false)
     private MaterialType materialType;
 
-    @Column(name = "seller_id", nullable = false, columnDefinition = "varchar(36)")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "seller_id", nullable = false)
     private UUID sellerId;
 
     @Column(name = "current_capacity", nullable = false)

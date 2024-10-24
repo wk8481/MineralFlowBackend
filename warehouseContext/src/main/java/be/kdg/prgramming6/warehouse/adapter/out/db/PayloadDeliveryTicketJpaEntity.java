@@ -14,8 +14,7 @@ public class PayloadDeliveryTicketJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", columnDefinition = "VARCHAR(36)", updatable = false)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "id", updatable = false)
     private UUID id;
 
     @Column(name = "warehouse_id", nullable = false)

@@ -26,8 +26,7 @@ public class WarehouseActivityJpaEntity {
     @Column(name = "time")
     private LocalDateTime time;
 
-    @Column(name = "seller_id", columnDefinition = "varchar(36)")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "seller_id")
     private UUID sellerId;
 
 
