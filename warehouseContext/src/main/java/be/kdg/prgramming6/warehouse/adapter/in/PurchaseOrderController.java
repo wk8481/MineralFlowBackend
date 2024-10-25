@@ -2,7 +2,8 @@ package be.kdg.prgramming6.warehouse.adapter.in;
 
 import be.kdg.prgramming6.warehouse.domain.OrderLine;
 import be.kdg.prgramming6.warehouse.domain.PurchaseOrder;
-import be.kdg.prgramming6.warehouse.port.in.PurchaseOrderUseCase;
+import be.kdg.prgramming6.warehouse.port.in.GetListPurchaseOrderUseCase;
+import be.kdg.prgramming6.warehouse.port.in.UpdatePurchaseOrderUseCase;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,15 +12,15 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/")
 public class PurchaseOrderController {
-    private final PurchaseOrderUseCase purchaseOrderUseCase;
+    private final GetListPurchaseOrderUseCase getListPurchaseOrderUseCase;
 
-    public PurchaseOrderController(PurchaseOrderUseCase purchaseOrderUseCase) {
-        this.purchaseOrderUseCase = purchaseOrderUseCase;
+    public PurchaseOrderController(GetListPurchaseOrderUseCase getListPurchaseOrderUseCase) {
+        this.getListPurchaseOrderUseCase = getListPurchaseOrderUseCase;
     }
 
     @GetMapping("/purchase-orders")
     public List<POReceivedDTO.PurchaseOrder> getAllPurchaseOrders() {
-        return purchaseOrderUseCase.getAllPurchaseOrders().stream()
+        return getListPurchaseOrderUseCase.getAllPurchaseOrders().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }

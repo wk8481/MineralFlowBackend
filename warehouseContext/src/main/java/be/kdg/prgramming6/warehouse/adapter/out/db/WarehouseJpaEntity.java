@@ -13,12 +13,10 @@ import java.util.UUID;
 public class WarehouseJpaEntity {
 
     @Id
-    @Column(name = "warehouse_id", columnDefinition = "varchar(36)")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "warehouse_id")
     private UUID warehouseId; // UUID for warehouse identification
 
-    @Column(name = "seller_id", columnDefinition = "VARCHAR(36)")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "seller_id")
     private UUID sellerId; // Reference to the sellerId
 
     @Enumerated(EnumType.STRING)

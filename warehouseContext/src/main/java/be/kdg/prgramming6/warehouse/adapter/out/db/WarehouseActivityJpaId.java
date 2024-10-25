@@ -12,12 +12,10 @@ import java.util.UUID;
 
 @Embeddable
 public class WarehouseActivityJpaId implements Serializable {
-    @Column(name = "warehouse_id", columnDefinition = "varchar(36)")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "warehouse_id")
     private UUID warehouseId;
 
-    @Column(name = "activity_id", columnDefinition = "varchar(36)")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "activity_id")
     private UUID activityId;
 
     public WarehouseActivityJpaId(final UUID warehouseId, final UUID activityId) {

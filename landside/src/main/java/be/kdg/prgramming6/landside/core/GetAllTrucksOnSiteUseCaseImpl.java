@@ -1,10 +1,10 @@
-// landside/src/main/java/be/kdg/prgramming6/landside/core/GetAllTrucksOnSiteUseCaseImpl.java
 package be.kdg.prgramming6.landside.core;
 
 import be.kdg.prgramming6.landside.port.in.GetAllTrucksOnSiteUseCase;
 import be.kdg.prgramming6.landside.port.in.TruckResponse;
 import be.kdg.prgramming6.landside.port.out.LoadTrucksByDaySchedulePort;
 import be.kdg.prgramming6.landside.port.out.LoadWBTPort;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,9 +22,10 @@ public class GetAllTrucksOnSiteUseCaseImpl implements GetAllTrucksOnSiteUseCase 
     }
 
     @Override
+    @Transactional
     public List<TruckResponse> getAllTrucksOnSite() {
-        LocalDateTime now = LocalDateTime.now();
-        return loadTrucksByDaySchedulePort.loadTrucksByDaySchedule(now).stream()
+        LocalDateTime scheduleTime = LocalDateTime.of(2024, 10, 30, 10, 0);
+        return loadTrucksByDaySchedulePort.loadTrucksByDaySchedule(scheduleTime).stream()
                 .map(appointment -> appointment.getTruck().getLicensePlate().toString())
                 .filter(licensePlate -> loadWBTPort.loadByLicensePlate(licensePlate).isPresent())
                 .map(TruckResponse::new)

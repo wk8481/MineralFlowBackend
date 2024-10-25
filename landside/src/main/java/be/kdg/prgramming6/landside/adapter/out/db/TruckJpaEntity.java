@@ -21,7 +21,6 @@ public class TruckJpaEntity {
     private String dockNumber;
 
     @Column(name = "seller_id")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID sellerId;
 

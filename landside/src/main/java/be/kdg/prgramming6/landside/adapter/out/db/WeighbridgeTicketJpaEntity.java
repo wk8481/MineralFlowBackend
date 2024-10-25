@@ -13,8 +13,7 @@ import java.util.UUID;
 public class WeighbridgeTicketJpaEntity {
 
     @Id
-    @Column(name = "ticket_id", columnDefinition = "varchar(36)")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "ticket_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID ticketId = UUID.randomUUID();
 

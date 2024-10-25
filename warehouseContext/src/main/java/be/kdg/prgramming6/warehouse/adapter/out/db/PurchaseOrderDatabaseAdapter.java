@@ -5,15 +5,15 @@ import be.kdg.prgramming6.warehouse.domain.PurchaseOrder;
 import be.kdg.prgramming6.warehouse.port.out.LoadAllPurchaseOrdersPort;
 import be.kdg.prgramming6.warehouse.port.out.LoadPurchaseOrderByIdPort;
 import be.kdg.prgramming6.warehouse.port.out.SavePurchaseOrderPort;
+import be.kdg.prgramming6.warehouse.port.out.UpdatePurchaseOrderPort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
-public class PurchaseOrderDatabaseAdapter implements LoadPurchaseOrderByIdPort, SavePurchaseOrderPort, LoadAllPurchaseOrdersPort {
+public class PurchaseOrderDatabaseAdapter implements LoadPurchaseOrderByIdPort, SavePurchaseOrderPort, LoadAllPurchaseOrdersPort, UpdatePurchaseOrderPort {
     private final PurchaseOrderJpaRepository purchaseOrderJpaRepository;
 
     public PurchaseOrderDatabaseAdapter(PurchaseOrderJpaRepository purchaseOrderJpaRepository) {
@@ -25,8 +25,6 @@ public class PurchaseOrderDatabaseAdapter implements LoadPurchaseOrderByIdPort, 
         return purchaseOrderJpaRepository.findById(poNumber).map(this::convertToDomain);
     }
 
-
-
     @Override
     public List<PurchaseOrder> loadAllPurchaseOrders() {
         return purchaseOrderJpaRepository.findAll().stream()
@@ -37,6 +35,14 @@ public class PurchaseOrderDatabaseAdapter implements LoadPurchaseOrderByIdPort, 
     @Override
     public void savePurchaseOrder(PurchaseOrder purchaseOrder) {
         purchaseOrderJpaRepository.save(convertToEntity(purchaseOrder));
+    }
+
+    @Override
+    public void updatePurchaseOrder(PurchaseOrder purchaseOrder) {
+        PurchaseOrderJpaEntity entity = purchaseOrderJpaRepository.findById(purchaseOrder.getPoNumber())
+                .orElseThrow(() -> new IllegalArgumentException("Purchase Order not found for ID: " + purchaseOrder.getPoNumber()));
+        entity.setStatus(purchaseOrder.getStatus());
+        purchaseOrderJpaRepository.save(entity);
     }
 
     private PurchaseOrder convertToDomain(PurchaseOrderJpaEntity entity) {

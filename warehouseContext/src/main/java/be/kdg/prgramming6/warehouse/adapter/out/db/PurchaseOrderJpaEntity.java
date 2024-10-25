@@ -22,8 +22,7 @@ public class PurchaseOrderJpaEntity {
     @Column(name = "date")
     private Date date;
 
-    @Column(name = "customer_number", columnDefinition = "varchar(36)")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "customer_number")
     private UUID customerNumber;
 
     @Column(name = "customer_name")

@@ -15,8 +15,6 @@ public class Warehouse {
     private final WarehouseActivityWindow activities;
 
 
-
-
     // Constructor
     public Warehouse(final WarehouseId warehouseId, final SellerId sellerId, final MaterialType materialType, final WarehouseActivityWindow activities) {
         this.warehouseId = warehouseId;
@@ -27,10 +25,7 @@ public class Warehouse {
     }
 
 
-
-
-
-    public WarehouseActivity addActivity(final BigDecimal weight) {
+    public WarehouseActivity loadWarehouse(final MaterialType materialType, final BigDecimal weight) {
         return activities.addActivity(WarehouseActivityType.DELIVERY, sellerId, materialType, weight);
     }
 
@@ -65,6 +60,10 @@ public class Warehouse {
         );
     }
 
+    public WarehouseActivity unloadWarehouse(final MaterialType materialType, final BigDecimal weight) {
+        return activities.addActivity(WarehouseActivityType.SHIPMENT, sellerId, materialType, weight);
+    }
+
     // Optional: Method to get all docked trucks for inspection or processing
     public List<Truck> getDockedTrucks() {
         return new ArrayList<>(dockedTrucks); // Return a copy to maintain encapsulation
@@ -82,6 +81,20 @@ public class Warehouse {
         return materialType;
     }
 
-
-
+    public BigDecimal getTotalMaterial() {
+        BigDecimal totalMaterial = BigDecimal.ZERO;
+        for (WarehouseActivity activity : activities.getActivities()) {
+            if (activity.warehouseActivityType() == WarehouseActivityType.DELIVERY) {
+                totalMaterial = totalMaterial.add(activity.weight());
+            } else if (activity.warehouseActivityType() == WarehouseActivityType.SHIPMENT) {
+                totalMaterial = totalMaterial.subtract(activity.weight());
+            }
+        }
+        return totalMaterial;
+    }
 }
+
+
+
+
+

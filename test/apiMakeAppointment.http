@@ -22,8 +22,8 @@ Content-Type: application/json
   "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
   "licensePlate": "ABC-123",
   "materialType": "PET_COKE",
-  "appointmentWindowStart": "2024-10-30T09:00:00",
-  "appointmentWindowEnd": "2024-10-30T10:00:00"
+  "appointmentWindowStart": "2024-10-30T10:00:00",
+  "appointmentWindowEnd": "2024-10-30T11:00:00"
 }
 
 
@@ -123,17 +123,11 @@ Content-Type: application/json
 }
 
 
-### Get one purchase order
-GET http://localhost:8090/api/purchase-order
+### Get purchase orders
+GET http://localhost:8090/api/purchase-orders
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
-{ "poNumber": "PO123456" }
 
 
-### Get list of purchase orders by customer
-GET http://localhost:8090/api/customer
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
 
-{ "customerNumber": "550e8400-e29b-41d4-a716-446655440000" }

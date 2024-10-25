@@ -39,8 +39,8 @@ public class UpdateWarehouseCapacityUseCaseImpl implements UpdateWarehouseCapaci
         Optional<Warehouse> optionalWarehouse = loadWarehouseByIdPort.loadWarehouseById(warehouseId);
         Warehouse warehouse = optionalWarehouse.orElseThrow(() -> new IllegalArgumentException("Warehouse not found for ID: " + warehouseId));
 
-        // Add the activity with the given weight
-        final WarehouseActivity warehouseActivity = warehouse.addActivity(weight);
+        // Add the activity with the given weight to load the warehouse
+        final WarehouseActivity warehouseActivity = warehouse.loadWarehouse(warehouse.getMaterialType(), weight);
         updateWarehousePorts.forEach(updateWarehousePort -> updateWarehousePort.activityCreated(warehouse, warehouseActivity));
     }
 }

@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
-public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMaterialPort, UpdatePDTPort, LoadPDTPort, SavePDTPort, UpdateWarehousePort, LoadWarehouseByIdPort {
+public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMaterialPort, UpdatePDTPort, LoadPDTPort, SavePDTPort, UpdateWarehousePort, LoadWarehouseByIdPort, LoadAllWarehousesPort {
     private static final Logger LOGGER = LoggerFactory.getLogger(DockTruckDatabaseAdapter.class);
 
     private final WarehouseJpaRepository warehouseJpaRepository;
@@ -44,6 +44,8 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
         payloadDeliveryTicketJpaRepository.save(updatedPDT);
         System.out.println("Updated Payload Delivery Ticket for license plate: " + licensePlate);
     }
+
+
 
     private PayloadDeliveryTicket toPayloadDeliveryTicket(PayloadDeliveryTicketJpaEntity pdtEntity) {
         return new PayloadDeliveryTicket(
@@ -129,5 +131,10 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
     @Override
     public Optional<Warehouse> loadWarehouseById(WarehouseId warehouseId) {
         return warehouseJpaRepository.findByWarehouseId(warehouseId.id()).map(this::toWarehouse);
+    }
+
+    @Override
+    public List<Warehouse> loadAllWarehouses() {
+        return warehouseJpaRepository.findAll().stream().map(this::toWarehouse).collect(Collectors.toList());
     }
 }

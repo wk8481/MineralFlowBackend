@@ -4,7 +4,7 @@ import be.kdg.prgramming6.warehouse.domain.MaterialType;
 import be.kdg.prgramming6.warehouse.domain.OrderLine;
 import be.kdg.prgramming6.warehouse.domain.PurchaseOrder;
 import be.kdg.prgramming6.warehouse.domain.PurchaseOrderStatus;
-import be.kdg.prgramming6.warehouse.port.in.PurchaseOrderUseCase;
+import be.kdg.prgramming6.warehouse.port.in.UpdatePurchaseOrderUseCase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +19,11 @@ public class POReceiveListener {
     private static final Logger logger = LoggerFactory.getLogger(POReceiveListener.class);
     private static final String PURCHASE_ORDER_QUEUE = "purchase_order_queue";
     private final ObjectMapper objectMapper;
-    private final PurchaseOrderUseCase purchaseOrderUseCase;
+    private final UpdatePurchaseOrderUseCase updatePurchaseOrderUseCase;
 
-    public POReceiveListener(ObjectMapper objectMapper, PurchaseOrderUseCase purchaseOrderUseCase) {
+    public POReceiveListener(ObjectMapper objectMapper, UpdatePurchaseOrderUseCase updatePurchaseOrderUseCase) {
         this.objectMapper = objectMapper;
-        this.purchaseOrderUseCase = purchaseOrderUseCase;
+        this.updatePurchaseOrderUseCase = updatePurchaseOrderUseCase;
     }
 
     @RabbitListener(queues = PURCHASE_ORDER_QUEUE)
@@ -36,7 +36,8 @@ public class POReceiveListener {
             PurchaseOrder receivedOrder = convertToDomain(poReceivedDTO.getPurchaseOrder());
 
             // Handle the purchase order
-            purchaseOrderUseCase.handle(receivedOrder);
+            updatePurchaseOrderUseCase.handle(receivedOrder);
+
 
         } catch (Exception e) {
             logger.error("Error processing message: {}", e.getMessage(), e);

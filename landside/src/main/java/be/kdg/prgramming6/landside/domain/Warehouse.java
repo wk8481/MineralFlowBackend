@@ -62,14 +62,14 @@ public class Warehouse {
         return dockNumber;
     }
 
-    public void modifyCapacity(final WarehouseActivityType warehouseActivityType, final BigDecimal weight) {
+    public synchronized void modifyCapacity(final WarehouseActivityType warehouseActivityType, final BigDecimal weight) {
         if (weight.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Weight must be greater than zero.");
         }
         switch (warehouseActivityType) {
             case DELIVERY -> store(weight);
             case SHIPMENT -> {
-                if (currentCapacity.compareTo(weight) < 0) {
+                if (!canUnload(weight)) {
                     throw new IllegalStateException("Warehouse does not have enough capacity for shipment.");
                 }
                 currentCapacity = currentCapacity.subtract(weight);
@@ -77,10 +77,14 @@ public class Warehouse {
         }
     }
 
-
     // Method to check if there is enough storage available for the given payload weight
     public boolean canStore(BigDecimal payloadWeight) {
         return currentCapacity.add(payloadWeight).compareTo(MAX_CAPACITY) <= 0;
+    }
+
+    // Method to check if there is enough capacity for unloading the given weight
+    public boolean canUnload(BigDecimal weight) {
+        return currentCapacity.compareTo(weight) >= 0;
     }
 
     // Method to store the payload (updating the current capacity)

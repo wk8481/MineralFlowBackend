@@ -17,17 +17,19 @@ public class ActivityCreatedListener {
     public ActivityCreatedListener(WarehouseProjector warehouseProjector) {
         this.warehouseProjector = warehouseProjector;
     }
-    //include da checkCapacityForAppointmentUseCase
 
     @RabbitListener(queues = WAREHOUSE_ACTIVITY_CREATED_QUEUE)
     public void activityCreated(final WarehouseActivityCreatedEvent event) {
-        LOGGER.info(
-            "{} activity got created on warehouse of {} with weight of {}",
-            event.type(),
-            event.sellerId(), //sellerId or warehouseId?
-            event.weight()
-        );
-        warehouseProjector.projectWarehouse(event.warehouseId(), event.type(), event.sellerId(), event.materialType(), event.time(), event.weight());
-        //checkCapacityForAppointmentUseCase.checkCapacityForAppointment(event.sellerId());
+        try {
+            LOGGER.info(
+                    "{} activity got created on warehouse of {} with weight of {}",
+                    event.type(),
+                    event.sellerId(),
+                    event.weight()
+            );
+            warehouseProjector.projectWarehouse(event.warehouseId(), event.type(), event.sellerId(), event.materialType(), event.time(), event.weight());
+        } catch (IllegalStateException e) {
+            LOGGER.error("Error processing warehouse activity: {}", e.getMessage());
+        }
     }
 }
