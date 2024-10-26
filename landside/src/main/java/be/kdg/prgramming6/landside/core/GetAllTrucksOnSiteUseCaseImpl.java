@@ -3,7 +3,6 @@ package be.kdg.prgramming6.landside.core;
 import be.kdg.prgramming6.landside.port.in.GetAllTrucksOnSiteUseCase;
 import be.kdg.prgramming6.landside.port.in.TruckResponse;
 import be.kdg.prgramming6.landside.port.out.LoadTrucksByDaySchedulePort;
-import be.kdg.prgramming6.landside.port.out.LoadWBTPort;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +13,9 @@ import java.util.stream.Collectors;
 @Service
 public class GetAllTrucksOnSiteUseCaseImpl implements GetAllTrucksOnSiteUseCase {
     private final LoadTrucksByDaySchedulePort loadTrucksByDaySchedulePort;
-    private final LoadWBTPort loadWBTPort;
 
-    public GetAllTrucksOnSiteUseCaseImpl(LoadTrucksByDaySchedulePort loadTrucksByDaySchedulePort, LoadWBTPort loadWBTPort) {
+    public GetAllTrucksOnSiteUseCaseImpl(LoadTrucksByDaySchedulePort loadTrucksByDaySchedulePort) {
         this.loadTrucksByDaySchedulePort = loadTrucksByDaySchedulePort;
-        this.loadWBTPort = loadWBTPort;
     }
 
     @Override
@@ -26,9 +23,8 @@ public class GetAllTrucksOnSiteUseCaseImpl implements GetAllTrucksOnSiteUseCase 
     public List<TruckResponse> getAllTrucksOnSite() {
         LocalDateTime scheduleTime = LocalDateTime.of(2024, 10, 30, 10, 0);
         return loadTrucksByDaySchedulePort.loadTrucksByDaySchedule(scheduleTime).stream()
-                .map(appointment -> appointment.getTruck().getLicensePlate().toString())
-                .filter(licensePlate -> loadWBTPort.loadByLicensePlate(licensePlate).isPresent())
-                .map(TruckResponse::new)
+                .filter(appointment -> appointment.isOnSite(scheduleTime))
+                .map(appointment -> new TruckResponse(appointment.getTruck().getLicensePlate().toString()))
                 .collect(Collectors.toList());
     }
 }

@@ -1,10 +1,6 @@
-// landside/src/main/java/be/kdg/prgramming6/landside/adapters/out/db/AppointmentJpaEntity.java
 package be.kdg.prgramming6.landside.adapter.out.db;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -37,6 +33,9 @@ public class AppointmentJpaEntity {
 
     @Column(name = "arrival_time")
     private LocalDateTime arrivalTime;
+
+    @Column(name = "departure_time")
+    private LocalDateTime departureTime;
 
     // Getters and setters...
 
@@ -102,5 +101,13 @@ public class AppointmentJpaEntity {
 
     public void setArrivalTime(LocalDateTime arrivalTime) {
         this.arrivalTime = arrivalTime;
+    }
+
+    public LocalDateTime getDepartureTime() {
+        return departureTime;
+    }
+
+    public void setDepartureTime(LocalDateTime departureTime) {
+        this.departureTime = departureTime;
     }
 }

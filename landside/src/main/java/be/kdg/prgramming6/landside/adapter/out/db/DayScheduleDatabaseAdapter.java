@@ -78,6 +78,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
                 new SellerId(appointmentJpaEntity.getSellerId())
         );
         appointment.setArrivalTime(appointmentJpaEntity.getArrivalTime());
+        appointment.setDepartureTime(appointmentJpaEntity.getDepartureTime());
         return appointment;
     }
 
@@ -90,6 +91,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
         appointmentJpaEntity.setSellerId(appointment.getSellerId().id());
         appointmentJpaEntity.setSchedule(scheduleJpaEntity);
         appointmentJpaEntity.setArrivalTime(appointment.getArrivalTime());
+        appointmentJpaEntity.setDepartureTime(appointment.getDepartureTime());
         return appointmentJpaEntity;
     }
 
@@ -125,6 +127,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
         existingAppointment.setWindowEnd(appointment.getWindowEnd());
         existingAppointment.setSellerId(appointment.getSellerId().id());
         existingAppointment.setArrivalTime(appointment.getArrivalTime());
+        existingAppointment.setDepartureTime(appointment.getDepartureTime());
         existingAppointment.setSchedule(existingAppointment.getSchedule());
     }
 

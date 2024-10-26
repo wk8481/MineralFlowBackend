@@ -1,15 +1,12 @@
 package be.kdg.prgramming6.landside.core;
 
-import be.kdg.prgramming6.landside.domain.LicensePlate;
-import be.kdg.prgramming6.landside.domain.Truck;
-import be.kdg.prgramming6.landside.domain.Warehouse;
-import be.kdg.prgramming6.landside.domain.WarehouseId;
-import be.kdg.prgramming6.landside.domain.WeighbridgeTicket;
+import be.kdg.prgramming6.landside.domain.*;
 import be.kdg.prgramming6.landside.port.in.*;
 import be.kdg.prgramming6.landside.port.out.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,19 +22,19 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
     private final SaveWBTPort saveWBTPort;
     private final LoadWBTPort loadWBTPort;
     private final List<UpdateWBTPort> updateWBTPorts;
-
     private final LoadTruckPort loadTruckPort;
     private final LoadWarehousePort loadWarehousePort;
+    private final LoadAppointmentByLicensePlatePort loadAppointmentPort;
+    private final UpdateAppointmentPort updateAppointmentPort;
 
-
-    public GenerateWeighbridgeTicketUseCaseImpl(SaveWBTPort saveWBTPort, LoadWBTPort loadWBTPort, List<UpdateWBTPort> updateWBTPorts, LoadTruckPort loadTruckPort, LoadWarehousePort loadWarehousePort) {
+    public GenerateWeighbridgeTicketUseCaseImpl(SaveWBTPort saveWBTPort, LoadWBTPort loadWBTPort, List<UpdateWBTPort> updateWBTPorts, LoadTruckPort loadTruckPort, LoadWarehousePort loadWarehousePort, LoadAppointmentByLicensePlatePort loadAppointmentPort, @Qualifier("dayScheduleDatabaseAdapter") UpdateAppointmentPort updateAppointmentPort) {
         this.saveWBTPort = saveWBTPort;
         this.loadWBTPort = loadWBTPort;
         this.updateWBTPorts = updateWBTPorts;
-
         this.loadTruckPort = loadTruckPort;
         this.loadWarehousePort = loadWarehousePort;
-
+        this.loadAppointmentPort = loadAppointmentPort;
+        this.updateAppointmentPort = updateAppointmentPort;
     }
 
     @Override
@@ -89,6 +86,19 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
             logger.debug("No existing ticket found. Saving new ticket: {}", ticket);
             saveWBTPort.save(ticket);
         }
+
+        // Load and update the appointment
+        loadAppointmentPort.loadAppointmentByLicensePlate(command.licensePlate())
+                .ifPresent(appointment -> {
+                    if (appointment.matches(truck)) {
+                        LocalDateTime departureTime = appointment.getArrivalTime().plusMinutes(15);
+                        appointment.setDepartureTime(departureTime);
+                        updateAppointmentPort.updateAppointment(appointment);
+                        logger.info("Updated appointment with departure time: {}", departureTime);
+                    } else {
+                        logger.warn("Appointment does not match the truck: {}", command.licensePlate());
+                    }
+                });
 
         logger.info("Generated or Loaded Weighbridge Ticket: {}", ticket);
 

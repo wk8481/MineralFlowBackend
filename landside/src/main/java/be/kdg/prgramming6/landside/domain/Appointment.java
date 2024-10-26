@@ -10,9 +10,11 @@ public class Appointment {
     private final LocalDateTime windowEnd;
     private final SellerId sellerId;
     private LocalDateTime arrivalTime;
+    private LocalDateTime departureTime;
 
     public Appointment(final Truck truck, final MaterialType materialType,
                        final LocalDateTime windowStart, final LocalDateTime windowEnd, final SellerId sellerId) {
+
 
         if (truck == null || materialType == null || windowStart == null ||
                 windowEnd == null || sellerId == null) {
@@ -56,6 +58,13 @@ public class Appointment {
         }
     }
 
+    public boolean isOnSite(LocalDateTime currentTime) {
+        if (arrivalTime == null || departureTime == null) {
+            return false;
+        }
+        return !currentTime.isBefore(arrivalTime) && !currentTime.isAfter(departureTime) && isWithinWindow(arrivalTime);
+    }
+
     // Method to check if the truck matches the appointment
     public boolean matches(Truck truck) {
         return this.truck.getLicensePlate().equals(truck.getLicensePlate()) &&
@@ -94,10 +103,26 @@ public class Appointment {
         this.arrivalTime = arrivalTime;
     }
 
+    public LocalDateTime getDepartureTime() {
+        return departureTime;
+    }
+
+    public void setDepartureTime(LocalDateTime departureTime) {
+        this.departureTime = departureTime;
+    }
+
     // Method to create a new Appointment instance
     public static Appointment scheduleAppointment(Truck truck, MaterialType materialType,
                                                   LocalDateTime windowStart, LocalDateTime windowEnd,
                                                   SellerId sellerId) {
         return new Appointment(truck, materialType, windowStart, windowEnd, sellerId);
     }
+
+    // boolean method to check if is onSite, when pass gate set it to true, when load the warehouse set it to false
+
+    public boolean isOnSite() {
+        return false;
+    }
+
+
 }
