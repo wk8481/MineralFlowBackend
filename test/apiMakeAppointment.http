@@ -105,6 +105,7 @@ Authorization: Bearer {{access_token}}
 
 
 
+
 ### Get Trucks onSIte
 GET http://localhost:8090/api/trucks-on-site
 Authorization: Bearer {{access_token}}
@@ -128,6 +129,10 @@ GET http://localhost:8090/api/purchase-orders
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
+### Get Warehouses with total material weight
+GET http://localhost:8090/api/total-material
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
 
 
 
