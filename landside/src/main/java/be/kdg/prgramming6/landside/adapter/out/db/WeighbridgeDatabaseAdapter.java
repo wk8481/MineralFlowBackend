@@ -6,11 +6,13 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
-public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighbridgePort, UpdateWeighbridgePort, UpdateWarehousePort {
+public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighbridgePort, UpdateWeighbridgePort, UpdateWarehousePort, LoadAllWarehousesPort {
 
     private final WarehouseProjectionJpaRepository warehouseProjectionJpaRepository;
     private final WeighbridgeJpaRepository weighbridgeJpaRepository;
@@ -71,11 +73,19 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighb
                         LocalDateTime.now())
                 .orElseGet(() -> fromWarehouse(warehouse));
 
-        // Accumulate the current capacity
-        BigDecimal newCapacity = warehouseProjectionJpaEntity.getCurrentCapacity().add(warehouse.getCurrentCapacity());
-        warehouseProjectionJpaEntity.setCurrentCapacity(newCapacity);
+        // Set the current capacity directly from the warehouse object
+        warehouseProjectionJpaEntity.setCurrentCapacity(warehouse.getCurrentCapacity());
 
         warehouseProjectionJpaRepository.save(warehouseProjectionJpaEntity);
+    }
+
+
+    private Warehouse toWarehouse(WarehouseProjectionJpaEntity warehouseProjection) {
+        return new Warehouse(
+                new WarehouseId(warehouseProjection.getWarehouseId()),
+                warehouseProjection.getMaterialType(),
+                new SellerId(warehouseProjection.getSellerId()),
+                warehouseProjection.getCurrentCapacity());
     }
 
     private WarehouseProjectionJpaEntity fromWarehouse(Warehouse warehouse) {
@@ -86,5 +96,13 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighb
                 LocalDateTime.now(),
                 warehouse.getCurrentCapacity()
         );
+    }
+
+
+    @Override
+    public List<Warehouse> loadAllWarehouses() {
+        return warehouseProjectionJpaRepository.findAll().stream()
+                .map(this::toWarehouse)
+                .collect(Collectors.toList());
     }
 }

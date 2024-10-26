@@ -1,6 +1,7 @@
-package be.kdg.prgramming6.warehouse.port.out;
+package be.kdg.prgramming6.landside.port.out;
 
-import be.kdg.prgramming6.warehouse.domain.Warehouse;
+
+import be.kdg.prgramming6.landside.domain.Warehouse;
 
 import java.util.List;
 

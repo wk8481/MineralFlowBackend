@@ -1,5 +1,5 @@
 // warehouseContext/src/main/java/be/kdg/prgramming6/warehouse/adapter/in/web/dto/WarehouseDetailsDto.java
-package be.kdg.prgramming6.warehouse.adapter.in;
+package be.kdg.prgramming6.landside.adapter.in;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -8,7 +8,7 @@ public class WarehouseDetailsDTO {
     private UUID warehouseId;
     private UUID sellerId;
     private String materialType;
-    private BigDecimal totalMaterial;
+    private BigDecimal currentCapacity;
 
     // Getters and setters
     public UUID getWarehouseId() {
@@ -35,11 +35,14 @@ public class WarehouseDetailsDTO {
         this.materialType = materialType;
     }
 
-    public BigDecimal getTotalMaterial() {
-        return totalMaterial;
+    public BigDecimal getCurrentCapacity() {
+        return currentCapacity;
     }
 
-    public void setTotalMaterial(BigDecimal totalMaterial) {
-        this.totalMaterial = totalMaterial;
+    public void setCurrentCapacity(BigDecimal currentCapacity) {
+        this.currentCapacity = currentCapacity;
     }
+
+
+
 }

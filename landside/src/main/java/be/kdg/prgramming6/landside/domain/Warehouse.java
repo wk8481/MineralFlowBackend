@@ -33,7 +33,7 @@ public class Warehouse {
     public Warehouse(WarehouseId warehouseId, MaterialType materialType, SellerId sellerId, BigDecimal currentCapacity) {
         this.warehouseId = Objects.requireNonNull(warehouseId, "Warehouse ID cannot be null");
         this.materialType = Objects.requireNonNull(materialType, "Material type cannot be null");
-        this.currentCapacity = BigDecimal.ZERO; // Initialize the current load as empty
+        this.currentCapacity = Objects.requireNonNull(currentCapacity, "Current capacity cannot be null"); // Use the provided current capacity
         this.sellerId = Objects.requireNonNull(sellerId, "Seller ID cannot be null");
     }
 
@@ -95,7 +95,9 @@ public class Warehouse {
         currentCapacity = currentCapacity.add(weight);
     }
 
-
+    public void setCurrentCapacity(BigDecimal currentCapacity) {
+        this.currentCapacity = currentCapacity;
+    }
 
     // Method to check if the warehouse is 80% full and there are less than 40 appointments in the same hour
     public boolean isAppointmentPossible(Schedule schedule, LocalDateTime start, LocalDateTime end) {

@@ -1,10 +1,6 @@
 package be.kdg.prgramming6.warehouse.core;
 
-import be.kdg.prgramming6.warehouse.domain.PurchaseOrder;
-import be.kdg.prgramming6.warehouse.domain.PurchaseOrderStatus;
-import be.kdg.prgramming6.warehouse.domain.Warehouse;
-import be.kdg.prgramming6.warehouse.domain.WarehouseActivity;
-import be.kdg.prgramming6.warehouse.domain.WarehouseId;
+import be.kdg.prgramming6.warehouse.domain.*;
 import be.kdg.prgramming6.warehouse.port.in.UpdatePurchaseOrderUseCase;
 import be.kdg.prgramming6.warehouse.port.out.*;
 import jakarta.transaction.Transactional;
@@ -50,8 +46,12 @@ public class UpdatePurchaseOrderUseCaseImpl implements UpdatePurchaseOrderUseCas
             Optional<Warehouse> optionalWarehouse = loadWarehouseByIdPort.loadWarehouseById(warehouseId);
             Warehouse warehouse = optionalWarehouse.orElseThrow(() -> new IllegalArgumentException("Warehouse not found for ID: " + warehouseId));
 
-            final WarehouseActivity warehouseActivity = warehouse.unloadWarehouse(warehouse.getMaterialType(), BigDecimal.TEN);
-            updateWarehousePorts.forEach(updateWarehousePort -> updateWarehousePort.activityCreated(warehouse, warehouseActivity));
+            // Loop through order lines and use their weights
+            for (OrderLine orderLine : receivedOrder.getOrderLines()) {
+                BigDecimal weight = BigDecimal.valueOf(orderLine.getAmountInTons());
+                final WarehouseActivity warehouseActivity = warehouse.unloadWarehouse(orderLine.getMaterialType(), weight);
+                updateWarehousePorts.forEach(updateWarehousePort -> updateWarehousePort.activityCreated(warehouse, warehouseActivity));
+            }
 
         } else {
             savePurchaseOrderPort.savePurchaseOrder(receivedOrder);

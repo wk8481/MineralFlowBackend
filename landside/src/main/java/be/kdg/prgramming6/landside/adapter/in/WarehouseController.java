@@ -1,9 +1,10 @@
 // warehouseContext/src/main/java/be/kdg/prgramming6/warehouse/adapter/in/web/WarehouseController.java
-package be.kdg.prgramming6.warehouse.adapter.in;
+package be.kdg.prgramming6.landside.adapter.in;
 
 
-import be.kdg.prgramming6.warehouse.port.in.ViewTotalMaterialUseCase;
-import be.kdg.prgramming6.warehouse.port.in.WarehouseDetailsResponse;
+
+import be.kdg.prgramming6.landside.port.in.ViewTotalMaterialUseCase;
+import be.kdg.prgramming6.landside.port.in.WarehouseDetailsResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +30,7 @@ public class WarehouseController {
                     dto.setWarehouseId(response.getWarehouseId());
                     dto.setSellerId(response.getSellerId());
                     dto.setMaterialType(response.getMaterialType());
-                    dto.setTotalMaterial(response.getTotalMaterial());
+                    dto.setCurrentCapacity(response.getCurrentCapacity());
                     return dto;
                 })
                 .collect(Collectors.toList());

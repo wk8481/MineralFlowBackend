@@ -101,6 +101,8 @@ Content-Type: application/json
 ### Get Trucks onTime/check arrival
 GET http://localhost:8090/api/check-arrival
 Authorization: Bearer {{access_token}}
+Accept: application/json
+Content-Type: application/json
 
 
 
@@ -109,6 +111,7 @@ Authorization: Bearer {{access_token}}
 ### Get Trucks onSIte
 GET http://localhost:8090/api/trucks-on-site
 Authorization: Bearer {{access_token}}
+Content-Type: application/json
 
 
 ### PO rabbit
