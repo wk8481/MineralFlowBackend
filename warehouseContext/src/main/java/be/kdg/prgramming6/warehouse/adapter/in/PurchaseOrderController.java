@@ -3,6 +3,7 @@ package be.kdg.prgramming6.warehouse.adapter.in;
 import be.kdg.prgramming6.warehouse.domain.OrderLine;
 import be.kdg.prgramming6.warehouse.domain.PurchaseOrder;
 import be.kdg.prgramming6.warehouse.port.in.GetListPurchaseOrderUseCase;
+import be.kdg.prgramming6.warehouse.port.in.GetPurchaseOrderByPoNumberUseCase;
 import be.kdg.prgramming6.warehouse.port.in.UpdatePurchaseOrderUseCase;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +14,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/")
 public class PurchaseOrderController {
     private final GetListPurchaseOrderUseCase getListPurchaseOrderUseCase;
+    private final GetPurchaseOrderByPoNumberUseCase getPurchaseOrderByPoNumberUseCase;
 
-    public PurchaseOrderController(GetListPurchaseOrderUseCase getListPurchaseOrderUseCase) {
+    public PurchaseOrderController(GetListPurchaseOrderUseCase getListPurchaseOrderUseCase, GetPurchaseOrderByPoNumberUseCase getPurchaseOrderByPoNumberUseCase) {
         this.getListPurchaseOrderUseCase = getListPurchaseOrderUseCase;
+        this.getPurchaseOrderByPoNumberUseCase = getPurchaseOrderByPoNumberUseCase;
     }
 
     @GetMapping("/purchase-orders")
@@ -24,6 +27,14 @@ public class PurchaseOrderController {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("/purchase-orders/{poNumber}")
+    public POReceivedDTO.PurchaseOrder getPurchaseOrderByPoNumber(@PathVariable String poNumber) {
+        PurchaseOrder purchaseOrder = getPurchaseOrderByPoNumberUseCase.getPurchaseOrderByPoNumber(poNumber);
+        return convertToDTO(purchaseOrder);
+    }
+
+
 
     private POReceivedDTO.PurchaseOrder convertToDTO(PurchaseOrder purchaseOrder) {
         POReceivedDTO.PurchaseOrder dto = new POReceivedDTO.PurchaseOrder();

@@ -1,5 +1,6 @@
 package be.kdg.prgramming6.landside.core;
 
+import be.kdg.prgramming6.common.exception.NotFoundException;
 import be.kdg.prgramming6.landside.domain.Appointment;
 import be.kdg.prgramming6.landside.port.in.CheckArrivalTruckUseCase;
 import be.kdg.prgramming6.landside.port.out.LoadAppointmentPort;
@@ -25,6 +26,9 @@ public class CheckTruckArrivalUseCaseImpl implements CheckArrivalTruckUseCase {
     @Transactional(readOnly = true)
     public List<Appointment> loadAllAppointments() {
         List<Appointment> appointments = loadAppointmentPort.loadAllAppointments();
+        if (appointments.isEmpty()) {
+            throw new NotFoundException("No appointments found");
+        }
         appointments.forEach(app -> {
             if (app.getArrivalTime() == null) {
                 app.setArrivalTime(LocalDateTime.now());

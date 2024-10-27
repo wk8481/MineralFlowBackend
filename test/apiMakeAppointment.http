@@ -104,6 +104,10 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 Content-Type: application/json
 
+### Get One Truck onTime/check arrival by license plate
+GET http://localhost:8090/api/check-arrival/ABC-001
+Authorization: Bearer {{access_token}}
+
 
 
 
@@ -131,6 +135,10 @@ Content-Type: application/json
 GET http://localhost:8090/api/purchase-orders
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
+
+### Get pruchase order by id
+GET http://localhost:8090/api/purchase-orders/PO123456
+Authorization: Bearer {{access_token}}
 
 ### Get Warehouses with total material weight
 GET http://localhost:8090/api/total-material
