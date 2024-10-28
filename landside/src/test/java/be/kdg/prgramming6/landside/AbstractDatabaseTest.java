@@ -1,7 +1,6 @@
 package be.kdg.prgramming6.landside;
 
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContextInitializer;
@@ -24,8 +23,18 @@ public abstract class AbstractDatabaseTest {
     private static final MySQLContainer<?> DATABASE;
 
     static {
-        DATABASE = new MySQLContainer<>("mysql:8.0.30");
-        DATABASE.start();
+        DATABASE = new MySQLContainer<>("mysql:8.0.30")
+                .withUsername("root")
+                .withPassword("")
+                .withPrivilegedMode(true)
+                .withInitScript("initScript.sql");
+        try {
+            DATABASE.start();
+        } catch (Exception e) {
+            System.err.println("Container startup failed. Logs:");
+            System.err.println(DATABASE.getLogs());
+            throw e;
+        }
     }
 
     @Test
@@ -38,10 +47,12 @@ public abstract class AbstractDatabaseTest {
         @Override
         public void initialize(ConfigurableApplicationContext applicationContext) {
             TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
-                applicationContext,
-                "spring.datasource.url=" + DATABASE.getJdbcUrl(),
-                "spring.datasource.username=" + DATABASE.getUsername(),
-                "spring.datasource.password=" + DATABASE.getPassword()
+                    applicationContext,
+                    "spring.datasource.url=" + DATABASE.getJdbcUrl(),
+                    "spring.datasource.username=" + DATABASE.getUsername(),
+                    "spring.datasource.password=" + DATABASE.getPassword(),
+                    "spring.sql.init.mode=always",
+                    "spring.jpa.generate-ddl=true"
             );
         }
     }

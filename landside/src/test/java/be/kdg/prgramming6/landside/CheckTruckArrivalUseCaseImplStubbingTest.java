@@ -18,8 +18,8 @@ class CheckTruckArrivalUseCaseImplStubbingTest {
     @BeforeEach
     void setUp() {
         // Initialize with an empty list or any default list if needed
-        LoadAppointmentPortStub loadAppointmentPortStub = new LoadAppointmentPortStub(List.of());
-        sut = new CheckTruckArrivalUseCaseImpl(loadAppointmentPortStub);
+        LoadTrucksByDaySchedulePortStub loadTrucksByDaySchedulePortStub = new LoadTrucksByDaySchedulePortStub(List.of());
+        sut = new CheckTruckArrivalUseCaseImpl(loadTrucksByDaySchedulePortStub);
     }
 
     @Test
@@ -29,11 +29,11 @@ class CheckTruckArrivalUseCaseImplStubbingTest {
                 new Appointment(new Truck(new LicensePlate("ABC-123"), MaterialType.PET_COKE, "WD-10"), MaterialType.PET_COKE, LocalDateTime.now(), LocalDateTime.now().plusHours(1), TestIds.SELLER_ID),
                 new Appointment(new Truck(new LicensePlate("XYZ-789"), MaterialType.GYPSUM, "WD-20"), MaterialType.GYPSUM, LocalDateTime.now(), LocalDateTime.now().plusHours(1), TestIds.SELLER_ID)
         );
-        LoadAppointmentPortStub loadAppointmentPortStub = new LoadAppointmentPortStub(appointments);
-        sut = new CheckTruckArrivalUseCaseImpl(loadAppointmentPortStub);
+        LoadTrucksByDaySchedulePortStub loadTrucksByDaySchedulePortStub = new LoadTrucksByDaySchedulePortStub(appointments);
+        sut = new CheckTruckArrivalUseCaseImpl(loadTrucksByDaySchedulePortStub);
 
         // Act
-        List<Appointment> result = sut.loadAllAppointments();
+        List<Appointment> result = sut.loadAllAppointments(List.of(LocalDateTime.now()));
 
         // Assert
         assertEquals(2, result.size());
@@ -44,11 +44,11 @@ class CheckTruckArrivalUseCaseImplStubbingTest {
     @Test
     void shouldThrowExceptionWhenNoAppointmentsFound() {
         // Arrange
-        LoadAppointmentPortStub loadAppointmentPortStub = new LoadAppointmentPortStub(List.of());
-        sut = new CheckTruckArrivalUseCaseImpl(loadAppointmentPortStub);
+        LoadTrucksByDaySchedulePortStub loadTrucksByDaySchedulePortStub = new LoadTrucksByDaySchedulePortStub(List.of());
+        sut = new CheckTruckArrivalUseCaseImpl(loadTrucksByDaySchedulePortStub);
 
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> sut.loadAllAppointments());
+        assertThrows(NotFoundException.class, () -> sut.loadAllAppointments(List.of(LocalDateTime.now())));
     }
 
     @Test
@@ -57,11 +57,11 @@ class CheckTruckArrivalUseCaseImplStubbingTest {
         LocalDateTime now = LocalDateTime.now();
         Appointment appointment = new Appointment(new Truck(new LicensePlate("ABC-123"), MaterialType.PET_COKE, "WD-10"), MaterialType.PET_COKE, now, now.plusHours(1), TestIds.SELLER_ID);
         appointment.setArrivalTime(null);
-        LoadAppointmentPortStub loadAppointmentPortStub = new LoadAppointmentPortStub(List.of(appointment));
-        sut = new CheckTruckArrivalUseCaseImpl(loadAppointmentPortStub);
+        LoadTrucksByDaySchedulePortStub loadTrucksByDaySchedulePortStub = new LoadTrucksByDaySchedulePortStub(List.of(appointment));
+        sut = new CheckTruckArrivalUseCaseImpl(loadTrucksByDaySchedulePortStub);
 
         // Act
-        sut.loadAllAppointments();
+        sut.loadAllAppointments(List.of(LocalDateTime.now()));
 
         // Assert
         assertNotNull(appointment.getArrivalTime());

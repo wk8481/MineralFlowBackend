@@ -24,7 +24,7 @@ public class CheckTruckArrivalUseCaseImpl implements CheckArrivalTruckUseCase {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Appointment> loadAllAppointments(List<LocalDateTime> scheduleTimes) {
         List<Appointment> appointments = loadTrucksByDaySchedulePort.loadTrucksByDaySchedules(scheduleTimes);
         if (appointments.isEmpty()) {

@@ -1,8 +1,10 @@
+// landside/src/test/java/be/kdg/prgramming6/landside/CheckTruckArrivalUseCaseImplMockingTest.java
 package be.kdg.prgramming6.landside;
+
 import be.kdg.prgramming6.common.exception.NotFoundException;
 import be.kdg.prgramming6.landside.core.CheckTruckArrivalUseCaseImpl;
 import be.kdg.prgramming6.landside.domain.*;
-import be.kdg.prgramming6.landside.port.out.LoadAppointmentPort;
+import be.kdg.prgramming6.landside.port.out.LoadTrucksByDaySchedulePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,12 +16,12 @@ import static org.mockito.Mockito.*;
 
 class CheckTruckArrivalUseCaseImplMockingTest {
     private CheckTruckArrivalUseCaseImpl sut;
-    private LoadAppointmentPort loadAppointmentPort;
+    private LoadTrucksByDaySchedulePort loadTrucksByDaySchedulePort;
 
     @BeforeEach
     void setUp() {
-        loadAppointmentPort = mock(LoadAppointmentPort.class);
-        sut = new CheckTruckArrivalUseCaseImpl(loadAppointmentPort);
+        loadTrucksByDaySchedulePort = mock(LoadTrucksByDaySchedulePort.class);
+        sut = new CheckTruckArrivalUseCaseImpl(loadTrucksByDaySchedulePort);
     }
 
     @Test
@@ -29,10 +31,10 @@ class CheckTruckArrivalUseCaseImplMockingTest {
                 new Appointment(new Truck(new LicensePlate("ABC-123"), MaterialType.PET_COKE, "WD-10"), MaterialType.PET_COKE, LocalDateTime.now(), LocalDateTime.now().plusHours(1), TestIds.SELLER_ID),
                 new Appointment(new Truck(new LicensePlate("XYZ-789"), MaterialType.GYPSUM, "WD-20"), MaterialType.GYPSUM, LocalDateTime.now(), LocalDateTime.now().plusHours(1), TestIds.SELLER_ID)
         );
-        when(loadAppointmentPort.loadAllAppointments()).thenReturn(appointments);
+        when(loadTrucksByDaySchedulePort.loadTrucksByDaySchedules(any())).thenReturn(appointments);
 
         // Act
-        List<Appointment> result = sut.loadAllAppointments();
+        List<Appointment> result = sut.loadAllAppointments(List.of(LocalDateTime.now()));
 
         // Assert
         assertEquals(2, result.size());
@@ -40,19 +42,19 @@ class CheckTruckArrivalUseCaseImplMockingTest {
         assertEquals("XYZ-789", result.get(1).getTruck().getLicensePlate().toString());
 
         // Verify
-        verify(loadAppointmentPort, times(1)).loadAllAppointments();
+        verify(loadTrucksByDaySchedulePort, times(1)).loadTrucksByDaySchedules(any());
     }
 
     @Test
     void shouldThrowExceptionWhenNoAppointmentsFound() {
         // Arrange
-        when(loadAppointmentPort.loadAllAppointments()).thenReturn(List.of());
+        when(loadTrucksByDaySchedulePort.loadTrucksByDaySchedules(any())).thenReturn(List.of());
 
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> sut.loadAllAppointments());
+        assertThrows(NotFoundException.class, () -> sut.loadAllAppointments(List.of(LocalDateTime.now())));
 
         // Verify
-        verify(loadAppointmentPort, times(1)).loadAllAppointments();
+        verify(loadTrucksByDaySchedulePort, times(1)).loadTrucksByDaySchedules(any());
     }
 
     @Test
@@ -61,15 +63,15 @@ class CheckTruckArrivalUseCaseImplMockingTest {
         LocalDateTime now = LocalDateTime.now();
         Appointment appointment = new Appointment(new Truck(new LicensePlate("ABC-123"), MaterialType.PET_COKE, "WD-10"), MaterialType.PET_COKE, now, now.plusHours(1), TestIds.SELLER_ID);
         appointment.setArrivalTime(null);
-        when(loadAppointmentPort.loadAllAppointments()).thenReturn(List.of(appointment));
+        when(loadTrucksByDaySchedulePort.loadTrucksByDaySchedules(any())).thenReturn(List.of(appointment));
 
         // Act
-        sut.loadAllAppointments();
+        sut.loadAllAppointments(List.of(LocalDateTime.now()));
 
         // Assert
         assertNotNull(appointment.getArrivalTime());
 
         // Verify
-        verify(loadAppointmentPort, times(1)).loadAllAppointments();
+        verify(loadTrucksByDaySchedulePort, times(1)).loadTrucksByDaySchedules(any());
     }
 }

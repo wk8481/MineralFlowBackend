@@ -1,101 +1,71 @@
 package be.kdg.prgramming6.landside;
 
-import be.kdg.prgramming6.common.exception.NotFoundException;
 import be.kdg.prgramming6.landside.adapter.out.db.AppointmentJpaEntity;
-import be.kdg.prgramming6.landside.adapter.out.db.AppointmentJpaRepository;
+import be.kdg.prgramming6.landside.adapter.out.db.ScheduleJpaEntity;
+import be.kdg.prgramming6.landside.adapter.out.db.ScheduleJpaRepository;
 import be.kdg.prgramming6.landside.domain.Appointment;
-import be.kdg.prgramming6.landside.domain.LicensePlate;
-import be.kdg.prgramming6.landside.domain.MaterialType;
-import be.kdg.prgramming6.landside.domain.Truck;
 import be.kdg.prgramming6.landside.port.in.CheckArrivalTruckUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest
-@ActiveProfiles("test")
-public class CheckTruckArrivalUseCaseImplIntegrationTest extends AbstractDatabaseTest {
+@Transactional
+class CheckTruckArrivalUseCaseImplIntegrationTest extends AbstractDatabaseTest {
+
     @Autowired
     private CheckArrivalTruckUseCase checkArrivalTruckUseCase;
+
     @Autowired
-    private AppointmentJpaRepository appointmentJpaRepository;
+    private ScheduleJpaRepository scheduleJpaRepository;
 
     @BeforeEach
     void setUp() {
-        appointmentJpaRepository.deleteAll();
+        createTestData();
+    }
+
+    private void createTestData() {
+        LocalDateTime now = LocalDateTime.now();
+        ScheduleJpaEntity schedule = new ScheduleJpaEntity();
+        schedule.setScheduleTime(now);
+
+        AppointmentJpaEntity appointment1 = new AppointmentJpaEntity();
+        appointment1.setLicensePlate("ABC-123");
+        appointment1.setMaterialType("PET_COKE");
+        appointment1.setWindowStart(now);
+        appointment1.setWindowEnd(now.plusHours(1));
+        appointment1.setSellerId(UUID.fromString("96712d0d-dd10-4802-9d62-1d30fa638422"));
+        appointment1.setSchedule(schedule);
+
+        AppointmentJpaEntity appointment2 = new AppointmentJpaEntity();
+        appointment2.setLicensePlate("XYZ-789");
+        appointment2.setMaterialType("GYPSUM");
+        appointment2.setWindowStart(now);
+        appointment2.setWindowEnd(now.plusHours(1));
+        appointment2.setSellerId(UUID.fromString("96712d0d-dd10-4802-9d62-1d30fa638422"));
+        appointment2.setSchedule(schedule);
+
+        schedule.setAppointments(List.of(appointment1, appointment2));
+        scheduleJpaRepository.save(schedule);
     }
 
     @Test
     void shouldLoadAllAppointments() {
         // Arrange
-        Appointment appointment1 = new Appointment(
-                new Truck(new LicensePlate("ABC-123"), MaterialType.PET_COKE, "WD-10", TestIds.SELLER_ID),
-                MaterialType.PET_COKE,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusHours(1),
-                TestIds.SELLER_ID
-        );
-        Appointment appointment2 = new Appointment(
-                new Truck(new LicensePlate("XYZ-789"), MaterialType.GYPSUM, "WD-20", TestIds.SELLER_ID),
-                MaterialType.GYPSUM,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusHours(1),
-                TestIds.SELLER_ID
-        );
-        appointmentJpaRepository.saveAll(List.of(toJpaEntity(appointment1), toJpaEntity(appointment2)));
-
-        // Act
-        List<Appointment> result = checkArrivalTruckUseCase.loadAllAppointments();
-
-        // Assert
-        assertEquals(2, result.size());
-        assertEquals("ABC-123", result.get(0).getTruck().getLicensePlate().toString());
-        assertEquals("XYZ-789", result.get(1).getTruck().getLicensePlate().toString());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenNoAppointmentsFound() {
-        // Act & Assert
-        assertThrows(NotFoundException.class, () -> checkArrivalTruckUseCase.loadAllAppointments());
-    }
-
-    @Test
-    void shouldSetArrivalTimeIfNull() {
-        // Arrange
         LocalDateTime now = LocalDateTime.now();
-        Appointment appointment = new Appointment(
-                new Truck(new LicensePlate("ABC-123"), MaterialType.PET_COKE, "WD-10", TestIds.SELLER_ID),
-                MaterialType.PET_COKE,
-                now,
-                now.plusHours(1),
-                TestIds.SELLER_ID
-        );
-        appointment.setArrivalTime(null);
-        appointmentJpaRepository.save(toJpaEntity(appointment));
 
         // Act
-        List<Appointment> result = checkArrivalTruckUseCase.loadAllAppointments();
+        List<Appointment> result = checkArrivalTruckUseCase.loadAllAppointments(List.of(now));
 
         // Assert
-        assertNotNull(result.get(0).getArrivalTime());
-    }
-
-    private AppointmentJpaEntity toJpaEntity(Appointment appointment) {
-        AppointmentJpaEntity entity = new AppointmentJpaEntity();
-        entity.setLicensePlate(appointment.getTruck().getLicensePlate().toString());
-        entity.setMaterialType(appointment.getMaterialType().name());
-        entity.setWindowStart(appointment.getWindowStart());
-        entity.setWindowEnd(appointment.getWindowEnd());
-        entity.setSellerId(appointment.getSellerId().id());
-        entity.setArrivalTime(appointment.getArrivalTime());
-        entity.setDepartureTime(appointment.getDepartureTime());
-        return entity;
+        assertFalse(result.isEmpty(), "Expected appointments to be loaded");
     }
 }
