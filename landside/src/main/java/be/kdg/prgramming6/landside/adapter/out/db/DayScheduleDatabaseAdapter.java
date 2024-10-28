@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,14 +58,12 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
 
         return schedule;
     }
-
     @Override
-    public List<Appointment> loadTrucksByDaySchedule(LocalDateTime scheduleTime) {
-        ScheduleJpaEntity scheduleJpaEntity = scheduleJpaRepository.findByScheduleTime(scheduleTime);
-        if (scheduleJpaEntity == null) {
-            return List.of();
-        }
-        return scheduleJpaEntity.getAppointments().stream()
+    public List<Appointment> loadTrucksByDaySchedules(List<LocalDateTime> scheduleTimes) {
+        return scheduleTimes.stream()
+                .map(scheduleJpaRepository::findByScheduleTime)
+                .filter(Objects::nonNull)
+                .flatMap(scheduleJpaEntity -> scheduleJpaEntity.getAppointments().stream())
                 .map(this::toAppointment)
                 .collect(Collectors.toList());
     }

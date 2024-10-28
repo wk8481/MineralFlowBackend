@@ -14,4 +14,6 @@ public interface WarehouseProjectionJpaRepository extends JpaRepository<Warehous
             // Adjust according to your MaterialType class
             // Use LocalDateTime instead of long
     );
+
+    Optional<WarehouseProjectionJpaEntity> findByWarehouseId(UUID warehouseId);
 }

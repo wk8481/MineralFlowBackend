@@ -12,7 +12,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
-public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighbridgePort, UpdateWeighbridgePort, UpdateWarehousePort, LoadAllWarehousesPort {
+public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighbridgePort, UpdateWeighbridgePort, UpdateWarehousePort, LoadAllWarehousesPort, LoadWarehouseByIDPort {
 
     private final WarehouseProjectionJpaRepository warehouseProjectionJpaRepository;
     private final WeighbridgeJpaRepository weighbridgeJpaRepository;
@@ -104,5 +104,12 @@ public class WeighbridgeDatabaseAdapter implements LoadWarehousePort, LoadWeighb
         return warehouseProjectionJpaRepository.findAll().stream()
                 .map(this::toWarehouse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Warehouse loadWarehouseByID(WarehouseId warehouseId) {
+        return warehouseProjectionJpaRepository.findByWarehouseId(warehouseId.id())
+                .map(this::toWarehouse)
+                .orElseThrow(() -> new IllegalArgumentException("Warehouse not found"));
     }
 }
