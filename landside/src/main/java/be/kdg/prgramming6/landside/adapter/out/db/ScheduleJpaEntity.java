@@ -17,6 +17,13 @@ public class ScheduleJpaEntity {
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AppointmentJpaEntity> appointments = new ArrayList<>(); // Initialize the list
 
+    public ScheduleJpaEntity(LocalDateTime scheduleTime) {
+        this.scheduleTime = scheduleTime;
+    }
+
+    public ScheduleJpaEntity() {
+    }
+
     // Getters and setters
     public LocalDateTime getScheduleTime() {
         return scheduleTime;

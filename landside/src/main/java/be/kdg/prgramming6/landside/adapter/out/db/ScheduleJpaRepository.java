@@ -9,7 +9,9 @@ import java.time.LocalDateTime;
 public interface ScheduleJpaRepository extends JpaRepository<ScheduleJpaEntity, LocalDateTime> {
     ScheduleJpaEntity findByScheduleTime(LocalDateTime scheduleTime); // Custom method to find schedule by day
 
-    @Query("SELECT s FROM ScheduleJpaEntity s LEFT JOIN FETCH s.appointments WHERE s.scheduleTime = :scheduleTime")
-    ScheduleJpaEntity findByScheduleTimeWithAppointments(@Param("scheduleTime") LocalDateTime scheduleTime);
+   @Query("FROM ScheduleJpaEntity s WHERE s.scheduleTime = :scheduleTime")
+    ScheduleJpaEntity findByScheduleTimeTest(@Param("scheduleTime") LocalDateTime scheduleTime); // Custom method to find schedule by day including appointments
+
+
 }
 

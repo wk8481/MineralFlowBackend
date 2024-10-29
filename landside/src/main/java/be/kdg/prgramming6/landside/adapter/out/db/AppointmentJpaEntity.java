@@ -37,6 +37,21 @@ public class AppointmentJpaEntity {
     @Column(name = "departure_time")
     private LocalDateTime departureTime;
 
+    public AppointmentJpaEntity(ScheduleJpaEntity schedule, String licensePlate, String materialType, LocalDateTime windowStart, LocalDateTime windowEnd, UUID sellerId, LocalDateTime arrivalTime, LocalDateTime departureTime) {
+        this.schedule = schedule;
+        this.licensePlate = licensePlate;
+        this.materialType = materialType;
+        this.windowStart = windowStart;
+        this.windowEnd = windowEnd;
+        this.sellerId = sellerId;
+        this.arrivalTime = arrivalTime;
+        this.departureTime = departureTime;
+    }
+
+    public AppointmentJpaEntity() {
+    }
+
+
     // Getters and setters...
 
     public int getAppointmentId() {
