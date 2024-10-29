@@ -4,11 +4,8 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
 
-
-//on entry take tare weight + some random number when u enter, and call that the gross and then when exit can subrtratct
 public class Truck {
     private final LicensePlate licensePlate;
-
     private static final BigDecimal TARE_WEIGHT = new BigDecimal("10000"); // Example constant tare weight
     private MaterialType materialType;
     private String dockNumber; // Conveyor belt/dock number
@@ -19,7 +16,6 @@ public class Truck {
         this.sellerId = null;
     }
 
-    // Constructor with LicensePlate, MaterialType, and dockNumber
     public Truck(LicensePlate licensePlate, MaterialType materialType, String dockNumber) {
         this.licensePlate = Objects.requireNonNull(licensePlate, "License plate cannot be null");
         this.materialType = Objects.requireNonNull(materialType, "Material type cannot be null");
@@ -48,6 +44,11 @@ public class Truck {
 
     public boolean canDock() {
         return dockNumber != null && !dockNumber.isEmpty();
+    }
+
+    public boolean matches(Appointment appointment) {
+        return this.licensePlate.equals(appointment.getTruck().getLicensePlate()) &&
+                this.materialType == appointment.getMaterialType();
     }
 
     // Getters

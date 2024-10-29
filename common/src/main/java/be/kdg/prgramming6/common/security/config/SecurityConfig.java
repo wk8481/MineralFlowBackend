@@ -46,28 +46,18 @@ public class SecurityConfig {
         return source;
     }
 
+
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
-        jwtConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRealmRoleConverter());
-        return jwtConverter;
+        return new JwtAuthenticationConverter();
     }
 }
 
 
 
-class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
-    @Override
-    public Collection<GrantedAuthority> convert(Jwt jwt) {
-        final Map<String, Object> realmAccess =
-                (Map<String, Object>) jwt.getClaims().get("realm_access");
-        return ((List<String>) realmAccess.get("roles")).stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-    }
 
 
-}
+
 
 
 
