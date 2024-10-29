@@ -23,6 +23,11 @@ public class Schedule {
 
     public Appointment scheduleAppointment(SellerId sellerId, LicensePlate licensePlate, MaterialType materialType,
                                            LocalDateTime windowStart, LocalDateTime windowEnd, Warehouse warehouse) {
+        // Ensure windowEnd is correctly set to 59 minutes past the hour if it is incorrectly set to the same as windowStart
+        if (windowEnd.equals(windowStart)) {
+            windowEnd = windowStart.plusMinutes(59);
+        }
+
         if (!isAppointmentPossible(windowStart, windowEnd, warehouse)) {
             throw new IllegalStateException("Cannot schedule appointment: either the warehouse is over 80% full or there are already 40 appointments in the same hour.");
         }
@@ -42,15 +47,15 @@ public class Schedule {
 
     public boolean hasAvailability(LocalDateTime start, LocalDateTime end) {
         long overlappingAppointments = appointments.stream()
-                .filter(appointment -> appointment.overlapsWith(start, end))
+                .filter(appointment -> appointment.overlapsWith(start, end) || appointment.isWithinWindow(start) || appointment.isWithinWindow(end))
                 .count();
 
         return overlappingAppointments < 40;
     }
 
     private boolean isAppointmentPossible(LocalDateTime start, LocalDateTime end, Warehouse warehouse) {
-        return warehouse.getCurrentCapacity().compareTo(Warehouse.getMaxCapacity().multiply(BigDecimal.valueOf(0.8))) < 0
-                && hasAvailability(start, end);
+        BigDecimal eightyPercentCapacity = Warehouse.getMaxCapacity().multiply(BigDecimal.valueOf(0.8));
+        return warehouse.getCurrentCapacity().compareTo(eightyPercentCapacity) < 0 || hasAvailability(start, end);
     }
 
     public List<Appointment> getAppointments() {

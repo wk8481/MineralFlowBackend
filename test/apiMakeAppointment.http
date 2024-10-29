@@ -20,10 +20,10 @@ Content-Type: application/json
 
 {
   "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
-  "licensePlate": "ABC-120",
+  "licensePlate": "ABC-123",
   "materialType": "PET_COKE",
   "appointmentWindowStart": "2024-10-30T10:00:00",
-  "appointmentWindowEnd": "2024-10-30T11:00:00"
+  "appointmentWindowEnd": "2024-10-30T10:59:00"
 }
 
 ### Unauthorized Request APPOINTMENT
@@ -62,7 +62,7 @@ Content-Type: application/json
 
 {
   "licensePlate": "ABC-123",
-  "netWeight": 3000,
+  "netWeight": 350000,
   "materialType": "PET_COKE",
   "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b"
 }
@@ -96,9 +96,9 @@ Content-Type: application/json
 
 {
   "licensePlate": "ABC-123",
-  "grossWeight": 13000,
+  "grossWeight": 360000,
   "tareWeight": 10000,
-  "netWeight": 3000
+  "netWeight": 350000
 }
 
 
@@ -109,7 +109,7 @@ Accept: application/json
 Content-Type: application/json
 
 ### Get One Truck onTime/check arrival by license plate
-GET http://localhost:8090/api/check-arrival/ABC-001
+GET http://localhost:8090/api/check-arrival/ABC-123
 Authorization: Bearer {{access_token}}
 
 
