@@ -15,7 +15,7 @@ public class WarehouseActivityWindow {
         this.activities = activities;
     }
 
-    WarehouseActivity addActivity(final WarehouseActivityType type, SellerId sellerId, MaterialType materialType, BigDecimal weight, FulfillmentStatus none) {
+    WarehouseActivity addActivity(final WarehouseActivityType type, SellerId sellerId, MaterialType materialType, BigDecimal weight, FulfillmentStatus fulfillmentStatus) {
         final WarehouseActivityId activityId = new WarehouseActivityId(warehouseId, UUID.randomUUID());
         final WarehouseActivity activity = new WarehouseActivity(
                 activityId,
@@ -24,7 +24,7 @@ public class WarehouseActivityWindow {
                 sellerId,
                 materialType,
                 weight,
-                FulfillmentStatus.OUTSTANDING // Default status when adding a new activity
+                fulfillmentStatus // Use the provided fulfillment status
         );
         activities.add(activity);
         return activity;

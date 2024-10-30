@@ -84,6 +84,7 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
         warehouseJpaRepository.save(warehouseEntity);
     }
 
+
     private WarehouseActivityJpaEntity toWarehouseActivity(final WarehouseJpaEntity warehouseJpaEntity, final WarehouseActivity activity) {
         final WarehouseActivityJpaEntity warehouseActivityJpaEntity = new WarehouseActivityJpaEntity();
         warehouseActivityJpaEntity.setId(WarehouseActivityJpaId.of(activity.activityId()));
@@ -93,7 +94,8 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
         warehouseActivityJpaEntity.setSellerId(activity.sellerId().id());
         warehouseActivityJpaEntity.setMaterialType(activity.materialType());
         warehouseActivityJpaEntity.setWarehouse(warehouseJpaEntity);
-        warehouseActivityJpaEntity.setFulfillmentStatus(new FulfillmentStatusJpaEntity(warehouseActivityJpaEntity, activity.fulfillmentStatus() == FulfillmentStatus.FULFILLED));
+        FulfillmentStatus status = activity.warehouseActivityType() == WarehouseActivityType.SHIPMENT ? FulfillmentStatus.NONE : activity.fulfillmentStatus();
+        warehouseActivityJpaEntity.setFulfillmentStatus(new FulfillmentStatusJpaEntity(warehouseActivityJpaEntity, status == FulfillmentStatus.FULFILLED));
         return warehouseActivityJpaEntity;
     }
 

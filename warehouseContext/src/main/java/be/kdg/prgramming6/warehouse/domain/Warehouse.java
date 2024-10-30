@@ -64,10 +64,7 @@ public class Warehouse {
         return activities.addActivity(WarehouseActivityType.SHIPMENT, sellerId, materialType, weight, FulfillmentStatus.NONE);
     }
 
-    // Optional: Method to get all docked trucks for inspection or processing
-    public List<Truck> getDockedTrucks() {
-        return new ArrayList<>(dockedTrucks); // Return a copy to maintain encapsulation
-    }
+
 
     public WarehouseId getWarehouseId() {
         return warehouseId;
@@ -81,17 +78,6 @@ public class Warehouse {
         return materialType;
     }
 
-    public BigDecimal getTotalMaterial() {
-        BigDecimal totalMaterial = BigDecimal.ZERO;
-        for (WarehouseActivity activity : activities.getActivities()) {
-            if (activity.warehouseActivityType() == WarehouseActivityType.DELIVERY) {
-                totalMaterial = totalMaterial.add(activity.weight());
-            } else if (activity.warehouseActivityType() == WarehouseActivityType.SHIPMENT) {
-                totalMaterial = totalMaterial.subtract(activity.weight());
-            }
-        }
-        return totalMaterial;
-    }
 
     //hmm
 
