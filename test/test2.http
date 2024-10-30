@@ -19,11 +19,11 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
-  "licensePlate": "ABC-123",
-  "materialType": "PET_COKE",
-  "appointmentWindowStart": "2024-10-30T10:00:00",
-  "appointmentWindowEnd": "2024-10-30T10:59:00"
+  "sellerId": "b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6",
+  "licensePlate": "XYZ-789",
+  "materialType": "GYPSUM",
+  "appointmentWindowStart": "2024-10-30T11:00:00",
+  "appointmentWindowEnd": "2024-10-30T11:59:00"
 }
 
 ### Unauthorized Request APPOINTMENT
@@ -49,9 +49,9 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "licensePlate": "ABC-123",
-  "materialType": "PET_COKE",
-  "dockNumber": "WD-10"
+  "licensePlate": "XYZ-789",
+  "materialType": "GYPSUM",
+  "dockNumber": "WD-2"
 }
 
 
@@ -61,10 +61,10 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "licensePlate": "ABC-123",
-  "netWeight": 350000,
-  "materialType": "PET_COKE",
-  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b"
+  "licensePlate": "XYZ-789",
+  "netWeight": 400000,
+  "materialType": "GYPSUM",
+  "sellerId": "b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6"
 }
 
 
@@ -75,12 +75,12 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "licensePlate": "ABC-123",
-  "materialType": "PET_COKE",
-  "warehouseId": "e2f7bcdc-69da-4b0e-b73f-6adf79e8d5f9",
-  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
-  "deliveryDate": "2024-10-30T09:00:00",
-  "dockNumber": "WD-10"
+  "licensePlate": "XYZ-789",
+  "materialType": "GYPSUM",
+  "warehouseId": "39dcbb4a-b535-4ab1-97b2-cfcba92f462a",
+  "sellerId": "b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6",
+  "deliveryDate": "2024-10-30T11:00:00",
+  "dockNumber": "WD-2"
 }
 
 
@@ -95,10 +95,10 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "licensePlate": "ABC-123",
-  "grossWeight": 360000,
+  "licensePlate": "XYZ-789",
+  "grossWeight": 410000,
   "tareWeight": 10000,
-  "netWeight": 350000
+  "netWeight": 400000
 }
 
 
@@ -130,7 +130,7 @@ Content-Type: application/json
 {
   "properties": {},
   "routing_key": "purchase.order.created",
-  "payload": "{\"purchaseOrder\":{\"date\":\"2024-10-23T13:31:00\",\"poNumber\":\"PO123456\",\"customerNumber\":\"550e8400-e29b-41d4-a716-446655440000\",\"customerName\":\"Joske Vermeulen\",\"status\":\"OUTSTANDING\",\"orderLines\":[{\"materialType\":\"PET_COKE\",\"amountInTons\":100,\"pricePerTon\":50.0},{\"materialType\":\"SLAG\",\"amountInTons\":50,\"pricePerTon\":30.0}]}}",
+  "payload": "{\"purchaseOrder\":{\"date\":\"2024-10-25T15:30:00\",\"poNumber\":\"PO123458\",\"customerNumber\":\"550e8400-e29b-41d4-a716-446655440002\",\"customerName\":\"Marie Janssens\",\"status\":\"OUTSTANDING\",\"orderLines\":[{\"materialType\":\"GYPSUM\",\"amountInTons\":120,\"pricePerTon\":35.0},{\"materialType\":\"PET_COKE\",\"amountInTons\":80,\"pricePerTon\":55.0}]}}",
   "payload_encoding": "string"
 }
 

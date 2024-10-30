@@ -1,5 +1,6 @@
 package be.kdg.prgramming6.warehouse.adapter.out.db;
 
+import be.kdg.prgramming6.common.domain.WarehouseActivityType;
 import be.kdg.prgramming6.warehouse.domain.*;
 import be.kdg.prgramming6.warehouse.port.out.*;
 import org.slf4j.Logger;
@@ -13,7 +14,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
-public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMaterialPort, UpdatePDTPort, LoadPDTPort, SavePDTPort, UpdateWarehousePort, LoadWarehouseByIdPort {
+public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMaterialPort, UpdatePDTPort, LoadPDTPort, SavePDTPort, UpdateWarehousePort, LoadWarehouseByIdPort, LoadWarehousesByMaterialTypeAndStatusPort, UpdateFulfillmentPort {
     private static final Logger LOGGER = LoggerFactory.getLogger(DockTruckDatabaseAdapter.class);
 
     private final WarehouseJpaRepository warehouseJpaRepository;
@@ -45,8 +46,6 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
         System.out.println("Updated Payload Delivery Ticket for license plate: " + licensePlate);
     }
 
-
-
     private PayloadDeliveryTicket toPayloadDeliveryTicket(PayloadDeliveryTicketJpaEntity pdtEntity) {
         return new PayloadDeliveryTicket(
                 new LicensePlate(pdtEntity.getLicensePlate()),
@@ -76,7 +75,6 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
         return toPayloadDeliveryTicket(savedEntity);
     }
 
-
     @Override
     public void activityCreated(Warehouse warehouse, WarehouseActivity activity) {
         final UUID warehouseId = warehouse.getWarehouseId().id();
@@ -95,6 +93,7 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
         warehouseActivityJpaEntity.setSellerId(activity.sellerId().id());
         warehouseActivityJpaEntity.setMaterialType(activity.materialType());
         warehouseActivityJpaEntity.setWarehouse(warehouseJpaEntity);
+        warehouseActivityJpaEntity.setFulfillmentStatus(new FulfillmentStatusJpaEntity(warehouseActivityJpaEntity, activity.fulfillmentStatus() == FulfillmentStatus.FULFILLED));
         return warehouseActivityJpaEntity;
     }
 
@@ -110,28 +109,47 @@ public class DockTruckDatabaseAdapter implements LoadWarehouseBySellerAndMateria
         final List<WarehouseActivity> activities = warehouseActivityJpaRepository
                 .findAllById_WarehouseIdAndTimeAfter(warehouseId.id(), LocalDateTime.now())
                 .stream()
-                .map(DockTruckDatabaseAdapter::toWarehouseActivity)
+                .map(this::toWarehouseActivity)
                 .collect(Collectors.toList());
         return new WarehouseActivityWindow(warehouseId, activities);
     }
 
-    private static WarehouseActivity toWarehouseActivity(final WarehouseActivityJpaEntity activity) {
+    private WarehouseActivity toWarehouseActivity(final WarehouseActivityJpaEntity activity) {
         return new WarehouseActivity(
                 new WarehouseActivityId(new WarehouseId(activity.getId().getWarehouseId()), activity.getId().getActivityId()),
                 activity.getTime(),
                 activity.getType(),
                 new SellerId(activity.getSellerId()),
                 activity.getMaterialType(),
-                activity.getWeight()
+                activity.getWeight(),
+                toFulfillmentStatus(activity.getFulfillmentStatus())
         );
     }
 
-
+    private FulfillmentStatus toFulfillmentStatus(final FulfillmentStatusJpaEntity fulfillmentStatusJpaEntity) {
+        return fulfillmentStatusJpaEntity.getStatus();
+    }
 
     @Override
     public Optional<Warehouse> loadWarehouseById(WarehouseId warehouseId) {
         return warehouseJpaRepository.findByWarehouseId(warehouseId.id()).map(this::toWarehouse);
     }
 
+    @Override
+    public List<WarehouseActivity> loadAllDeliveriesByMaterialTypeAndStatus(MaterialType materialType, String status) {
+        FulfillmentStatus fulfillmentStatus = FulfillmentStatus.valueOf(status);
+        return warehouseActivityJpaRepository.findAllByMaterialTypeAndFulfillmentStatus_StatusAndType(materialType, fulfillmentStatus, WarehouseActivityType.DELIVERY)
+                .stream()
+                .map(this::toWarehouseActivity)
+                .collect(Collectors.toList());
+    }
 
+    @Override
+    public void updateFulfillmentStatus(WarehouseActivityId activityId, boolean isFulfilled) {
+        WarehouseActivityJpaEntity activityEntity = warehouseActivityJpaRepository.findById(WarehouseActivityJpaId.of(activityId))
+                .orElseThrow(() -> new IllegalArgumentException("Warehouse activity not found for ID: " + activityId));
+        FulfillmentStatusJpaEntity fulfillmentStatus = new FulfillmentStatusJpaEntity(activityEntity, isFulfilled);
+        activityEntity.setFulfillmentStatus(fulfillmentStatus);
+        warehouseActivityJpaRepository.save(activityEntity);
+    }
 }

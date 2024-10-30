@@ -11,19 +11,19 @@ import java.util.UUID;
 public class MakeAppointmentRequestDTO {
 
     @NotNull(message = "Seller ID cannot be null.")
-    private UUID sellerId;
+    private final UUID sellerId;
 
     @NotEmpty(message = "License plate cannot be empty.")
-    private String licensePlate;
+    private final String licensePlate;
 
     @NotEmpty(message = "Material type cannot be empty.")
-    private String materialType;
+    private final String materialType;
 
     @NotNull(message = "Appointment window start cannot be null.")
-    private LocalDateTime appointmentWindowStart;
+    private final LocalDateTime appointmentWindowStart;
 
     @NotNull(message = "Appointment window end cannot be null.")
-    private LocalDateTime appointmentWindowEnd;
+    private final LocalDateTime appointmentWindowEnd;
 
     // Constructors, Getters, and Setters
     public MakeAppointmentRequestDTO(UUID sellerId, String licensePlate, String materialType,

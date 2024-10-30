@@ -3,9 +3,6 @@ package be.kdg.prgramming6.warehouse.adapter.out.db;
 import be.kdg.prgramming6.common.domain.WarehouseActivityType;
 import be.kdg.prgramming6.warehouse.domain.MaterialType;
 import jakarta.persistence.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -29,7 +26,6 @@ public class WarehouseActivityJpaEntity {
     @Column(name = "seller_id")
     private UUID sellerId;
 
-
     @Column(name = "material_type")
     @Enumerated(value = EnumType.STRING)
     private MaterialType materialType;
@@ -38,6 +34,10 @@ public class WarehouseActivityJpaEntity {
     @JoinColumn(name = "warehouse_id", referencedColumnName = "warehouse_id", insertable = false, updatable = false)
     private WarehouseJpaEntity warehouse;
 
+    @OneToOne(mappedBy = "activity", cascade = CascadeType.ALL)
+    private FulfillmentStatusJpaEntity fulfillmentStatus;
+
+    // Constructors, getters, setters
     public WarehouseActivityJpaEntity() {
     }
 
@@ -100,4 +100,14 @@ public class WarehouseActivityJpaEntity {
     public void setWarehouse(WarehouseJpaEntity warehouse) {
         this.warehouse = warehouse;
     }
+
+    public FulfillmentStatusJpaEntity getFulfillmentStatus() {
+        return fulfillmentStatus;
+    }
+
+    public void setFulfillmentStatus(FulfillmentStatusJpaEntity fulfillmentStatus) {
+        this.fulfillmentStatus = fulfillmentStatus;
+    }
+
+
 }

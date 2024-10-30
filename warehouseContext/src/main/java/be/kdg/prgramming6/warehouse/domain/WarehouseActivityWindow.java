@@ -15,8 +15,7 @@ public class WarehouseActivityWindow {
         this.activities = activities;
     }
 
-
-    WarehouseActivity addActivity(final WarehouseActivityType type, SellerId sellerId, MaterialType materialType, BigDecimal weight) {
+    WarehouseActivity addActivity(final WarehouseActivityType type, SellerId sellerId, MaterialType materialType, BigDecimal weight, FulfillmentStatus none) {
         final WarehouseActivityId activityId = new WarehouseActivityId(warehouseId, UUID.randomUUID());
         final WarehouseActivity activity = new WarehouseActivity(
                 activityId,
@@ -24,7 +23,8 @@ public class WarehouseActivityWindow {
                 type,
                 sellerId,
                 materialType,
-                weight
+                weight,
+                FulfillmentStatus.OUTSTANDING // Default status when adding a new activity
         );
         activities.add(activity);
         return activity;
@@ -33,5 +33,4 @@ public class WarehouseActivityWindow {
     List<WarehouseActivity> getActivities() {
         return Collections.unmodifiableList(activities);
     }
-
 }

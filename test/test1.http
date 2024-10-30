@@ -1,0 +1,156 @@
+### Get access token with normal user
+
+POST http://localhost:8180/realms/mineral/protocol/openid-connect/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+client_id=backend&client_secret=bQG1f1VFFPbGkF8sjtMPryOXQChtU8p4&username=zamlamb&password=admin&grant_type=password&scope=openid
+
+//saving the access token
+> {%
+    client.global.set("access_token", response.body.access_token);
+%}
+
+
+
+
+### Valid Request APPOINTMENT
+POST http://localhost:8090/api/make-appointment
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
+  "licensePlate": "ABC-123",
+  "materialType": "PET_COKE",
+  "appointmentWindowStart": "2024-10-30T10:00:00",
+  "appointmentWindowEnd": "2024-10-30T10:59:00"
+}
+
+### Unauthorized Request APPOINTMENT
+POST http://localhost:8090/api/make-appointment/5c2db01b-1b71-48be-8b93-fa25635a388d/5c2db01b-1b71-48be-8b93-fa25635a388d/ABC-123/PET_COKE/2024-10-30T09:00:00/2024-10-30T10:00:00
+
+### Bad Request APPOINTMENT: Start date is after end date
+POST http://localhost:8090/api/make-appointment/5c2db01b-1b71-48be-8b93-fa25635a388d/ABC-123/PET_COKE/2024-10-30T10:00:00/2024-10-30T09:00:00
+Authorization: Bearer {{access_token}}
+
+### Invalid material type APPOINTMENT
+POST http://localhost:8090/api/make-appointment/5c2db01b-1b71-48be-8b93-fa25635a388d/ABC-123/INVALID_MATERIAL/2024-10-30T09:00:00/2024-10-30T10:00:00
+Authorization: Bearer {{access_token}}
+
+### Empty license plate APPOINTMENT
+POST http://localhost:8090/api/make-appointment/5c2db01b-1b71-48be-8b93-fa25635a388d//PET_COKE/2024-10-30T09:00:00/2024-10-30T10:00:00
+Authorization: Bearer {{access_token}}
+
+
+
+### Recognize Truck
+POST http://localhost:8090/api/recognize-truck
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "licensePlate": "ABC-123",
+  "materialType": "PET_COKE",
+  "dockNumber": "WD-10"
+}
+
+
+### Receive Warehouse Number and Weighbridge
+POST http://localhost:8090/api/receive-warehouse-number
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "licensePlate": "ABC-123",
+  "netWeight": 350000,
+  "materialType": "PET_COKE",
+  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b"
+}
+
+
+### Post of  docktruck and need to insert the warehouse information
+###
+POST http://localhost:8090/api/dock-truck
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "licensePlate": "ABC-123",
+  "materialType": "PET_COKE",
+  "warehouseId": "e2f7bcdc-69da-4b0e-b73f-6adf79e8d5f9",
+  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
+  "deliveryDate": "2024-10-30T10:00:00",
+  "dockNumber": "WD-10"
+}
+
+
+
+
+
+
+
+### Final WBT Created
+POST http://localhost:8090/api/generate-weighbridge-ticket
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "licensePlate": "ABC-123",
+  "grossWeight": 360000,
+  "tareWeight": 10000,
+  "netWeight": 350000
+}
+
+
+### Get Trucks onTime/check arrival
+GET http://localhost:8090/api/check-arrival
+Authorization: Bearer {{access_token}}
+Accept: application/json
+Content-Type: application/json
+
+### Get One Truck onTime/check arrival by license plate
+GET http://localhost:8090/api/check-arrival/ABC-123
+Authorization: Bearer {{access_token}}
+
+
+
+
+
+### Get Trucks onSIte
+GET http://localhost:8090/api/trucks-on-site
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+
+### PO rabbit
+POST http://localhost:15672/api/exchanges/%2f/purchase_order_exchange/publish
+Authorization: Basic bXl1c2VyOm15cGFzc3dvcmQ=
+Content-Type: application/json
+
+{
+  "properties": {},
+  "routing_key": "purchase.order.created",
+  "payload": "{\"purchaseOrder\":{\"date\":\"2024-10-23T13:31:00\",\"poNumber\":\"PO123456\",\"customerNumber\":\"550e8400-e29b-41d4-a716-446655440000\",\"customerName\":\"Joske Vermeulen\",\"status\":\"OUTSTANDING\",\"orderLines\":[{\"materialType\":\"PET_COKE\",\"amountInTons\":100,\"pricePerTon\":50.0},{\"materialType\":\"SLAG\",\"amountInTons\":50,\"pricePerTon\":30.0}]}}",
+  "payload_encoding": "string"
+}
+
+
+### Get purchase orders
+GET http://localhost:8090/api/purchase-orders
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### Get pruchase order by id
+GET http://localhost:8090/api/purchase-orders/PO123456
+Authorization: Bearer {{access_token}}
+
+### Get Warehouses with total material weight
+GET http://localhost:8090/api/total-material
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+
+### Get Warehouse By warehouseId
+GET http://localhost:8090/api/total-material/e2f7bcdc-69da-4b0e-b73f-6adf79e8d5f9
+Authorization: Bearer {{access_token}}
+

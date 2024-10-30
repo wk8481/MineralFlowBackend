@@ -26,7 +26,7 @@ public class Warehouse {
 
 
     public WarehouseActivity loadWarehouse(final MaterialType materialType, final BigDecimal weight) {
-        return activities.addActivity(WarehouseActivityType.DELIVERY, sellerId, materialType, weight);
+        return activities.addActivity(WarehouseActivityType.DELIVERY, sellerId, materialType, weight, FulfillmentStatus.OUTSTANDING);
     }
 
     public List<WarehouseActivity> getActivities() {
@@ -60,8 +60,8 @@ public class Warehouse {
         );
     }
 
-    public WarehouseActivity unloadWarehouse(final MaterialType materialType, final BigDecimal weight) {
-        return activities.addActivity(WarehouseActivityType.SHIPMENT, sellerId, materialType, weight);
+    public WarehouseActivity unloadWarehouse(MaterialType materialType, BigDecimal weight) {
+        return activities.addActivity(WarehouseActivityType.SHIPMENT, sellerId, materialType, weight, FulfillmentStatus.NONE);
     }
 
     // Optional: Method to get all docked trucks for inspection or processing

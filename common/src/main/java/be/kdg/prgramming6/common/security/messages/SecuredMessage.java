@@ -2,12 +2,12 @@ package be.kdg.prgramming6.common.security.messages;
 
 public class SecuredMessage extends UnsecuredMessage{
 
-    private String subjectid;
-    private String email;
-    private String firstName;
-    private String lastName;
+    private final String subjectid;
+    private final String email;
+    private final String firstName;
+    private final String lastName;
 
-    private String message;
+    private final String message;
 
 
     private SecuredMessage(Builder builder) {

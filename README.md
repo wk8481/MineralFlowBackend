@@ -7,6 +7,8 @@ This project is a Spring Boot application that manages warehouse and landside op
 - [Commands](#commands)
 - [Events](#events)
 - [HTTP Tests](#http-tests)
+- [Running the Application](#running-the-application)
+- [Security](#security)
 - [Running Tests](#running-tests)
 
 ## Commands
@@ -100,7 +102,7 @@ public record AppointmentUpdatedEvent(
 ```
 
 ### `WarehouseActivityCreatedEvent`
-This event is triggered when a warehouse activity is created
+This event is triggered when a warehouse activity is created and used for projection
 
 ```java
 public record WarehouseActivityCreatedEvent(
@@ -115,7 +117,7 @@ public record WarehouseActivityCreatedEvent(
 ```
 
 ### `WBTUpdatedEvent`
-This event is triggered when a weighbridge ticket is updated and sends the weight to the warehouselistener to kick off the event sourcing
+This event is triggered when a weighbridge ticket is updated and sends the weight to the warehouselistener to kick off the event sourcing and projection
 
 ```java
 public record WBTUpdatedEvent(
@@ -268,12 +270,42 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 ```
 
-## Running Tests
-This section will be updated once the tests in the test folders are completed.
+## Running the Application
+To run the application as a monolith, you need to edit the configuration and add `$MODULE_WORKING_DIR$`. You can start the Infra using the following command:
+```shell
+cd infrastructure
+docker-compose up -d
+```
 
+To run the application, you can use the following command:
+```shell
+./gradlew bootRun
+```
+To run a single schema, you can run the LandSideApplication
+
+## Security
+The application uses OAuth2 for security. You need to obtain an access token to interact with the secured endpoints. Here is how you can get an access token:
+```shell
+POST http://localhost:8180/realms/mineral/protocol/openid-connect/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+client_id=backend&client_secret=bQG1f1VFFPbGkF8sjtMPryOXQChtU8p4&username=zamlamb&password=admin&grant_type=password&scope=openid
+
+> {%
+client.global.set("access_token", response.body.access_token);
+%}
+```
+
+Use the obtained access token in the Authorization header for subsequent requests:
+```shell
+Authorization: Bearer {{access_token}}
+```
+
+## Running Tests
+The project includes integration tests and abstract/smoke tests that use an initialization script and Testcontainers. As well, as the other tests as well  To run the tests, use the following command:
 ```shell
 # Example command to run tests
 ./gradlew test
 ```
-```
+Integration tests and abstract/smoke tests use an initialization script (initScript.sql) and Testcontainers to set up the test environment.
 
