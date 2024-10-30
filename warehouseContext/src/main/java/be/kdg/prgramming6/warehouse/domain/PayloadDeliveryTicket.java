@@ -3,13 +3,12 @@ package be.kdg.prgramming6.warehouse.domain;
 import java.time.LocalDateTime;
 
 public class PayloadDeliveryTicket {
-    private final LicensePlate licensePlate; // License plate of the truck
-    private final MaterialType materialType; // Type of material
-    private final LocalDateTime deliveryDate; // Date of delivery
-    private final WarehouseId warehouseId; // Warehouse ID
-    private final String dockNumber; // Dock number
+    private final LicensePlate licensePlate;
+    private final MaterialType materialType;
+    private LocalDateTime deliveryDate;
+    private final WarehouseId warehouseId;
+    private String dockNumber;
 
-    // Constructor
     public PayloadDeliveryTicket(final LicensePlate licensePlate, final MaterialType materialType, final LocalDateTime deliveryDate, final WarehouseId warehouseId, final String dockNumber) {
         this.licensePlate = licensePlate;
         this.materialType = materialType;
@@ -18,7 +17,11 @@ public class PayloadDeliveryTicket {
         this.dockNumber = dockNumber;
     }
 
-    // Getters
+    public void update(String dockNumber, LocalDateTime deliveryDate) {
+        this.dockNumber = dockNumber;
+        this.deliveryDate = deliveryDate;
+    }
+
     public MaterialType getMaterialType() {
         return materialType;
     }

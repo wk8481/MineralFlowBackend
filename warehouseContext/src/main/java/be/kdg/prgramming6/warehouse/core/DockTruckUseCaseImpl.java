@@ -3,10 +3,7 @@ package be.kdg.prgramming6.warehouse.core;
 import be.kdg.prgramming6.warehouse.domain.*;
 import be.kdg.prgramming6.warehouse.port.in.DockTruckCommand;
 import be.kdg.prgramming6.warehouse.port.in.DockTruckUseCase;
-import be.kdg.prgramming6.warehouse.port.out.LoadPDTPort;
-import be.kdg.prgramming6.warehouse.port.out.LoadWarehouseBySellerAndMaterialPort;
-import be.kdg.prgramming6.warehouse.port.out.SavePDTPort;
-import be.kdg.prgramming6.warehouse.port.out.UpdatePDTPort;
+import be.kdg.prgramming6.warehouse.port.out.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,16 +21,18 @@ public class DockTruckUseCaseImpl implements DockTruckUseCase {
     private final SavePDTPort savePDTPort;
     private final UpdatePDTPort updatePDTPort;
     private final LoadPDTPort loadPDTPort;
+    private final LoadWarehouseByIdPort loadWarehouseByIdPort;
 
     public DockTruckUseCaseImpl(
             LoadWarehouseBySellerAndMaterialPort loadWarehouseBySellerAndMaterialPort,
             SavePDTPort savePDTPort,
             UpdatePDTPort updatePDTPort,
-            LoadPDTPort loadPDTPort) {
+            LoadPDTPort loadPDTPort, LoadWarehouseByIdPort loadWarehouseByIdPort) {
         this.loadWarehouseBySellerAndMaterialPort = loadWarehouseBySellerAndMaterialPort;
         this.savePDTPort = savePDTPort;
         this.updatePDTPort = updatePDTPort;
         this.loadPDTPort = loadPDTPort;
+        this.loadWarehouseByIdPort = loadWarehouseByIdPort;
     }
 
     @Override
@@ -60,39 +59,31 @@ public class DockTruckUseCaseImpl implements DockTruckUseCase {
         Truck truck = new Truck(licensePlate, materialType);
         truck.setDockNumber(dockNumber);
 
-        // Load existing PDT
         Optional<PayloadDeliveryTicket> existingPDT = loadPDTPort.loadPDTByPlate(licensePlate);
         WeighbridgeNumber weighbridgeNumber = WeighbridgeNumber.generate(truck);
 
+        Warehouse warehouse = loadWarehouseByIdPort.loadWarehouseById(warehouseId)
+                .orElseThrow(() -> new IllegalArgumentException("Warehouse not found for ID: " + warehouseId));
+
         if (existingPDT.isPresent()) {
-            handleExistingPDT(existingPDT.get(), command, warehouseId, weighbridgeNumber);
+            warehouse.updatePDT(existingPDT.get(), dockNumber, deliveryDate);
+            updatePDTPort.updatePDT(existingPDT.get().getLicensePlate().toString(), materialType.toString(), warehouseId.id(), dockNumber, deliveryDate);
+            logger.info("Updated existing PDT for License Plate: {}", existingPDT.get().getLicensePlate());
         } else {
-            createAndSaveNewPDT(licensePlate, materialType, deliveryDate, warehouseId, dockNumber, weighbridgeNumber);
+            PayloadDeliveryTicket newPDT = warehouse.generatePDT(truck, dockNumber, deliveryDate);
+            savePDTPort.savePDT(licensePlate, materialType, warehouseId, dockNumber, deliveryDate);
+            logger.info("Created and saved new PDT: {}", newPDT);
         }
+
+        printPDTAndWeighbridge(existingPDT.orElse(null), weighbridgeNumber);
     }
 
     private void printPDTAndWeighbridge(PayloadDeliveryTicket pdt, WeighbridgeNumber weighbridgeNumber) {
         logger.info("----- Docking Summary -----");
-        logger.info("Payload Delivery Ticket: {}", pdt);
+        if (pdt != null) {
+            logger.info("Payload Delivery Ticket: {}", pdt);
+        }
         logger.info("Weighbridge Number: {}", weighbridgeNumber);
         logger.info("---------------------------");
-    }
-
-    private void handleExistingPDT(PayloadDeliveryTicket pdt, DockTruckCommand command, WarehouseId warehouseId, WeighbridgeNumber weighbridgeNumber) {
-        logger.debug("Found existing PDT: {}", pdt);
-
-        // Update the existing PDT
-        updatePDTPort.updatePDT(pdt.getLicensePlate().toString(), pdt.getMaterialType().toString(), warehouseId.id(), command.dockNumber(), command.deliveryDate());
-        logger.info("Updated existing PDT for License Plate: {}", pdt.getLicensePlate());
-        printPDTAndWeighbridge(pdt, weighbridgeNumber);
-    }
-
-    private void createAndSaveNewPDT(LicensePlate licensePlate, MaterialType materialType, LocalDateTime deliveryDate, WarehouseId warehouseId, String dockNumber, WeighbridgeNumber weighbridgeNumber) {
-        PayloadDeliveryTicket newPDT = new PayloadDeliveryTicket(licensePlate, materialType, deliveryDate, warehouseId, dockNumber);
-
-        // Save the newly created PDT
-        savePDTPort.savePDT(licensePlate, materialType, warehouseId, dockNumber, deliveryDate);
-        logger.info("Created and saved new PDT: {}", newPDT);
-        printPDTAndWeighbridge(newPDT, weighbridgeNumber);
     }
 }
