@@ -22,8 +22,8 @@ Content-Type: application/json
   "sellerId": "b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6",
   "licensePlate": "XYZ-789",
   "materialType": "GYPSUM",
-  "appointmentWindowStart": "2024-10-30T11:00:00",
-  "appointmentWindowEnd": "2024-10-30T11:59:00"
+  "appointmentWindowStart": "2024-11-30T11:00:00",
+  "appointmentWindowEnd": "2024-11-30T11:59:00"
 }
 
 ### Unauthorized Request APPOINTMENT
@@ -62,7 +62,7 @@ Content-Type: application/json
 
 {
   "licensePlate": "XYZ-789",
-  "netWeight": 400000,
+  "netWeight": 440000,
   "materialType": "GYPSUM",
   "sellerId": "b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6"
 }
@@ -96,9 +96,9 @@ Content-Type: application/json
 
 {
   "licensePlate": "XYZ-789",
-  "grossWeight": 410000,
+  "grossWeight": 450000,
   "tareWeight": 10000,
-  "netWeight": 400000
+  "netWeight": 440000
 }
 
 
@@ -151,6 +151,6 @@ Content-Type: application/json
 
 
 ### Get Warehouse By warehouseId
-GET http://localhost:8090/api/total-material/e2f7bcdc-69da-4b0e-b73f-6adf79e8d5f9
+GET http://localhost:8090/api/total-material/39dcbb4a-b535-4ab1-97b2-cfcba92f462a
 Authorization: Bearer {{access_token}}
 

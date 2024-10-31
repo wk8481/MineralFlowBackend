@@ -20,11 +20,13 @@ Content-Type: application/json
 
 {
   "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
-  "licensePlate": "ABC-123",
-  "materialType": "PET_COKE",
-  "appointmentWindowStart": "2024-10-30T10:00:00",
-  "appointmentWindowEnd": "2024-10-30T10:59:00"
+  "licensePlate": "ABC-127",
+  "materialType": "GYPSUM",
+  "appointmentWindowStart": "2024-11-30T10:00:00",
+  "appointmentWindowEnd": "2024-11-30T10:59:00"
 }
+
+
 
 ### Unauthorized Request APPOINTMENT
 POST http://localhost:8090/api/make-appointment/5c2db01b-1b71-48be-8b93-fa25635a388d/5c2db01b-1b71-48be-8b93-fa25635a388d/ABC-123/PET_COKE/2024-10-30T09:00:00/2024-10-30T10:00:00
@@ -62,7 +64,7 @@ Content-Type: application/json
 
 {
   "licensePlate": "ABC-123",
-  "netWeight": 350000,
+  "netWeight": 400000,
   "materialType": "PET_COKE",
   "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b"
 }
@@ -96,9 +98,9 @@ Content-Type: application/json
 
 {
   "licensePlate": "ABC-123",
-  "grossWeight": 360000,
+  "grossWeight": 410000,
   "tareWeight": 10000,
-  "netWeight": 350000
+  "netWeight": 400000
 }
 
 

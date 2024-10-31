@@ -10,6 +10,7 @@ public class Warehouse {
     private final WarehouseId warehouseId;
     private final MaterialType materialType;
     private static final BigDecimal MAX_CAPACITY = BigDecimal.valueOf(400_000); // Maximum capacity in tonnes
+    private static final BigDecimal OVERFLOW_LIMIT = MAX_CAPACITY.multiply(BigDecimal.valueOf(1.1)); // 10% overflow limit
     private BigDecimal currentCapacity;
     private final SellerId sellerId;
     private String dockNumber; // Additional attribute for dock number
@@ -79,7 +80,7 @@ public class Warehouse {
 
     // Method to check if there is enough storage available for the given payload weight
     public boolean canStore(BigDecimal payloadWeight) {
-        return currentCapacity.add(payloadWeight).compareTo(MAX_CAPACITY) <= 0;
+        return currentCapacity.add(payloadWeight).compareTo(OVERFLOW_LIMIT) <= 0;
     }
 
     // Method to check if there is enough capacity for unloading the given weight
@@ -90,7 +91,7 @@ public class Warehouse {
     // Method to store the payload (updating the current capacity)
     public void store(BigDecimal weight) {
         if (!canStore(weight)) {
-            throw new IllegalStateException("Warehouse has exceeded its maximum capacity.");
+            throw new IllegalStateException("Warehouse has exceeded its maximum capacity including overflow limit.");
         }
         currentCapacity = currentCapacity.add(weight);
     }

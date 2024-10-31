@@ -55,7 +55,7 @@ public class Schedule {
 
     private boolean isAppointmentPossible(LocalDateTime start, LocalDateTime end, Warehouse warehouse) {
         BigDecimal eightyPercentCapacity = Warehouse.getMaxCapacity().multiply(BigDecimal.valueOf(0.8));
-        return warehouse.getCurrentCapacity().compareTo(eightyPercentCapacity) < 0 || hasAvailability(start, end);
+        return warehouse.getCurrentCapacity().compareTo(eightyPercentCapacity) < 0 && hasAvailability(start, end);
     }
 
     public List<Appointment> getAppointments() {
