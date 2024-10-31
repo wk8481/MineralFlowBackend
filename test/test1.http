@@ -20,8 +20,8 @@ Content-Type: application/json
 
 {
   "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
-  "licensePlate": "ABC-127",
-  "materialType": "GYPSUM",
+  "licensePlate": "ABC-123",
+  "materialType": "PET_COKE",
   "appointmentWindowStart": "2024-11-30T10:00:00",
   "appointmentWindowEnd": "2024-11-30T10:59:00"
 }
