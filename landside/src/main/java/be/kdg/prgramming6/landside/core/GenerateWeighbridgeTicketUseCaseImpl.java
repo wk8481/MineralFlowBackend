@@ -86,11 +86,10 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
         loadAppointmentPort.loadAppointmentByLicensePlate(command.licensePlate())
                 .ifPresent(appointment -> {
                     if (appointment.matches(truck)) {
-                        if (appointment.getDepartureTime() == null) {
-                            appointment.setDepartureTime(LocalDateTime.now());
-                        }
+                        LocalDateTime departureTime = appointment.getArrivalTime().plusMinutes(15);
+                        appointment.setDepartureTime(departureTime);
                         updateAppointmentPort.updateAppointment(appointment);
-                        logger.info("Updated appointment with departure time: {}", appointment.getDepartureTime());
+                        logger.info("Updated appointment with departure time: {}", departureTime);
                     } else {
                         logger.warn("Appointment does not match the truck: {}", command.licensePlate());
                     }

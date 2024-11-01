@@ -59,13 +59,11 @@ public class Appointment {
         }
     }
 
-
-    public boolean isOnSite() {
-        LocalDateTime currentTime = LocalDateTime.now();
-        if (arrivalTime != null && currentTime.isAfter(arrivalTime) && departureTime == null) {
-            return true;
+    public boolean isOnSite(LocalDateTime currentTime) {
+        if (arrivalTime == null || departureTime == null) {
+            return false;
         }
-        return arrivalTime != null && currentTime.isAfter(arrivalTime) && currentTime.isBefore(departureTime);
+        return !currentTime.isBefore(arrivalTime) && !currentTime.isAfter(departureTime) && isWithinWindow(arrivalTime);
     }
 
 

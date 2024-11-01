@@ -23,7 +23,7 @@ public class GetAllTrucksOnSiteUseCaseImpl implements GetAllTrucksOnSiteUseCase 
     @Transactional
     public List<TruckResponse> getAllTrucksOnSite(List<LocalDateTime> scheduleTimes) {
         return loadTrucksByDaySchedulePort.loadTrucksByDaySchedules(scheduleTimes).stream()
-                .filter(Appointment::isOnSite)
+                .filter(appointment -> scheduleTimes.stream().anyMatch(appointment::isOnSite))
                 .map(appointment -> new TruckResponse(appointment.getTruck().getLicensePlate().toString()))
                 .collect(Collectors.toList());
     }
