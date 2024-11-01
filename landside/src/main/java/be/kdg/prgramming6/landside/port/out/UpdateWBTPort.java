@@ -5,7 +5,5 @@ import be.kdg.prgramming6.landside.domain.WeighbridgeTicket;
 
 @FunctionalInterface
 public interface UpdateWBTPort {
-//    void update(WeighbridgeTicket weighbridgeTicket, Truck truck);
-
     void update(WeighbridgeTicket weighbridgeTicket, WarehouseId warehouseId);
 }

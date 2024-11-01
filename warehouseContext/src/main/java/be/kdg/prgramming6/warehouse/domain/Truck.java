@@ -26,5 +26,5 @@ public class Truck {
         return dockNumber;
     }
 
-    // Other methods...
+
 }

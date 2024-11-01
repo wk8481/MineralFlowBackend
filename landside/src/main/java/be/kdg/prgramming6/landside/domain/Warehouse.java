@@ -9,7 +9,7 @@ import java.util.Objects;
 public class Warehouse {
     private final WarehouseId warehouseId;
     private final MaterialType materialType;
-    private static final BigDecimal MAX_CAPACITY = BigDecimal.valueOf(400_000); // Maximum capacity in tonnes
+    private static final BigDecimal MAX_CAPACITY = BigDecimal.valueOf(500_000); // Maximum capacity in tonnes
     private static final BigDecimal OVERFLOW_LIMIT = MAX_CAPACITY.multiply(BigDecimal.valueOf(1.1)); // 10% overflow limit
     private BigDecimal currentCapacity;
     private final SellerId sellerId;
@@ -59,9 +59,6 @@ public class Warehouse {
         return MAX_CAPACITY;
     }
 
-    public String getDockNumber() {
-        return dockNumber;
-    }
 
     public synchronized void modifyCapacity(final WarehouseActivityType warehouseActivityType, final BigDecimal weight) {
         if (weight.compareTo(BigDecimal.ZERO) <= 0) {
@@ -96,30 +93,6 @@ public class Warehouse {
         currentCapacity = currentCapacity.add(weight);
     }
 
-    public void setCurrentCapacity(BigDecimal currentCapacity) {
-        this.currentCapacity = currentCapacity;
-    }
-
-    // Method to check if the warehouse is 80% full and there are less than 40 appointments in the same hour
-    public boolean isAppointmentPossible(Schedule schedule, LocalDateTime start, LocalDateTime end) {
-        return currentCapacity.compareTo(MAX_CAPACITY.multiply(BigDecimal.valueOf(0.8))) >= 0
-                && schedule.hasAvailability(start, end);
-    }
-
-    // Method to reset current capacity for testing or end-of-day operations
-    public void resetCapacity() {
-        currentCapacity = BigDecimal.ZERO;
-    }
-
-    // Update method for dock number
-    public void updateDockNumber(String dockNumber) {
-        this.dockNumber = Objects.requireNonNull(dockNumber, "Dock number cannot be null");
-    }
-
-    // Method to get remaining capacity
-    public BigDecimal getRemainingCapacity() {
-        return MAX_CAPACITY.subtract(currentCapacity);
-    }
 
     @Override
     public String toString() {

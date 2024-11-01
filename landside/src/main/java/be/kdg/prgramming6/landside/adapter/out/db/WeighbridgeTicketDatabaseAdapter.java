@@ -25,7 +25,7 @@ public class WeighbridgeTicketDatabaseAdapter implements SaveWBTPort, LoadWBTPor
     }
 
     @Override
-    public WeighbridgeTicket save(WeighbridgeTicket ticket) {
+    public void save(WeighbridgeTicket ticket) {
         WeighbridgeTicketJpaEntity entity = new WeighbridgeTicketJpaEntity();
         entity.setLicensePlate(ticket.getLicensePlate());
         entity.setGrossWeight(ticket.getGrossWeight());
@@ -33,7 +33,6 @@ public class WeighbridgeTicketDatabaseAdapter implements SaveWBTPort, LoadWBTPor
         entity.setNetWeight(ticket.getNetWeight());
         entity.setTimestamp(ticket.getTimestamp());
         repository.save(entity);
-        return ticket;
     }
 
     @Override

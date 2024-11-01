@@ -19,10 +19,8 @@ public class MakeAppointmentRequestDTO {
     @NotEmpty(message = "Material type cannot be empty.")
     private final String materialType;
 
-    @NotNull(message = "Appointment window start cannot be null.")
     private final LocalDateTime appointmentWindowStart;
 
-    @NotNull(message = "Appointment window end cannot be null.")
     private final LocalDateTime appointmentWindowEnd;
 
     // Constructors, Getters, and Setters
@@ -56,7 +54,7 @@ public class MakeAppointmentRequestDTO {
     }
 
     public void validate() {
-        if (!isValidWindowTime()) {
+        if (appointmentWindowStart != null && appointmentWindowEnd != null && !isValidWindowTime()) {
             throw new InvalidOperationException("Start time cannot be after end time.");
         }
         if (MaterialType.fromString(materialType) == null) {

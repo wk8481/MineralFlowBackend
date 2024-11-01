@@ -1,4 +1,3 @@
-// warehouseContext/src/main/java/be/kdg/prgramming6/warehouse/adapter/in/web/dto/WarehouseDetailsDto.java
 package be.kdg.prgramming6.landside.adapter.in;
 
 import java.math.BigDecimal;

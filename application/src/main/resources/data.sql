@@ -35,13 +35,15 @@ INSERT INTO landside.weighbridge (weighbridge_number, license_plate)
 VALUES
     ('ABC-123-WB', 'ABC-123'),
     ('XYZ-789-WB', 'XYZ-789'),
-    ('LMN-456-WB', 'LMN-456');
+    ('LMN-456-WB', 'LMN-456'),
+    ('PQR-789-WB', 'PQR-789');
 
 INSERT into landside.trucks (license_plate, dock_number, material_type, seller_id)
 VALUES
     ('ABC-123', 'WD-10','PET_COKE',UUID_TO_BIN('dd2e2b7d-4622-441f-9200-123f8bb3e29b') ),
     ('XYZ-789', 'WD-2','GYPSUM',UUID_TO_BIN('b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6') ),
-    ('LMN-456', 'WD-5', 'IRON_ORE',UUID_TO_BIN('dd2e2b7d-4622-441f-9200-123f8bb3e29b') );
+    ('LMN-456', 'WD-5', 'PET_COKE',UUID_TO_BIN('dd2e2b7d-4622-441f-9200-123f8bb3e29b') ),
+    ('PQR-789', 'WD-7','IRON_ORE',UUID_TO_BIN('b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6') );
 
 
 INSERT INTO landside.schedule (schedule_time)
@@ -127,7 +129,7 @@ VALUES
     ('PO123456', '2024-10-23 13:31:00', UUID_TO_BIN('550e8400-e29b-41d4-a716-446655440000'), 'Joske Vermeulen', 'OUTSTANDING'),
     ('PO123457', '2024-10-24 14:00:00', UUID_TO_BIN('550e8400-e29b-41d4-a716-446655440001'), 'Jan Peeters', 'FULFILLED'),
     ('PO123458', '2024-10-25 15:30:00', UUID_TO_BIN('550e8400-e29b-41d4-a716-446655440002'), 'Marie Janssens', 'OUTSTANDING'),
-    ('PO123459', '2024-10-26 16:45:00', UUID_TO_BIN('550e8400-e29b-41d4-a716-446655440003'), 'Karel De Grote', 'FULFILLED'),
+    ('PO123459', '2024-10-26 16:45:00', UUID_TO_BIN('550e8400-e29b-41d4-a716-446655440003'), 'Karel De Grote', 'OUTSTANDING'),
     ('PO123460', '2024-10-27 17:15:00', UUID_TO_BIN('550e8400-e29b-41d4-a716-446655440004'), 'Sofie De Smet', 'OUTSTANDING'),
     ('PO123461', '2024-10-28 18:00:00', UUID_TO_BIN('550e8400-e29b-41d4-a716-446655440005'), 'Tom De Vries', 'OUTSTANDING');
 

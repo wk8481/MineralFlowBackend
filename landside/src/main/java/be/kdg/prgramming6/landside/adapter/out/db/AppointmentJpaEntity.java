@@ -13,22 +13,22 @@ public class AppointmentJpaEntity {
     private int appointmentId;
 
     @ManyToOne
-    @JoinColumn(name = "schedule_time", nullable = false)
+    @JoinColumn(name = "schedule_time")
     private ScheduleJpaEntity schedule;
 
-    @Column(name = "license_plate", nullable = false)
+    @Column(name = "license_plate")
     private String licensePlate;
 
-    @Column(name = "material_type", nullable = false)
+    @Column(name = "material_type")
     private String materialType;
 
-    @Column(name = "window_start", nullable = false)
+    @Column(name = "window_start")
     private LocalDateTime windowStart;
 
-    @Column(name = "window_end", nullable = false)
+    @Column(name = "window_end")
     private LocalDateTime windowEnd;
 
-    @Column(name = "seller_id", nullable = false)
+    @Column(name = "seller_id")
     private UUID sellerId;
 
     @Column(name = "arrival_time")

@@ -1,5 +1,6 @@
 package be.kdg.prgramming6.landside.core;
 
+import be.kdg.prgramming6.landside.domain.Appointment;
 import be.kdg.prgramming6.landside.port.in.GetAllTrucksOnSiteUseCase;
 import be.kdg.prgramming6.landside.port.in.TruckResponse;
 import be.kdg.prgramming6.landside.port.out.LoadTrucksByDaySchedulePort;
@@ -22,7 +23,7 @@ public class GetAllTrucksOnSiteUseCaseImpl implements GetAllTrucksOnSiteUseCase 
     @Transactional
     public List<TruckResponse> getAllTrucksOnSite(List<LocalDateTime> scheduleTimes) {
         return loadTrucksByDaySchedulePort.loadTrucksByDaySchedules(scheduleTimes).stream()
-                .filter(appointment -> scheduleTimes.stream().anyMatch(appointment::isOnSite))
+                .filter(Appointment::isOnSite)
                 .map(appointment -> new TruckResponse(appointment.getTruck().getLicensePlate().toString()))
                 .collect(Collectors.toList());
     }

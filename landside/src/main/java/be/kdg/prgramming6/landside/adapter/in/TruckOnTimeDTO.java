@@ -1,4 +1,3 @@
-// landside/src/main/java/be/kdg/prgramming6/landside/adapter/in/TruckOnTimeDTO.java
 package be.kdg.prgramming6.landside.adapter.in;
 
 import java.time.LocalDateTime;

@@ -12,8 +12,7 @@ public interface WarehouseJpaRepository extends JpaRepository<WarehouseJpaEntity
 
     Optional<WarehouseJpaEntity> findByWarehouseId(UUID warehouseId);
 
-    @Query("FROM WarehouseJpaEntity w JOIN FETCH w.activities WHERE w.warehouseId = :warehouseId")
-    WarehouseJpaEntity findByWarehouseIdIncludingActivities(UUID warehouseId);
+
 
 
 }

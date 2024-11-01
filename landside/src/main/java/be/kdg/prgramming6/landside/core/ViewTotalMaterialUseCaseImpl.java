@@ -5,6 +5,7 @@ import be.kdg.prgramming6.landside.domain.Warehouse;
 import be.kdg.prgramming6.landside.port.in.ViewTotalMaterialUseCase;
 import be.kdg.prgramming6.landside.port.in.WarehouseDetailsResponse;
 import be.kdg.prgramming6.landside.port.out.LoadAllWarehousesPort;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class ViewTotalMaterialUseCaseImpl implements ViewTotalMaterialUseCase {
     }
 
     @Override
+    @Transactional
     public List<WarehouseDetailsResponse> getTotalMaterialAndDetails() {
         List<Warehouse> warehouses = loadAllWarehousesPort.loadAllWarehouses();
         return warehouses.stream()

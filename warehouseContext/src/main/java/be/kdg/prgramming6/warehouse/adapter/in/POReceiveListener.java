@@ -5,7 +5,6 @@ import be.kdg.prgramming6.warehouse.domain.OrderLine;
 import be.kdg.prgramming6.warehouse.domain.PurchaseOrder;
 import be.kdg.prgramming6.warehouse.domain.PurchaseOrderStatus;
 import be.kdg.prgramming6.warehouse.port.in.UpdatePurchaseOrderUseCase;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -18,11 +17,10 @@ public class POReceiveListener {
 
     private static final Logger logger = LoggerFactory.getLogger(POReceiveListener.class);
     private static final String PURCHASE_ORDER_QUEUE = "purchase_order_queue";
-    private final ObjectMapper objectMapper;
     private final UpdatePurchaseOrderUseCase updatePurchaseOrderUseCase;
 
-    public POReceiveListener(ObjectMapper objectMapper, UpdatePurchaseOrderUseCase updatePurchaseOrderUseCase) {
-        this.objectMapper = objectMapper;
+    public POReceiveListener(UpdatePurchaseOrderUseCase updatePurchaseOrderUseCase) {
+
         this.updatePurchaseOrderUseCase = updatePurchaseOrderUseCase;
     }
 

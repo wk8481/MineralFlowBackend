@@ -42,4 +42,3 @@ public class WBTUpdatedPublisher implements UpdateWBTPort {
 }
 
 
-//in publisher u have from wbt, the licenseplate, netweight, and timestamp, and the warehouse number

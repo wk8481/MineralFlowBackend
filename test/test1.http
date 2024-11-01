@@ -64,7 +64,7 @@ Content-Type: application/json
 
 {
   "licensePlate": "ABC-123",
-  "netWeight": 400000,
+  "netWeight": 330000,
   "materialType": "PET_COKE",
   "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b"
 }
@@ -98,9 +98,8 @@ Content-Type: application/json
 
 {
   "licensePlate": "ABC-123",
-  "grossWeight": 410000,
-  "tareWeight": 10000,
-  "netWeight": 400000
+  "grossWeight": 340000,
+  "tareWeight": 10000
 }
 
 

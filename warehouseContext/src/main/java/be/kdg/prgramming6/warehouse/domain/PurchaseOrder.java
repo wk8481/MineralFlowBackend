@@ -1,6 +1,5 @@
 package be.kdg.prgramming6.warehouse.domain;
 
-import be.kdg.prgramming6.warehouse.adapter.in.POReceivedDTO;
 
 import java.util.Date;
 import java.util.List;

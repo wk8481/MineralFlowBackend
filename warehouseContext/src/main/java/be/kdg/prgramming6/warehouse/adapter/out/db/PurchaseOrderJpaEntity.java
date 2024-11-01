@@ -4,9 +4,6 @@ import be.kdg.prgramming6.warehouse.domain.PurchaseOrderStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;

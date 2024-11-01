@@ -2,6 +2,7 @@
 package be.kdg.prgramming6.landside.domain;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public class Appointment {
     private final Truck truck;
@@ -58,12 +59,17 @@ public class Appointment {
         }
     }
 
-    public boolean isOnSite(LocalDateTime currentTime) {
-        if (arrivalTime == null || departureTime == null) {
-            return false;
+
+    public boolean isOnSite() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        if (arrivalTime != null && currentTime.isAfter(arrivalTime) && departureTime == null) {
+            return true;
         }
-        return !currentTime.isBefore(arrivalTime) && !currentTime.isAfter(departureTime) && isWithinWindow(arrivalTime);
+        return arrivalTime != null && currentTime.isAfter(arrivalTime) && currentTime.isBefore(departureTime);
     }
+
+
+
 
     // Method to check if the truck matches the appointment
     public boolean matches(Truck truck) {
@@ -118,11 +124,6 @@ public class Appointment {
         return new Appointment(truck, materialType, windowStart, windowEnd, sellerId);
     }
 
-    // boolean method to check if is onSite, when pass gate set it to true, when load the warehouse set it to false
-
-    public boolean isOnSite() {
-        return false;
-    }
 
 
 }

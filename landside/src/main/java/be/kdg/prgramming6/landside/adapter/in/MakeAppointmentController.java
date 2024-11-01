@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/")
@@ -40,12 +41,16 @@ public class MakeAppointmentController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
+        // Set default values for appointment window if not provided
+        LocalDateTime windowStart = request.getAppointmentWindowStart() != null ? request.getAppointmentWindowStart() : LocalDateTime.now();
+        LocalDateTime windowEnd = request.getAppointmentWindowEnd() != null ? request.getAppointmentWindowEnd() : LocalDateTime.now().plusHours(1);
+
         // Create the command object
         MakeAppointmentCommand command = new MakeAppointmentCommand(
                 new LicensePlate(request.getLicensePlate()),
                 MaterialType.fromString(request.getMaterialType()), // This will not throw an exception now
-                request.getAppointmentWindowStart(),
-                request.getAppointmentWindowEnd(),
+                windowStart,
+                windowEnd,
                 new SellerId(request.getSellerId())
         );
 

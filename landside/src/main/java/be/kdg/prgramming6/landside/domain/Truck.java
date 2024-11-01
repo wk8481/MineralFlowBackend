@@ -46,10 +46,6 @@ public class Truck {
         return dockNumber != null && !dockNumber.isEmpty();
     }
 
-    public boolean matches(Appointment appointment) {
-        return this.licensePlate.equals(appointment.getTruck().getLicensePlate()) &&
-                this.materialType == appointment.getMaterialType();
-    }
 
     // Getters
     public LicensePlate getLicensePlate() {
@@ -70,17 +66,6 @@ public class Truck {
 
     public BigDecimal getTareWeight() {
         return TARE_WEIGHT;
-    }
-
-    // Update method for material type and dock number
-    public Truck update(MaterialType newMaterialType, String newDockNumber) {
-        if (newMaterialType != null) {
-            this.materialType = newMaterialType;
-        }
-        if (newDockNumber != null) {
-            this.dockNumber = newDockNumber;
-        }
-        return new Truck(this.licensePlate, this.materialType, this.dockNumber, this.sellerId);
     }
 
     // Optional setters if needed

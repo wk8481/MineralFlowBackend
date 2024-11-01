@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAppointmentPort, CreateSchedulePort, LoadAppointmentPort, LoadTrucksByDaySchedulePort, LoadAppointmentByLicensePlatePort {
+public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAppointmentPort, CreateSchedulePort, LoadTrucksByDaySchedulePort, LoadAppointmentByLicensePlatePort {
     private final ScheduleJpaRepository scheduleJpaRepository;
     private final AppointmentJpaRepository appointmentJpaRepository;
 
@@ -130,12 +130,7 @@ public class DayScheduleDatabaseAdapter implements LoadDaySchedulePort, UpdateAp
         existingAppointment.setSchedule(existingAppointment.getSchedule());
     }
 
-    @Override
-    public List<Appointment> loadAllAppointments() {
-        return appointmentJpaRepository.findAll().stream()
-                .map(this::toAppointment)
-                .collect(Collectors.toList());
-    }
+
 
     @Override
     public Optional<Appointment> loadAppointmentByLicensePlate(String licensePlate) {

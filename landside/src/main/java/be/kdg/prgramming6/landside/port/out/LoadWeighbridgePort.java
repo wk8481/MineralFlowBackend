@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface LoadWeighbridgePort {
     Optional<Weighbridge> loadWeighbridge(WeighbridgeNumber weighbridgeNumber);
-    // Additional load methods based on different attributes can be added here
+
 }

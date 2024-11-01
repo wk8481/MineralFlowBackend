@@ -20,10 +20,8 @@ Content-Type: application/json
 
 {
   "sellerId": "b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6",
-  "licensePlate": "PQR-789",
-  "materialType": "IRON_ORE",
-  "appointmentWindowStart": "2024-11-30T11:00:00",
-  "appointmentWindowEnd": "2024-11-30T11:59:00"
+  "licensePlate": "XYZ-789",
+  "materialType": "GYPSUM"
 }
 
 ### Unauthorized Request APPOINTMENT
@@ -49,9 +47,9 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "licensePlate": "PQR-789",
-  "materialType": "IRON_ORE",
-  "dockNumber": "WD-7"
+  "licensePlate": "XYZ-789",
+  "materialType": "GYPSUM",
+  "dockNumber": "WD-2"
 }
 
 
@@ -61,9 +59,9 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "licensePlate": "PQR-789",
-  "netWeight": 500000,
-  "materialType": "IRON_ORE",
+  "licensePlate": "XYZ-789",
+  "netWeight": 540000,
+  "materialType": "GYPSUM",
   "sellerId": "b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6"
 }
 
@@ -75,7 +73,7 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "licensePlate": "PQR-789",
+  "licensePlate": "XYZ-789",
   "materialType": "GYPSUM",
   "warehouseId": "39dcbb4a-b535-4ab1-97b2-cfcba92f462a",
   "sellerId": "b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6",
@@ -95,8 +93,8 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "licensePlate": "PQR-789",
-  "grossWeight": 510000,
+  "licensePlate": "XYZ-789",
+  "grossWeight": 550000,
   "tareWeight": 10000
 }
 
@@ -108,7 +106,7 @@ Accept: application/json
 Content-Type: application/json
 
 ### Get One Truck onTime/check arrival by license plate
-GET http://localhost:8090/api/check-arrival/ABC-123
+GET http://localhost:8090/api/check-arrival/XYZ-789
 Authorization: Bearer {{access_token}}
 
 
@@ -121,8 +119,6 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 
-
-
 ### PO rabbit
 POST http://localhost:15672/api/exchanges/%2f/purchase_order_exchange/publish
 Authorization: Basic bXl1c2VyOm15cGFzc3dvcmQ=
@@ -131,9 +127,10 @@ Content-Type: application/json
 {
   "properties": {},
   "routing_key": "purchase.order.created",
-  "payload": "{\"purchaseOrder\":{\"date\":\"2024-10-26T16:45:00\",\"poNumber\":\"PO123459\",\"customerNumber\":\"550e8400-e29b-41d4-a716-446655440003\",\"customerName\":\"Karel De Grote\",\"status\":\"OUTSTANDING\",\"orderLines\":[{\"materialType\":\"SLAG\",\"amountInTons\":60,\"pricePerTon\":32.0},{\"materialType\":\"IRON_ORE\",\"amountInTons\":90,\"pricePerTon\":75.0}]}}",
+  "payload": "{\"purchaseOrder\":{\"date\":\"2024-10-25T15:30:00\",\"poNumber\":\"PO123458\",\"customerNumber\":\"550e8400-e29b-41d4-a716-446655440002\",\"customerName\":\"Marie Janssens\",\"status\":\"OUTSTANDING\",\"orderLines\":[{\"materialType\":\"GYPSUM\",\"amountInTons\":120,\"pricePerTon\":35.0},{\"materialType\":\"PET_COKE\",\"amountInTons\":80,\"pricePerTon\":55.0}]}}",
   "payload_encoding": "string"
 }
+
 
 ### Get purchase orders
 GET http://localhost:8090/api/purchase-orders
@@ -154,3 +151,17 @@ Content-Type: application/json
 GET http://localhost:8090/api/total-material/39dcbb4a-b535-4ab1-97b2-cfcba92f462a
 Authorization: Bearer {{access_token}}
 
+
+### After it we run the method we will check if its over 80% of the total weight full
+### Valid Request APPOINTMENT
+POST http://localhost:8090/api/make-appointment
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "sellerId": "b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6",
+  "licensePlate": "XYZ-789",
+  "materialType": "GYPSUM",
+  "appointmentWindowStart": "2024-11-30T11:00:00",
+  "appointmentWindowEnd": "2024-11-30T11:59:00"
+}

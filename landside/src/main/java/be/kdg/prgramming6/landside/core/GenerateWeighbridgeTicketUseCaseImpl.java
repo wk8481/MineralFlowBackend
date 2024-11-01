@@ -47,19 +47,16 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
                 .orElseThrow(() -> new IllegalArgumentException("Truck not found with license plate: " + command.licensePlate()));
 
         BigDecimal tareWeight = truck.getTareWeight();
-        BigDecimal netWeight = command.netWeight() != null ? command.netWeight() : command.grossWeight().subtract(tareWeight);
-
-        logger.debug("Tare weight: {}, Net weight: {}", tareWeight, netWeight);
+        logger.debug("Tare weight: {}", tareWeight);
 
         Optional<WeighbridgeTicket> existingTicket = loadWBTPort.loadByLicensePlate(command.licensePlate());
-        LocalDateTime timestamp = LocalDateTime.now().plusHours(1);
+        LocalDateTime timestamp = LocalDateTime.now();
 
         WeighbridgeTicket ticket;
         WarehouseId warehouseId;
         if (existingTicket.isPresent()) {
             ticket = existingTicket.get();
             ticket.setGrossWeight(command.grossWeight());
-            ticket.setNetWeight(netWeight);
             ticket.setTimestamp(timestamp);
 
             logger.debug("Existing ticket found. Updating ticket: {}", ticket);
@@ -79,7 +76,6 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
                     command.licensePlate(),
                     command.grossWeight(),
                     tareWeight,
-                    netWeight,
                     timestamp
             );
 
@@ -87,21 +83,20 @@ public class GenerateWeighbridgeTicketUseCaseImpl implements GenerateWeighbridge
             saveWBTPort.save(ticket);
         }
 
-        // Load and update the appointment
         loadAppointmentPort.loadAppointmentByLicensePlate(command.licensePlate())
                 .ifPresent(appointment -> {
                     if (appointment.matches(truck)) {
-                        LocalDateTime departureTime = appointment.getArrivalTime().plusMinutes(15);
-                        appointment.setDepartureTime(departureTime);
+                        if (appointment.getDepartureTime() == null) {
+                            appointment.setDepartureTime(LocalDateTime.now());
+                        }
                         updateAppointmentPort.updateAppointment(appointment);
-                        logger.info("Updated appointment with departure time: {}", departureTime);
+                        logger.info("Updated appointment with departure time: {}", appointment.getDepartureTime());
                     } else {
                         logger.warn("Appointment does not match the truck: {}", command.licensePlate());
                     }
                 });
 
         logger.info("Generated or Loaded Weighbridge Ticket: {}", ticket);
-
         return new GenerateWeighbridgeTicketResponse(ticket);
     }
 }

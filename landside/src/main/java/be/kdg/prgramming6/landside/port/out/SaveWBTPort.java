@@ -4,5 +4,5 @@ import be.kdg.prgramming6.landside.domain.WeighbridgeTicket;
 
 @FunctionalInterface
 public interface SaveWBTPort {
-    WeighbridgeTicket save(WeighbridgeTicket weighbridgeTicket);
+    void save(WeighbridgeTicket weighbridgeTicket);
 }

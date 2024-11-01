@@ -19,9 +19,9 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "sellerId": "b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6",
-  "licensePlate": "PQR-789",
-  "materialType": "IRON_ORE",
+  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
+  "licensePlate": "LMN-456",
+  "materialType": "PET_COKE",
   "appointmentWindowStart": "2024-11-30T11:00:00",
   "appointmentWindowEnd": "2024-11-30T11:59:00"
 }
@@ -49,9 +49,9 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "licensePlate": "PQR-789",
-  "materialType": "IRON_ORE",
-  "dockNumber": "WD-7"
+  "licensePlate": "LMN-456",
+  "materialType": "PET_COKE",
+  "dockNumber": "WD-5"
 }
 
 
@@ -61,10 +61,10 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "licensePlate": "PQR-789",
-  "netWeight": 500000,
-  "materialType": "IRON_ORE",
-  "sellerId": "b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6"
+  "licensePlate": "LMN-456",
+  "netWeight": 200000,
+  "materialType": "PET_COKE",
+  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b"
 }
 
 
@@ -75,12 +75,12 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "licensePlate": "PQR-789",
-  "materialType": "GYPSUM",
-  "warehouseId": "39dcbb4a-b535-4ab1-97b2-cfcba92f462a",
-  "sellerId": "b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6",
+  "licensePlate": "LMN-456",
+  "materialType": "PET_COKE",
+  "warehouseId": "e2f7bcdc-69da-4b0e-b73f-6adf79e8d5f9",
+  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
   "deliveryDate": "2024-10-30T11:00:00",
-  "dockNumber": "WD-2"
+  "dockNumber": "WD-5"
 }
 
 
@@ -95,8 +95,8 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "licensePlate": "PQR-789",
-  "grossWeight": 510000,
+  "licensePlate": "LMN-456",
+  "grossWeight": 210000,
   "tareWeight": 10000
 }
 
@@ -121,8 +121,6 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 
-
-
 ### PO rabbit
 POST http://localhost:15672/api/exchanges/%2f/purchase_order_exchange/publish
 Authorization: Basic bXl1c2VyOm15cGFzc3dvcmQ=
@@ -131,9 +129,10 @@ Content-Type: application/json
 {
   "properties": {},
   "routing_key": "purchase.order.created",
-  "payload": "{\"purchaseOrder\":{\"date\":\"2024-10-26T16:45:00\",\"poNumber\":\"PO123459\",\"customerNumber\":\"550e8400-e29b-41d4-a716-446655440003\",\"customerName\":\"Karel De Grote\",\"status\":\"OUTSTANDING\",\"orderLines\":[{\"materialType\":\"SLAG\",\"amountInTons\":60,\"pricePerTon\":32.0},{\"materialType\":\"IRON_ORE\",\"amountInTons\":90,\"pricePerTon\":75.0}]}}",
+  "payload": "{\"purchaseOrder\":{\"date\":\"2024-10-25T15:30:00\",\"poNumber\":\"PO123458\",\"customerNumber\":\"550e8400-e29b-41d4-a716-446655440002\",\"customerName\":\"Marie Janssens\",\"status\":\"OUTSTANDING\",\"orderLines\":[{\"materialType\":\"GYPSUM\",\"amountInTons\":120,\"pricePerTon\":35.0},{\"materialType\":\"PET_COKE\",\"amountInTons\":80,\"pricePerTon\":55.0}]}}",
   "payload_encoding": "string"
 }
+
 
 ### Get purchase orders
 GET http://localhost:8090/api/purchase-orders
@@ -153,4 +152,7 @@ Content-Type: application/json
 ### Get Warehouse By warehouseId
 GET http://localhost:8090/api/total-material/39dcbb4a-b535-4ab1-97b2-cfcba92f462a
 Authorization: Bearer {{access_token}}
+
+
+
 

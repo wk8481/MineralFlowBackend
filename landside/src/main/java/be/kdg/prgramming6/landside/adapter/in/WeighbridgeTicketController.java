@@ -23,14 +23,13 @@ public class WeighbridgeTicketController {
     @PostMapping("/generate-weighbridge-ticket")
     public ResponseEntity<GenerateWeighbridgeTicketResponse> generateWeighbridgeTicket(@Valid @RequestBody GenerateWeighbridgeTicketDTO dto) {
         LOGGER.info("Received request to generate weighbridge ticket");
-        LOGGER.debug("Request details - License Plate: {}, Gross Weight: {}, Tare Weight: {}, Net Weight: {}",
-                dto.getLicensePlate(), dto.getGrossWeight(), dto.getTareWeight(), dto.getNetWeight());
+        LOGGER.debug("Request details - License Plate: {}, Gross Weight: {}, Tare Weight: {}",
+                dto.getLicensePlate(), dto.getGrossWeight(), dto.getTareWeight());
 
         GenerateWeighbridgeTicketCommand command = new GenerateWeighbridgeTicketCommand(
                 dto.getLicensePlate(),
                 dto.getGrossWeight(),
-                dto.getTareWeight(),
-                dto.getNetWeight()
+                dto.getTareWeight()
         );
 
         LOGGER.debug("Generated command: {}", command);
