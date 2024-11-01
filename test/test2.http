@@ -108,7 +108,7 @@ Accept: application/json
 Content-Type: application/json
 
 ### Get One Truck onTime/check arrival by license plate
-GET http://localhost:8090/api/check-arrival/ABC-123
+GET http://localhost:8090/api/check-arrival/license-plate/ABC-123
 Authorization: Bearer {{access_token}}
 
 

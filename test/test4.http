@@ -60,7 +60,7 @@ Content-Type: application/json
 
 {
   "licensePlate": "XYZ-789",
-  "netWeight": 540000,
+  "netWeight": 300000,
   "materialType": "GYPSUM",
   "sellerId": "b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6"
 }
@@ -94,7 +94,7 @@ Content-Type: application/json
 
 {
   "licensePlate": "XYZ-789",
-  "grossWeight": 550000,
+  "grossWeight": 310000,
   "tareWeight": 10000
 }
 
@@ -105,11 +105,13 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 Content-Type: application/json
 
-### Get One Truck onTime/check arrival by license plate
-GET http://localhost:8090/api/check-arrival/XYZ-789
+#### Get One Truck onTime/check arrival by license plate
+#GET http://localhost:8090/api/check-arrival/XYZ-789
+#Authorization: Bearer {{access_token}}
+
+### Get one truck onTime/check arrival by appointment id
+GET http://localhost:8090/api/check-arrival/62
 Authorization: Bearer {{access_token}}
-
-
 
 
 
@@ -160,7 +162,7 @@ Content-Type: application/json
 
 {
   "sellerId": "b5fa5dbd-1130-44a1-8db8-4e8d7155e7b6",
-  "licensePlate": "XYZ-789",
+  "licensePlate": "XYZ-890",
   "materialType": "GYPSUM",
   "appointmentWindowStart": "2024-11-30T11:00:00",
   "appointmentWindowEnd": "2024-11-30T11:59:00"

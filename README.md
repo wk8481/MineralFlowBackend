@@ -1,311 +1,261 @@
-# Project Overview
+Here's the updated **README** file draft incorporating your commands and events:
 
-This project is a Spring Boot application that manages warehouse and landside operations. It includes various use cases, controllers, and events to handle different aspects of the system.
+---
+
+# README - Landside and Warehouse Domain
+
+This project is designed to support `Landside` and `Warehouse` management functionalities. Each domain includes specific commands, events, and entity definitions to ensure seamless operations, from truck appointment scheduling to inventory handling and order fulfillment.
 
 ## Table of Contents
+1. [Landside Domain](#landside-domain)
+2. [Warehouse Domain](#warehouse-domain)
+3. [Commands and Events](#commands-and-events)
+4. [Domain Entities](#domain-entities)
 
-- [Commands](#commands)
-- [Events](#events)
-- [HTTP Tests](#http-tests)
-- [Running the Application](#running-the-application)
-- [Security](#security)
-- [Running Tests](#running-tests)
+---
 
-## Commands
-Commands are actions that change the state of the system. They are typically initiated by the user or an external system and are handled by the application to perform specific tasks.
+### Landside Domain
+The `Landside` domain handles truck scheduling and management related to facility entry and deliveries.
 
+#### Key Components:
+- **MakeAppointmentUseCaseImpl**: A use case that checks if an appointment can be made for a truck, processes scheduling constraints, and coordinates between the `Truck` and external schedule providers.
+- **Appointment Entity**: Manages appointment information, including `LicensePlate`, `MaterialType`, and `ArrivalWindow`.
 
-### `DockTruckCommand`
+---
 
-Handles the docking of a truck at the warehouse.
+### Warehouse Domain
+The `Warehouse` domain includes management of inventory, order fulfillment, and truck docking for material delivery.
 
-```java
-public record DockTruckCommand(
-    LicensePlate licensePlate,
-    MaterialType materialType,
-    WarehouseId warehouseId,
-    String dockNumber,
-    LocalDateTime deliveryDate,
-    UUID sellerId
-) {
-    // Constructor with validation
-}
-```
+#### Key Components:
+- **FulfillmentStatus**:
+    - `OUTSTANDING`: Order yet to be fulfilled.
+    - `FULFILLED`: Order completed.
+    - `NONE`: No fulfillment required.
 
-### `MakeAppointmentCommand`
-Creates an appointment for a truck to arrive at the warehouse.
+- **LicensePlate**: Represents a truck's license plate.
 
-```java
-public record MakeAppointmentCommand(
-    LicensePlate licensePlate,
-    MaterialType materialType,
-    LocalDateTime appointmentWindowStart,
-    LocalDateTime appointmentWindowEnd,
-    SellerId sellerId
-) {
-    // Constructor with validation
-}
-```
+- **MaterialType**: Enum representing materials stored in the warehouse (`GYPSUM`, `IRON_ORE`, `CEMENT`, `PET_COKE`, `SLAG`).
 
-### `ReceiveWarehouseNumberCommand`
-Handles the reception of a warehouse number and a weighbridge ticket as well as creating the partial wbt.
+- **OrderLine**: Contains order details, including material type, amount in tons, and price per ton.
 
-```java
-public record ReceiveWarehouseNumberCommand(
-    String licensePlate,
-    BigDecimal netWeight,
-    String materialType,
-    UUID sellerId
-) {
-    // Constructor with validation
-}
-```
+- **PayloadDeliveryTicket**: Tracks delivery details, including dock assignment, delivery date, and warehouse ID.
 
-### `RecognizeTruckCommand`
-Recognizes a truck by its license plate and allows it to pass the gate and allow it be given the access to dock
+- **PurchaseOrder**: Represents an order, with details on status, customer, and order lines.
 
-```java
-public record RecognizeTruckCommand(
-    String licensePlate,
-    String materialType,
-    String dockNumber
-) {
-    // Constructor with validation
-}
-```
+- **Truck**: Manages truck-related data, including `LicensePlate`, `MaterialType`, and `DockNumber`.
 
-### `GenerateWeighbridgeTicketCommand`
-Generates a weighbridge ticket for a truck that is leaving the warehouse
+- **Warehouse**: Manages warehouse operations, truck docking, and activity tracking.
 
-```java
-public record GenerateWeighbridgeTicketCommand(
-    String licensePlate,
-    BigDecimal grossWeight,
-    BigDecimal tareWeight,
-    BigDecimal netWeight
-) {
-    // Constructor with validation
-}
-```
-## Events
-Events are notifications that something has happened in the system, They are typically used to inform other parts of the system or external systems about changes in state.
+---
 
-### `AppointmentUpdatedEvent`
-This event is triggered when an appointment is updated but is just for the event publishing example
+### Commands and Events
 
-```java
-public record AppointmentUpdatedEvent(
-    UUID sellerId,
-    String licensePlate
-) {
-}
-```
+#### Commands:
+1. **DockTruckCommand**
+    - Description: Handles the docking of a truck at the warehouse.
+    - Fields:
+        - `LicensePlate`: Truck's license plate.
+        - `MaterialType`: Type of material being delivered.
+        - `WarehouseId`: Identifier of the warehouse.
+        - `DockNumber`: Dock number where the truck will dock.
+        - `DeliveryDate`: Date of delivery.
+        - `SellerId`: Identifier for the seller.
 
-### `WarehouseActivityCreatedEvent`
-This event is triggered when a warehouse activity is created and used for projection
+   ```java
+   public record DockTruckCommand(
+       LicensePlate licensePlate,
+       MaterialType materialType,
+       WarehouseId warehouseId,
+       String dockNumber,
+       LocalDateTime deliveryDate,
+       UUID sellerId
+   ) {
+       // Constructor with validation
+   }
+   ```
 
-```java
-public record WarehouseActivityCreatedEvent(
-    UUID warehouseId,
-    WarehouseActivityType type,
-    String materialType,
-    UUID sellerId,
-    LocalDateTime time,
-    BigDecimal weight
-) {
-}
-```
+2. **MakeAppointmentCommand**
+    - Description: Creates an appointment for a truck to arrive at the warehouse.
+    - Fields:
+        - `LicensePlate`: Unique truck identifier.
+        - `MaterialType`: Type of material.
+        - `AppointmentWindowStart`: Start of the appointment window.
+        - `AppointmentWindowEnd`: End of the appointment window.
+        - `SellerId`: Identifier for the seller.
 
-### `WBTUpdatedEvent`
-This event is triggered when a weighbridge ticket is updated and sends the weight to the warehouselistener to kick off the event sourcing and projection
+   ```java
+   public record MakeAppointmentCommand(
+       LicensePlate licensePlate,
+       MaterialType materialType,
+       LocalDateTime appointmentWindowStart,
+       LocalDateTime appointmentWindowEnd,
+       SellerId sellerId
+   ) {
+       // Constructor with validation
+   }
+   ```
 
-```java
-public record WBTUpdatedEvent(
-    String licensePlate,
-    BigDecimal netWeight,
-    UUID warehouseId
-) {
-}
-```
+3. **ReceiveWarehouseNumberCommand**
+    - Description: Handles the reception of a warehouse number and weighbridge ticket.
+    - Fields:
+        - `LicensePlate`: Truck's license plate.
+        - `NetWeight`: Net weight of the load.
+        - `MaterialType`: Type of material delivered.
+        - `SellerId`: Identifier for the seller.
 
-## HTTP Tests
+   ```java
+   public record ReceiveWarehouseNumberCommand(
+       String licensePlate,
+       BigDecimal netWeight,
+       String materialType,
+       UUID sellerId
+   ) {
+       // Constructor with validation
+   }
+   ```
 
-### `Get Access Token`
-```shell
-POST http://localhost:8180/realms/mineral/protocol/openid-connect/token HTTP/1.1
-Content-Type: application/x-www-form-urlencoded
+4. **RecognizeTruckCommand**
+    - Description: Recognizes a truck by its license plate and allows it to pass the gate.
+    - Fields:
+        - `LicensePlate`: Truck's license plate.
+        - `MaterialType`: Type of material.
+        - `DockNumber`: Dock number assigned to the truck.
 
-client_id=backend&client_secret=bQG1f1VFFPbGkF8sjtMPryOXQChtU8p4&username=zamlamb&password=admin&grant_type=password&scope=openid
+   ```java
+   public record RecognizeTruckCommand(
+       String licensePlate,
+       String materialType,
+       String dockNumber
+   ) {
+       // Constructor with validation
+   }
+   ```
 
-> {%
-    client.global.set("access_token", response.body.access_token);
-%}
-```
+5. **GenerateWeighbridgeTicketCommand**
+    - Description: Generates a weighbridge ticket for a truck leaving the warehouse.
+    - Fields:
+        - `LicensePlate`: Truck's license plate.
+        - `GrossWeight`: Gross weight of the truck.
+        - `TareWeight`: Tare weight of the truck.
+        - `NetWeight`: Net weight of the load.
 
-### `Vali Request Appointment`
-```shell
-POST http://localhost:8090/api/make-appointment
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
+   ```java
+   public record GenerateWeighbridgeTicketCommand(
+       String licensePlate,
+       BigDecimal grossWeight,
+       BigDecimal tareWeight,
+       BigDecimal netWeight
+   ) {
+       // Constructor with validation
+   }
+   ```
 
-{
-  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
-  "licensePlate": "ABC-123",
-  "materialType": "PET_COKE",
-  "appointmentWindowStart": "2024-10-30T10:00:00",
-  "appointmentWindowEnd": "2024-10-30T10:59:00"
-}
-```
+#### Events:
+1. **AppointmentCreatedEvent**
+    - Description: Triggered upon successful appointment creation for a truck.
 
+   ```java
+   public record AppointmentCreatedEvent(
+       UUID sellerId,
+       String licensePlate
+   ) {
+   }
+   ```
 
-### `Recognize Truck`
-```shell
-POST http://localhost:8090/api/recognize-truck
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
+2. **AppointmentUpdatedEvent**
+    - Description: Triggered when an appointment is updated.
 
-{
-  "licensePlate": "ABC-123",
-  "materialType": "PET_COKE",
-  "dockNumber": "WD-10"
-}
-```
+   ```java
+   public record AppointmentUpdatedEvent(
+       UUID sellerId,
+       String licensePlate
+   ) {
+   }
+   ```
 
-### `Receive Warehouse Number and Weighbridge Number`
-```shell
-POST http://localhost:8090/api/receive-warehouse-number
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
+3. **WarehouseActivityCreatedEvent**
+    - Description: Triggered when a warehouse activity is created.
 
-{
-  "licensePlate": "ABC-123",
-  "netWeight": 3000,
-  "materialType": "PET_COKE",
-  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b"
-}
-```
+   ```java
+   public record WarehouseActivityCreatedEvent(
+       UUID warehouseId,
+       WarehouseActivityType type,
+       String materialType,
+       UUID sellerId,
+       LocalDateTime time,
+       BigDecimal weight
+   ) {
+   }
+   ```
 
-### `Dock Truck`
-```shell
-POST http://localhost:8090/api/dock-truck
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
+4. **WBTUpdatedEvent**
+    - Description: Triggered when a weighbridge ticket is updated.
 
-{
-  "licensePlate": "ABC-123",
-  "materialType": "PET_COKE",
-  "warehouseId": "e2f7bcdc-69da-4b0e-b73f-6adf79e8d5f9",
-  "sellerId": "dd2e2b7d-4622-441f-9200-123f8bb3e29b",
-  "deliveryDate": "2024-10-30T09:00:00",
-  "dockNumber": "WD-10"
-}
-```
+   ```java
+   public record WBTUpdatedEvent(
+       String licensePlate,
+       BigDecimal netWeight,
+       UUID warehouseId
+   ) {
+   }
+   ```
 
-### `Generate Weighbridge Ticket`
-```shell
-POST http://localhost:8090/api/generate-weighbridge-ticket
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
+5. **WarehouseLoadedEvent**
+    - Description: Triggered when materials are successfully loaded into the warehouse.
 
-{
-  "licensePlate": "ABC-123",
-  "grossWeight": 13000,
-  "tareWeight": 10000,
-  "netWeight": 3000
-}
-```
+6. **WarehouseUnloadedEvent**
+    - Description: Triggered when materials are successfully unloaded from the warehouse.
 
-### `Get Trucks On Time / Check Arrival`
-```shell
-GET http://localhost:8090/api/check-arrival
-Authorization: Bearer {{access_token}}
-Accept: application/json
-Content-Type: application/json
-```
+7. **OrderFulfilledEvent**
+    - Description: Triggered when a purchase order is fulfilled.
 
-### `Get One Truck / Check Arrival by License Plate`
-```shell
-GET http://localhost:8090/api/check-arrival/ABC-001
-Authorization: Bearer {{access_token}}
-```
+---
 
-### `Get Trucks On Site`
-```shell
-GET http://localhost:8090/api/trucks-on-site
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
-```
+### Domain Entities
 
-### `PO Rabbit`
-```shell
-POST http://localhost:15672/api/exchanges/%2f/purchase_order_exchange/publish
-Authorization: Basic bXl1c2VyOm15cGFzc3dvcmQ=
-Content-Type: application/json
+#### Landside Domain
+- **Truck**:
+    - `LicensePlate`: Identifies the truck.
+    - `MaterialType`: Specifies the material the truck carries.
 
-{
-  "properties": {},
-  "routing_key": "purchase.order.created",
-  "payload": "{\"purchaseOrder\":{\"date\":\"2024-10-23T13:31:00\",\"poNumber\":\"PO123456\",\"customerNumber\":\"550e8400-e29b-41d4-a716-446655440000\",\"customerName\":\"Joske Vermeulen\",\"status\":\"OUTSTANDING\",\"orderLines\":[{\"materialType\":\"PET_COKE\",\"amountInTons\":100,\"pricePerTon\":50.0},{\"materialType\":\"SLAG\",\"amountInTons\":50,\"pricePerTon\":30.0}]}}",
-  "payload_encoding": "string"
-}
-```
+#### Warehouse Domain
+- **Warehouse**:
+    - **Fields**:
+        - `warehouseId`: Unique identifier.
+        - `materialType`: Material stored.
+        - `activities`: Tracks activities in the warehouse.
+    - **Methods**:
+        - `loadWarehouse(MaterialType, weight)`: Adds loading activity.
+        - `unloadWarehouse(MaterialType, weight)`: Adds unloading activity.
+        - `dockTruck(Truck)`: Docks a truck in the warehouse.
+        - `generatePDT(Truck, dockNumber, deliveryDate)`: Generates a delivery ticket.
+        - `assignWeighbridgeNumber(Truck)`: Assigns a weighbridge number to a truck.
 
-### `Get Purchase Orders`
-```shell
-GET http://localhost:8090/api/purchase-orders
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
-```
+- **OrderLine**:
+    - Represents a line item in an order.
+    - Fields: `MaterialType`, `AmountInTons`, `PricePerTon`.
 
-### `Get Purchase Order by ID`
-```shell
-GET http://localhost:8090/api/purchase-orders/PO123456
-Authorization: Bearer {{access_token}}
-```
+- **PayloadDeliveryTicket**:
+    - Tracks delivery information, including `LicensePlate`, `MaterialType`, `DockNumber`, and `WarehouseId`.
 
-### `Get Warehouses with Total Material Weight`
-```shell
-GET http://localhost:8090/api/total-material
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
-```
+- **PurchaseOrder**:
+    - Manages purchase order details.
+    - Fields: `poNumber`, `CustomerNumber`, `Status`, `OrderLines`.
 
-## Running the Application
-To run the application as a monolith, you need to edit the configuration and add `$MODULE_WORKING_DIR$`. You can start the Infra using the following command:
-```shell
-cd infrastructure
-docker-compose up -d
-```
+- **WarehouseActivity**:
+    - Records a warehouse activity (e.g., loading, unloading).
+    - Fields: `WarehouseActivityId`, `Type`, `Time`, `MaterialType`, `Weight`.
 
-To run the application, you can use the following command:
-```shell
-./gradlew bootRun
-```
-To run a single schema, you can run the LandSideApplication
+- **WarehouseActivityWindow**:
+    - Manages all activities within a specific time frame.
+    - Methods:
+        - `addActivity(type, sellerId, materialType, weight, status)`: Records a new activity.
 
-## Security
-The application uses OAuth2 for security. You need to obtain an access token to interact with the secured endpoints. Here is how you can get an access token:
-```shell
-POST http://localhost:8180/realms/mineral/protocol/openid-connect/token HTTP/1.1
-Content-Type: application/x-www-form-urlencoded
+- **FulfillmentStatus**:
+    - Enum to manage fulfillment states: `OUTSTANDING`, `FULFILLED`, `NONE`.
 
-client_id=backend&client_secret=bQG1f1VFFPbGkF8sjtMPryOXQChtU8p4&username=zamlamb&password=admin&grant_type=password&scope=openid
+---
 
-> {%
-client.global.set("access_token", response.body.access_token);
-%}
-```
+This **README** provides an overview of the structure and operations within the `Landside` and `Warehouse` domains, detailing commands, events, and domain classes to support core functionalities. The modular design ensures easy extension and integration across different functional areas.
 
-Use the obtained access token in the Authorization header for subsequent requests:
-```shell
-Authorization: Bearer {{access_token}}
-```
-
-## Running Tests
-The project includes integration tests and abstract/smoke tests that use an initialization script and Testcontainers. As well, as the other tests as well  To run the tests, use the following command:
-```shell
-# Example command to run tests
-./gradlew test
-```
-Integration tests and abstract/smoke tests use an initialization script (initScript.sql) and Testcontainers to set up the test environment.
-
+--- 

@@ -11,4 +11,8 @@ public interface AppointmentJpaRepository extends JpaRepository<AppointmentJpaEn
 
     @Query("FROM AppointmentJpaEntity a JOIN FETCH a.schedule WHERE a.licensePlate = :licensePlate")
     AppointmentJpaEntity findByLicensePlateTest(String licensePlate);
+    Optional<AppointmentJpaEntity> findById(int appointmentId);
+
+
+
 }

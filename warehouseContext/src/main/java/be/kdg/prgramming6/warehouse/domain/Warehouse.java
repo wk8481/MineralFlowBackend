@@ -1,14 +1,13 @@
 package be.kdg.prgramming6.warehouse.domain;
 
 import be.kdg.prgramming6.common.domain.WarehouseActivityType;
-import jdk.jshell.Snippet;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+
 
 public class Warehouse {
     private final WarehouseId warehouseId;

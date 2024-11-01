@@ -53,11 +53,19 @@ public class RecognizeTruckUseCaseImpl implements RecognizeTruckUseCase {
             loadAppointmentPort.loadAppointmentByLicensePlate(licensePlate.toString())
                     .ifPresent(appointment -> {
                         if (appointment.matches(truck)) {
-                            LocalDateTime arrivalTime = appointment.getWindowStart().plusMinutes(15);
+                            LocalDateTime arrivalTime = appointment.getArrivalTime() != null ? appointment.getArrivalTime() : LocalDateTime.now().plusMinutes(15);
                             appointment.setArrivalTime(arrivalTime);
                             updateAppointmentPort.updateAppointment(appointment);
                             LOGGER.info("Truck recognized and has a matching appointment: {}", truck.getLicensePlate());
-                            // Logic to open the gate
+
+                            // Check if the truck is on time
+                            if ("on time".equals(appointment.checkArrivalStatus())) {
+                                // Logic to open the gate
+                                gateOpened.set(true);
+                            } else {
+                                gateOpened.set(false);
+                                LOGGER.warn("Truck recognized but not on time: {}", command.licensePlate());
+                            }
                         } else {
                             gateOpened.set(false);
                             LOGGER.warn("Truck recognized but no matching appointment found: {}", command.licensePlate());

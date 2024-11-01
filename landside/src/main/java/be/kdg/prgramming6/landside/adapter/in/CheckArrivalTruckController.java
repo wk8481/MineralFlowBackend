@@ -3,6 +3,7 @@ package be.kdg.prgramming6.landside.adapter.in;
 
 import be.kdg.prgramming6.landside.domain.Appointment;
 import be.kdg.prgramming6.landside.port.in.CheckArrivalTruckUseCase;
+import be.kdg.prgramming6.landside.port.in.GetTruckByIdUseCase;
 import be.kdg.prgramming6.landside.port.in.GetTruckByLicensePlateUseCase;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +19,12 @@ public class CheckArrivalTruckController {
 
     private final CheckArrivalTruckUseCase checkArrivalTruckUseCase;
     private final GetTruckByLicensePlateUseCase getTruckByLicensePlateUseCase;
+    private final GetTruckByIdUseCase getTruckByIdUseCase;
 
-    public CheckArrivalTruckController(CheckArrivalTruckUseCase checkArrivalTruckUseCase, GetTruckByLicensePlateUseCase getTruckByLicensePlateUseCase) {
+    public CheckArrivalTruckController(CheckArrivalTruckUseCase checkArrivalTruckUseCase, GetTruckByLicensePlateUseCase getTruckByLicensePlateUseCase, GetTruckByIdUseCase getTruckByIdUseCase) {
         this.checkArrivalTruckUseCase = checkArrivalTruckUseCase;
         this.getTruckByLicensePlateUseCase = getTruckByLicensePlateUseCase;
+        this.getTruckByIdUseCase = getTruckByIdUseCase;
     }
 
     @GetMapping(value = "/check-arrival", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,6 +40,7 @@ public class CheckArrivalTruckController {
                 LocalDateTime.of(2024, 11, 30, 17, 0),
                 LocalDateTime.of(2024, 12, 30, 18, 0),
                 LocalDateTime.of(2024, 11, 30, 19, 0),
+                LocalDateTime.of(2024, 11, 4, 9, 0),
                 LocalDateTime.now()
         );
         List<Appointment> appointments = checkArrivalTruckUseCase.loadAllAppointments(scheduleTimes);
@@ -55,9 +59,25 @@ public class CheckArrivalTruckController {
         return ResponseEntity.ok(truckOnTimeDTOs);
     }
 
-    @GetMapping(value = "/check-arrival/{licensePlate}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/check-arrival/license-plate/{licensePlate}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TruckOnTimeDTO> getAppointmentByLicensePlate(@PathVariable String licensePlate) {
         Appointment appointment = getTruckByLicensePlateUseCase.getAppointmentByLicensePlate(licensePlate);
+        TruckOnTimeDTO dto = new TruckOnTimeDTO(
+                appointment.getTruck().getLicensePlate().toString(),
+                appointment.getSellerId().toString(),
+                appointment.getMaterialType().toString(),
+                appointment.getArrivalTime(),
+                "on time".equals(appointment.checkArrivalStatus()),
+                appointment.getWindowStart(),
+                appointment.getWindowEnd()
+        );
+        return ResponseEntity.ok(dto);
+    }
+
+
+    @GetMapping(value = "/check-arrival/id/{appointmentId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TruckOnTimeDTO> getAppointmentById(@PathVariable int appointmentId) {
+        Appointment appointment = getTruckByIdUseCase.getAppointmentById(appointmentId);
         TruckOnTimeDTO dto = new TruckOnTimeDTO(
                 appointment.getTruck().getLicensePlate().toString(),
                 appointment.getSellerId().toString(),
